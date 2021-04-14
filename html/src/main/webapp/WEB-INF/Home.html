@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Home</title>
+</head>
+<body>
+<div align="right">
+    <a th:href="@{/Logout}">Logout</a>
+</div>
+<h1>Welcome to the TIW 2021 Auction Home Page</h1>
+<p th:text="${'Nice to see you again ' + session.user.firstName + ' ' + session.user.lastName}"></p>
+
+<a th:href="@{/Buy}">BUY</a>
+<a th:href="@{/Sell}">SELL</a>
+
+</body>
+</html>
