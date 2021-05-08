@@ -3,16 +3,25 @@
 <head>
     <meta charset="ISO-8859-1">
     <title>Login page</title>
+    <link href="css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
 </head>
 <body>
+<div class="topnav">
+    <h1>TIW 2021 Auction Website</h1>
+    <a class="active" href="#home">Login</a>
+</div>
 <h1>Welcome to the TIW 2021 Auction website!</h1>
 
 <form action="CheckLogin" method="POST">
-    Username: <input type="text" name="username" required> <br>
-    Password: <input type="password" name="password" required><br>
-    <input type="submit" value="login">
-    <p th:text=" ${errorMsg}"></p>
+    <div class="container">
+        <label for="username"><b>Username</b></label>
+        <input type="text" placeholder="Enter Username" name="username" required> <br>
+        <label for="password"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" name="password" required><br>
+        <button type="submit">Login</button>
+        <p th:text=" ${errorMsg}"></p>
+    </div>
 </form>
-
+</div>
 </body>
 </html>

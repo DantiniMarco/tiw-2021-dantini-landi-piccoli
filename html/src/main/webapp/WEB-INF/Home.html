@@ -3,16 +3,19 @@
 <head>
     <meta charset="ISO-8859-1">
     <title>Home</title>
+    <link href="../css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
 </head>
 <body>
-<div align="right">
-    <a th:href="@{/Logout}">Logout</a>
+<div class="topnav">
+    <h1>TIW 2021 Auction Website</h1>
+    <a href="#home" th:href="@{/Logout}">Logout</a>
+    <a class="active" href="#home" th:href="@{/Home}">Home Page</a>
 </div>
 <h1>Welcome to the TIW 2021 Auction Home Page</h1>
 <p th:text="${'Nice to see you again ' + session.user.firstName + ' ' + session.user.lastName}"></p>
-
-<a th:href="@{/Buy}">BUY</a>
-<a th:href="@{/Sell}">SELL</a>
-
+<div class="actionButton">
+    <a th:href="@{/Buy}">BUY</a>
+    <a th:href="@{/Sell}">SELL</a>
+</div>
 </body>
 </html>
