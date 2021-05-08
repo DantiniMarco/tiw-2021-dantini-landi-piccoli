@@ -30,16 +30,16 @@ public class AuctionDAO {
     public HashMap<Auction, String> findOpenAuction(String keyword) throws SQLException {
         HashMap<Auction, String> searchedList= new HashMap<Auction, String>();
 
-        String query = "SELECT idauction, deadline, minraise, initialprice FROM " +
-                "(item JOIN auction ON idauction = iditem ) WHERE item.name LIKE = ? OR " +
-                "item.description LIKE = ? HAVING auction.deadline >= " +
-                "getDate() ORDER BY auction.deadline DESC";
+        String query = "SELECT idauction, deadline, minraise, initialprice, name FROM " +
+                "(item INNER JOIN auction) WHERE (item.name LIKE ? OR " +
+                "item.description LIKE ?) AND auction.deadline >= " +
+                "CURDATE() ORDER BY auction.deadline DESC";
         ResultSet result = null;
         PreparedStatement pstatement = null;
         try {
             pstatement = con.prepareStatement(query);
-            pstatement.setString(1, keyword);
-            pstatement.setString(2, keyword);
+            pstatement.setString(1, "%" + keyword + "%");
+            pstatement.setString(2, "%" + keyword + "%");
             result = pstatement.executeQuery();
             if (!result.isBeforeFirst()) // no results
                 return null;
@@ -50,7 +50,7 @@ public class AuctionDAO {
                     auction.setMinRaise(result.getInt("minraise"));
                     auction.setDeadline(result.getDate("deadline"));
                     auction.setIdAuction(result.getInt("idauction"));
-                    searchedList.add(auction);
+                    searchedList.put(auction, result.getString("name"));
                 }
             }
         } catch (SQLException e) {

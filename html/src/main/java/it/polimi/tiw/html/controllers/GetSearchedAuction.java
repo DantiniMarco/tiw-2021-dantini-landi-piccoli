@@ -71,10 +71,10 @@ public class GetSearchedAuction extends HttpServlet {
             HashMap<Auction, String> searchedList;
             try{
                 searchedList = aDAO.findOpenAuction(keyWord);
-                if(searchedList.isEmpty()){
+                if(searchedList == null || searchedList.isEmpty()){
                     ctx.setVariable("errorMsg", "This keyword is not matching to any open auction");
                 } else{
-
+                    ctx.setVariable("auctions", searchedList);
                 }
             } catch(SQLException e){
                 response.sendError(500, "Database access failed");

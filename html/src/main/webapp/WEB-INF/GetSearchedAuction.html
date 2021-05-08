@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>GetSearchedAuction</title>
@@ -16,7 +16,7 @@
 <div align="left">
 <h1>Use this page to search an Open Auction</h1>
 </div>
-<form action = "/GetSearchedAuction" method="get">
+<form action = "GetSearchedAuction" method="get">
     <div class="container">
         <label for="keyword"><b>Search for Open Auctions</b></label>
         <input type="text" placeholder="Write a key word..." id="keyword" name="keyword" required> <br>

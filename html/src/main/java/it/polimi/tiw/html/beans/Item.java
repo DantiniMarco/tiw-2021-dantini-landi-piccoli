@@ -1,17 +1,17 @@
 package it.polimi.tiw.html.beans;
 
 public class Item {
-    private int idArticle;
+    private int idItem;
     private String name;
     private String image;
     private String description;
 
-    public int getIdArticle() {
-        return idArticle;
+    public int getIdItem() {
+        return idItem;
     }
 
-    public void setIdArticle(int idArticle) {
-        this.idArticle = idArticle;
+    public void setIdItem(int idItem) {
+        this.idItem = idItem;
     }
 
     public String getName() {
