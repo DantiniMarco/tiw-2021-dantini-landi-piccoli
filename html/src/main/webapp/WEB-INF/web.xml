@@ -6,15 +6,15 @@
     <display-name>TIW-2021-D'Antini-Landi-Piccoli</display-name>
     <context-param>
         <param-name>dbUrl</param-name>
-        <param-value>jdbc:mysql://localhost:3306/tiw_2021</param-value>
+        <param-value>jdbc:mysql://tiw-2021.cbtzvxwa446p.eu-central-1.rds.amazonaws.com/tiw_2021</param-value>
     </context-param>
     <context-param>
         <param-name>dbUser</param-name>
-        <param-value>root</param-value>
+        <param-value>admin</param-value>
     </context-param>
     <context-param>
         <param-name>dbPassword</param-name>
-        <param-value>RooTDBtest2021!</param-value>
+        <param-value>vwSlqJQecyLsRCHY9Vq9</param-value>
     </context-param>
     <context-param>
         <param-name>dbDriver</param-name>
