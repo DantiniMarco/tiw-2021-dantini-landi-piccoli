@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="ISO-8859-1">
     <title>Login page</title>
@@ -8,10 +8,10 @@
 <body>
 <div class="topnav">
     <h1>TIW 2021 Auction Website</h1>
-    <a class="active" href="#home">Login</a>
+    <a class="active" th:href="@{/Login}">Login</a>
 </div>
 <h1>Welcome to the TIW 2021 Auction website!</h1>
-<form action="CheckLogin" method="POST">
+<form action="Login" method="POST">
     <div class="container">
         <label for="username"><b>Username</b></label>
         <input type="text" placeholder="Enter Username" id="username" name="username" required> <br>

@@ -24,7 +24,7 @@ public class Logout extends HttpServlet {
         if (session != null) {
             session.invalidate();
         }
-        String path = getServletContext().getContextPath() + "/index.html";
+        String path = getServletContext().getContextPath() + "/Login";
         response.sendRedirect(path);
     }
 

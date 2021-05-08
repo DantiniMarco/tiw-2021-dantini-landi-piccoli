@@ -3,8 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>GetSearchedAuction</title>
+    <link href="../css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
 </head>
 <body>
+<div class="topnav">
+    <h1>TIW 2021 Auction Website</h1>
+    <a th:href="@{/Logout}">Logout</a>
+    <a th:href="@{/Sell}">Sell</a>
+    <a class="active" th:href="@{/GetSearchedAuction}">Buy</a>
+    <a th:href="@{/Home}">Home Page</a>
+</div>
 <div align="left">
 <h1>Use this page to search an Open Auction</h1>
 <p th:text="${session.user.firstName+' please, write here a keyWord'}"></p>
