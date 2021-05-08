@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import it.polimi.tiw.html.beans.Auction;
@@ -26,8 +27,8 @@ public class AuctionDAO {
      * @return
      * @throws SQLException
      */
-    public ArrayList<Auction> findOpenAuction(String keyword) throws SQLException {
-        ArrayList<Auction> searchedList = null;
+    public HashMap<Auction, String> findOpenAuction(String keyword) throws SQLException {
+        HashMap<Auction, String> searchedList= new HashMap<Auction, String>();
 
         String query = "SELECT idauction, deadline, minraise, initialprice FROM " +
                 "(item JOIN auction ON idauction = iditem ) WHERE item.name LIKE = ? OR " +

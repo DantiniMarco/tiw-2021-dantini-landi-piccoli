@@ -25,4 +25,27 @@
     </div>
 </form>
 </body>
+<table th:if="auctions != null">
+    <thead>
+    <tr>
+        <th>ID Auction</th>
+        <th>Item Name</th>
+        <th>Initial Price</th>
+        <th>Minimum Raise</th>
+        <th>Deadline</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="a : ${auctions}">
+
+        <td th:text="${a.getKey().getIdAuction()}"></td>
+        <td th:text="${a.getValue()}"></td>
+        <td th:text="${a.getKey().getInitialPrice()}"></td>
+        <td th:text="${a.getKey().getMinRaise()}"></td>
+        <td th:text="${a.getKey().getDeadline()}"></td>
+        <!-- <td><a th:href="@{/GetMissionDetails(missionid=${m.id})}">Details</a></td> -->
+    </tr>
+    </tbody>
+</table>
 </html>

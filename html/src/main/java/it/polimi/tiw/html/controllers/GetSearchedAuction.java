@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -67,7 +68,7 @@ public class GetSearchedAuction extends HttpServlet {
 
         if( keyWord != null ){
             AuctionDAO aDAO = new AuctionDAO(connection);
-            ArrayList<Auction> searchedList;
+            HashMap<Auction, String> searchedList;
             try{
                 searchedList = aDAO.findOpenAuction(keyWord);
                 if(searchedList.isEmpty()){
