@@ -62,35 +62,28 @@ public class GetSearchedAuction extends HttpServlet {
         throws ServletException, IOException {
         HttpSession s = request.getSession();
         String keyWord = request.getParameter("keyword");
-        //check parameter is present
-        /*if( keyWord == null ){
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "missing parameters");
-            return;
-        }*/
-            User u = (User) s.getAttribute("user");
-        AuctionDAO aDAO = new AuctionDAO(connection);
-        ArrayList<Auction> searchedList;
-            //try{
-            //searchedList = aDAO.findOpenAuction(keyWord);
-            /*
-            if(searchedList.isEmpty()){
-                ServletContext servletContext = getServletContext();
-                final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
-                ctx.setVariable("errorMsg", "This keyword is not matching to any open auction");
-                String path = "/index.html";
-                templateEngine.process(path, ctx, response.getWriter());
+        ServletContext servletContext = getServletContext();
+        final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
 
-            } else{*/
-            String path = "/WEB-INF/GetSearchedAuction.html";
-            //request.setAttribute("searchedList", searchedList);
-            ServletContext servletContext = getServletContext();
-            final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
-            templateEngine.process(path, ctx, response.getWriter());
+        if( keyWord != null ){
+            AuctionDAO aDAO = new AuctionDAO(connection);
+            ArrayList<Auction> searchedList;
+            try{
+                searchedList = aDAO.findOpenAuction(keyWord);
+                if(searchedList.isEmpty()){
+                    ctx.setVariable("errorMsg", "This keyword is not matching to any open auction");
+                } else{
 
-            //}
-        //} catch(SQLException e){
-             //   response.sendError(500, "Database access failed");
-           // }
+                }
+            } catch(SQLException e){
+                response.sendError(500, "Database access failed");
+            }
+        }
+        String path = "/WEB-INF/GetSearchedAuction.html";
+        templateEngine.process(path, ctx, response.getWriter());
+            //User u = (User) s.getAttribute("user");
+
+
     }
     public void destroy(){
         try{
