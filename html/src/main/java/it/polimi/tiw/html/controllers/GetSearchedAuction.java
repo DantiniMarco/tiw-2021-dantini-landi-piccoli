@@ -83,8 +83,10 @@ public class GetSearchedAuction extends HttpServlet {
             } else{*/
             String path = "/WEB-INF/GetSearchedAuction.html";
             //request.setAttribute("searchedList", searchedList);
-            RequestDispatcher dispatcher = request.getRequestDispatcher(path);
-            dispatcher.forward(request,response);
+            ServletContext servletContext = getServletContext();
+            final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
+            templateEngine.process(path, ctx, response.getWriter());
+
             //}
         //} catch(SQLException e){
              //   response.sendError(500, "Database access failed");
