@@ -31,8 +31,8 @@ public class AuctionDAO {
     public HashMap<Auction, String> findOpenAuction(String keyword) throws SQLException {
         HashMap<Auction, String> searchedList= new HashMap<Auction, String>();
 
-        String query = "SELECT idauction, deadline, minraise, initialprice, name FROM " +
-                "(item INNER JOIN auction) WHERE (item.name LIKE ? OR " +
+        String query = "SELECT idauction, UNIX_TIMESTAMP(deadline) AS deadline, minraise, initialprice, name FROM " +
+                "(item NATURAL JOIN auction) WHERE (item.name LIKE ? OR " +
                 "item.description LIKE ?) AND auction.deadline >= " +
                 "CURDATE() ORDER BY auction.deadline DESC";
         ResultSet result = null;
@@ -49,7 +49,7 @@ public class AuctionDAO {
                     Auction auction = new Auction();
                     auction.setInitialPrice(result.getInt("initialprice"));
                     auction.setMinRaise(result.getInt("minraise"));
-                    auction.setDeadline(result.getDate("deadline"));
+                    auction.setDeadline(new Date(result.getLong("deadline")*1000));
                     auction.setIdAuction(result.getInt("idauction"));
                     searchedList.put(auction, result.getString("name"));
                 }
@@ -92,7 +92,7 @@ public class AuctionDAO {
                     auction.setIdAuction(result.getInt("idAuction"));
                     auction.setInitialPrice(result.getFloat("initialprice"));
                     auction.setMinRaise(result.getFloat("minraise"));
-                    auction.setDeadline(result.getDate("deadline"));
+                    auction.setDeadline(new Date(result.getDate("deadline").getTime()));
                     auction.setIdCreator(result.getInt("idcreator"));
                     auction.setIdItem(result.getInt("iditem"));
                     auction.setStatus((AuctionStatus) result.getObject("status"));

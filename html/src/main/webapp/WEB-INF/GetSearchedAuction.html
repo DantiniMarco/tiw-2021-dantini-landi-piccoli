@@ -45,7 +45,7 @@
         <td th:text="${a.getValue()}"></td>
         <td th:text="${a.getKey().getInitialPrice()}"></td>
         <td th:text="${a.getKey().getMinRaise()}"></td>
-        <td th:text="${a.getKey().getDeadline()}"></td>
+        <td th:text="${#dates.format(a.getKey().getDeadline(), 'dd-MM-yyyy HH:mm')}"></td>
         <!-- <td><a th:href="@{/GetMissionDetails(missionid=${m.id})}">Details</a></td> -->
     </tr>
     </tbody>
