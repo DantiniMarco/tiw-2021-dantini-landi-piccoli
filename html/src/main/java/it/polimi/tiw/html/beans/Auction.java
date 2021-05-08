@@ -8,7 +8,7 @@ public class Auction {
     private float minRaise;
     private Date deadline;
     private int idCreator;
-    private int idArticle;
+    private int idItem;
     private AuctionStatus status;
 
     public int getIdAuction() {
@@ -51,12 +51,12 @@ public class Auction {
         this.idCreator = idCreator;
     }
 
-    public int getIdArticle() {
-        return idArticle;
+    public int getIdItem() {
+        return idItem;
     }
 
-    public void setIdArticle(int idArticle) {
-        this.idArticle = idArticle;
+    public void setIdItem(int idItem) {
+        this.idItem = idItem;
     }
 
     public AuctionStatus getStatus() {
