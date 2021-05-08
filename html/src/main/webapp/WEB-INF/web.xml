@@ -28,6 +28,7 @@
         <filter-name>Checker</filter-name>
         <url-pattern>/Home</url-pattern>
         <url-pattern>/Logout</url-pattern>
+        <url-pattern>/GetSearchedAuction</url-pattern>
     </filter-mapping>
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
