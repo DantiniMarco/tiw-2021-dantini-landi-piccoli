@@ -57,7 +57,7 @@ public class GetSearchedAuction extends HttpServlet {
         throws ServletException, IOException {
         HttpSession s = request.getSession();
         User u = (User) s.getAttribute("utente");
-        AuctionDAO aDAO= new AuctionDAO(connection, u.getIdUser());
+        AuctionDAO aDAO= new AuctionDAO(connection);
         ArrayList<Auction> choosenList = new ArrayList<Auction>();
 
 

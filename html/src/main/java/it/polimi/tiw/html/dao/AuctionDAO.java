@@ -15,7 +15,7 @@ public class AuctionDAO {
     private Connection con;
     private ArrayList<Auction> searchedList;
 
-    public AuctionDAO(Connection connection, int idUser) {
+    public AuctionDAO(Connection connection) {
         this.con = connection;
     }
 
@@ -72,24 +72,33 @@ public class AuctionDAO {
 
     /**
      * @author Alfredo
-     * @param status
-     * @return
+     * @param status of an auction, it can be "0" -> CLOSED or "1" -> OPEN
+     * @return a list of auctions for the selected status
      */
-        public List<Auction> findAuctionsByStatus(AuctionStatus status) {
+        public List<Auction> findAuctionsByStatus(AuctionStatus status) throws SQLException{
             List<Auction> auctions = new ArrayList<>();
+            String query = "SELECT * FROM auction WHERE status=?";
+            PreparedStatement pstatement = null;
+            ResultSet result = null;
 
             try {
-
-                String query = "SELECT * FROM auction WHERE status=?";
-                PreparedStatement preparedStatement = con.prepareStatement(query);
-                ResultSet result = preparedStatement.executeQuery();
+                pstatement = con.prepareStatement(query);
+                pstatement.setInt(1, status.getValue());
+                result = pstatement.executeQuery();
                 while (result.next()) {
                     Auction auction = new Auction();
-
+                    auction.setIdAuction(result.getInt("idAuction"));
+                    auction.setInitialPrice(result.getFloat("initialprice"));
+                    auction.setMinRaise(result.getFloat("minraise"));
+                    auction.setDeadline(result.getDate("deadline"));
+                    auction.setIdCreator(result.getInt("idcreator"));
+                    auction.setIdItem(result.getInt("iditem"));
+                    auction.setStatus((AuctionStatus) result.getObject("status"));
                     auctions.add(auction);
                 }
             } catch (SQLException e) {
-
+                e.printStackTrace();
+                throw new SQLException(e);
             }
             return auctions;
         }
