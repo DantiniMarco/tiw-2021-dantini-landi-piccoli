@@ -66,24 +66,28 @@ public class GetSearchedAuction extends HttpServlet {
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
 
+
         if( keyWord != null ){
+            if(keyWord.length()<3){
+            ctx.setVariable("errorMsg", "Try again, this keyword is too short.");
+            }
+            else{
             AuctionDAO aDAO = new AuctionDAO(connection);
             HashMap<Auction, String> searchedList;
             try{
                 searchedList = aDAO.findOpenAuction(keyWord);
                 if(searchedList == null || searchedList.isEmpty()){
-                    ctx.setVariable("errorMsg", "This keyword is not matching to any open auction");
+                    ctx.setVariable("errorMsg", "This keyword is not matching to any open auction.");
                 } else{
                     ctx.setVariable("auctions", searchedList);
                 }
             } catch(SQLException e){
                 response.sendError(500, "Database access failed");
             }
+            }
         }
         String path = "/WEB-INF/GetSearchedAuction.html";
         templateEngine.process(path, ctx, response.getWriter());
-            //User u = (User) s.getAttribute("user");
-
 
     }
     public void destroy(){
