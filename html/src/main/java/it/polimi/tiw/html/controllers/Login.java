@@ -89,15 +89,6 @@ public class Login extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Redirect to the Home page
-        String homepath;
-        homepath = getServletContext().getContextPath() + "/Home";
-        HttpSession s = request.getSession();
-        if (!(s.isNew() || s.getAttribute("user") == null)) {
-            response.sendRedirect(homepath);
-            return;
-        }
-
         String path = "/index.html";
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
