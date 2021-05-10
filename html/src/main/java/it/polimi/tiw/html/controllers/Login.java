@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import it.polimi.tiw.html.beans.User;
 import it.polimi.tiw.html.dao.UserDAO;
@@ -75,7 +76,7 @@ public class Login extends HttpServlet {
         if (user == null) {
             ServletContext servletContext = getServletContext();
             final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-            ctx.setVariable("errorMsg", "Incorrect username or password");
+            ctx.setVariable("errorMsg", "Incorrect username or password!");
             path = "/index.html";
             templateEngine.process(path, ctx, response.getWriter());
         } else {
@@ -89,6 +90,14 @@ public class Login extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Redirect to the Home page
+        String homepath;
+        homepath = getServletContext().getContextPath() + "/Home";
+        HttpSession s = request.getSession();
+        if (!(s.isNew() || s.getAttribute("user") == null)) {
+            response.sendRedirect(homepath);
+            return;
+        }
+
         String path = "/index.html";
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
