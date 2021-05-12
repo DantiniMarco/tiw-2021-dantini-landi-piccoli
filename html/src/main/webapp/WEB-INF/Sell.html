@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sell new products!</title>
+</head>
+<body>
+<h3>Add new auction</h3>
+<form action="SellHelperServlet" method="POST">
+    <label for="itemName">Name: </label><input id="itemName" name ="itemName" value="Select a name, please" required><br><br>
+    <label for="itemImage">Image: </label><input id="itemImage" name ="itemImage" value="Upload an image, please" required><br><br>
+    <label for="itemDescription">Description: </label><input id="itemDescription" name ="itemDescription" value="Insert a short description, please" required><br><br>
+    <label for="initialPrice"></label>Initial Price: <input id="initialPrice" name ="initialPrice" value="Select an initial price, please" required><br><br>
+    <label for="minRaise"></label>Minimum Raise: <input id="minRaise" name ="minRaise" value="Select a minimum raise, please" required><br><br>
+    <label for="deadline"></label>Deadline: <input id="deadline" name ="deadline" type="date" required><br><br>
+    <input type="submit" value="Submit">
+</form>
+</body>
+</html>

@@ -6,6 +6,27 @@ public class Item {
     private String image;
     private String description;
 
+    /***
+     * @author Alfredo Landi
+     * Default constructor for this bean
+     */
+    public Item(){
+        super();
+    }
+
+    /**
+     * @author Alfredo Landi
+     * Constructor of item without id attribute in the case that database will compute item id
+     * @param name of item
+     * @param image of item
+     * @param description of item
+     */
+    public Item(String name, String image, String description){
+        this.name=name;
+        this.image=image;
+        this.description=description;
+    }
+
     public int getIdItem() {
         return idItem;
     }
