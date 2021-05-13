@@ -144,11 +144,9 @@ public class AuctionDAO {
             String query= "INSERT INTO auction (initialprice, minraise, deadline, idcreator, iditem, status) VALUES (?,?,?,?,?,?)";
             try{
                 con.setAutoCommit(false);
-                code=im.insertNewItem(newItem);
-                if(code==0){
+                itemId=im.insertNewItem(newItem);
+                if(itemId==-1){
                     throw new SQLException();
-                }else{
-                    itemId=code;
                 }
                 pstatement = con.prepareStatement(query);
                 pstatement.setFloat(1,initialPrice);
