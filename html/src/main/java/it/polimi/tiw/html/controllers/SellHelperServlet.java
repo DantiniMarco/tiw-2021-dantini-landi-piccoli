@@ -115,14 +115,13 @@ public class SellHelperServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter/s missing");
         }
 
-        //Forse andrebbe controllato (?)
         User user = (User) request.getSession().getAttribute("user");
-        System.out.println(user);
-        /*try{
-            am.insertNewAuction(itemName,itemImage, itemDescription, initialPrice, minRaise, deadline, idCreator);
+        int idCreator = user.getIdUser();
+        try{
+            am.insertNewAuction(itemName,fileName, itemDescription, initialPrice, minRaise, deadline, idCreator);
         }catch (SQLException sqle){
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
-        }*/
+        }
 
 
         ServletContext servletContext = getServletContext();

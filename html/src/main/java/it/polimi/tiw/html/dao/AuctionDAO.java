@@ -150,7 +150,7 @@ public class AuctionDAO {
                 pstatement.setDate(3, (java.sql.Date)deadline);
                 pstatement.setInt(4, idCreator);
                 pstatement.setInt(5, itemId);
-                pstatement.setObject(6, AuctionStatus.OPEN);
+                pstatement.setInt(6, AuctionStatus.OPEN.getValue());
                 result= pstatement.executeUpdate();
                 con.commit();
 
