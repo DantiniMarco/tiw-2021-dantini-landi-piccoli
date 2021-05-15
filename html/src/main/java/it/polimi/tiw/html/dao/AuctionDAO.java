@@ -135,7 +135,6 @@ public class AuctionDAO {
      * @return code of success or unsuccess
      */
         public int insertNewAuction(String itemName, String itemImage, String itemDescription, float initialPrice, float minRaise, Date deadline, int idCreator) throws SQLException{
-            int code;
             int itemId;
             Item newItem = new Item(itemName, itemImage, itemDescription);
             ItemDAO im = new ItemDAO(con);

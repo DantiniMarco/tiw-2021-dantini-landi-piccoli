@@ -31,10 +31,8 @@ public class ItemDAO {
             pstatement.setString(1, newItem.getName());
             pstatement.setString(2, newItem.getImage());
             pstatement.setString(3, newItem.getDescription());
-            //Qui c'è un problema serio, l'id dell'item non può essere scelto dal db
             int affectedRows = pstatement.executeUpdate();
             if(affectedRows == 0){
-                // Create item failed
                 return -1;
             }
             result = pstatement.getGeneratedKeys();
