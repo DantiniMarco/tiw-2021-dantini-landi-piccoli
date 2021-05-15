@@ -48,6 +48,9 @@
         <url-pattern>/Home</url-pattern>
         <url-pattern>/Logout</url-pattern>
         <url-pattern>/GetSearchedAuction</url-pattern>
+        <url-pattern>/Sell.html</url-pattern>
+        <url-pattern>/SellServlet</url-pattern>
+        <url-pattern>/SellHelperServlet</url-pattern>
     </filter-mapping>
     <welcome-file-list>
         <welcome-file>Login</welcome-file>
