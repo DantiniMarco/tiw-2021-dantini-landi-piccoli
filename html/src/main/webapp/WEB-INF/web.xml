@@ -51,6 +51,7 @@
         <url-pattern>/Sell.html</url-pattern>
         <url-pattern>/SellServlet</url-pattern>
         <url-pattern>/SellHelperServlet</url-pattern>
+        <url-pattern>/ImageServlet</url-pattern>
     </filter-mapping>
     <welcome-file-list>
         <welcome-file>Login</welcome-file>

@@ -9,21 +9,21 @@
 <div class="topnav">
     <h1>TIW 2021 Auction Website</h1>
     <a th:href="@{/Logout}">Logout</a>
-    <a th:href="@{/Sell}">Sell</a>
+    <a th:href="@{/SellServlet}">Sell</a>
     <a class="active" th:href="@{/GetSearchedAuction}">Buy</a>
     <a th:href="@{/Home}">Home Page</a>
 </div>
 <div align="left">
     <h1>Use this page to add a new Bid for the searched item</h1>
 </div>
-<div>
+<div align="center">
     <br>
     <br>
     <h1 th:text = "${'Name : '+ item.getName()}"></h1>
     <br>
     <h2 th:text = "${'Description : '+ item.getDescription()}"></h2>
     <br>
-    <img th:href = "${'ImageServlet?' + item.getImage()}">
+    <img style="max-height: 300px; max-width: 300px;" th:src = "@{/ImageServlet(name=${item.getImage()})}">
 </div>
 </body>
 <table th:if="${bids != null}">
