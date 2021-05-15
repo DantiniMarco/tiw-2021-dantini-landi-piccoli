@@ -1,14 +1,21 @@
 package it.polimi.tiw.html.controllers;
 
+import it.polimi.tiw.html.beans.User;
 import it.polimi.tiw.html.dao.AuctionDAO;
 import it.polimi.tiw.html.utils.ConnectionHandler;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -18,9 +25,16 @@ import java.sql.Date;
 public class SellHelperServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Connection con;
+    private TemplateEngine templateEngine;
 
     public void init() throws ServletException{
+        ServletContext servletContext = getServletContext();
         con = ConnectionHandler.getConnection(getServletContext());
+        ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        this.templateEngine = new TemplateEngine();
+        this.templateEngine.setTemplateResolver(templateResolver);
+        templateResolver.setSuffix(".html");
     }
 
     @Override
@@ -58,14 +72,19 @@ public class SellHelperServlet extends HttpServlet {
         }
 
         //Forse andrebbe controllato (?)
-        int idCreator = (Integer) request.getSession().getAttribute("user");
-        try{
+        User user = (User) request.getSession().getAttribute("user");
+        System.out.println(user);
+        /*try{
             am.insertNewAuction(itemName,itemImage, itemDescription, initialPrice, minRaise, deadline, idCreator);
         }catch (SQLException sqle){
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
-        }
+        }*/
 
-        response.sendRedirect("SellServlet");
+        HttpSession s = request.getSession();
+        ServletContext servletContext = getServletContext();
+        final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
+        String path = "/WEB-INF/Sell.html";
+        templateEngine.process(path, ctx, response.getWriter());
     }
 
     @Override
