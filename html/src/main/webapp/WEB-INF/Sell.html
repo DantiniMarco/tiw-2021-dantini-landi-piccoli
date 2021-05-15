@@ -5,6 +5,13 @@
     <title>Sell new products!</title>
 </head>
 <body>
+<div class="topnav">
+    <h1>TIW 2021 Auction Website</h1>
+    <a th:href="@{/Logout}">Logout</a>
+    <a class="active" th:href="@{/SellServlet}">Sell</a>
+    <a th:href="@{/GetSearchedAuction}">Buy</a>
+    <a th:href="@{/Home}">Home Page</a>
+</div>
 <h3>Add new auction</h3>
 <form action="SellHelperServlet" method="POST">
     <label for="itemName">Name: </label><input id="itemName" name ="itemName" value="Select a name, please" required><br><br>

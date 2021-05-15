@@ -93,7 +93,7 @@ public class AuctionDAO {
                     auction.setDeadline(new Date(result.getDate("deadline").getTime()));
                     auction.setIdCreator(result.getInt("idcreator"));
                     auction.setIdItem(result.getInt("iditem"));
-                    auction.setStatus((AuctionStatus) result.getObject("status"));
+                    auction.setStatus(AuctionStatus.getAuctionStatusFromInt(result.getInt("status")));
                     auctions.add(auction);
                 }
             } catch (SQLException e) {

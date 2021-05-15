@@ -9,7 +9,7 @@
 <div class="topnav">
     <h1>TIW 2021 Auction Website</h1>
     <a th:href="@{/Logout}">Logout</a>
-    <a th:href="@{/Sell}">Sell</a>
+    <a th:href="@{/SellServlet}">Sell</a>
     <a th:href="@{/GetSearchedAuction}">Buy</a>
     <a class="active" th:href="@{/Home}">Home Page</a>
 </div>
@@ -17,7 +17,7 @@
 <h2 th:text="${'Nice to see you again ' + session.user.firstName + ' ' + session.user.lastName}"></h2>
 <div class="actionButton">
     <a th:href="@{/GetSearchedAuction}">BUY</a>
-    <a th:href="@{/Sell}">SELL</a>
+    <a th:href="@{/SellServlet}">SELL</a>
 </div>
 </body>
 </html>
