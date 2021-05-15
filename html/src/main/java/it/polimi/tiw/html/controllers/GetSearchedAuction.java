@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.TreeMap;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -73,7 +75,7 @@ public class GetSearchedAuction extends HttpServlet {
             }
             else{
             AuctionDAO aDAO = new AuctionDAO(connection);
-            HashMap<Auction, String> searchedList;
+            LinkedHashMap<Auction, String> searchedList;
             try{
                 searchedList = aDAO.findOpenAuction(keyWord);
                 if(searchedList == null || searchedList.isEmpty()){

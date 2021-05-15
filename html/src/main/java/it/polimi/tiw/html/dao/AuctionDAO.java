@@ -4,10 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import it.polimi.tiw.html.beans.Auction;
 import it.polimi.tiw.html.beans.AuctionStatus;
@@ -29,8 +26,8 @@ public class AuctionDAO {
      * @return
      * @throws SQLException
      */
-    public HashMap<Auction, String> findOpenAuction(String keyword) throws SQLException {
-        HashMap<Auction, String> searchedList= new HashMap<Auction, String>();
+    public LinkedHashMap<Auction, String> findOpenAuction(String keyword) throws SQLException {
+        LinkedHashMap<Auction, String> searchedList= new LinkedHashMap<Auction, String>();
 
         String query = "SELECT idauction, UNIX_TIMESTAMP(deadline) AS deadline, minraise, initialprice, name FROM " +
                 "(item NATURAL JOIN auction) WHERE (item.name LIKE ? OR " +
