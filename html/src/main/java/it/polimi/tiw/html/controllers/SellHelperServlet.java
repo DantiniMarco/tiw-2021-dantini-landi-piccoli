@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Date;
+import java.sql.Date;
 
 @WebServlet("/SellHelperServlet")
 public class SellHelperServlet extends HttpServlet {
@@ -41,15 +41,15 @@ public class SellHelperServlet extends HttpServlet {
         || initialPrice_param==null || initialPrice_param.isEmpty() || minRaise_param==null || minRaise_param.isEmpty() || deadline_param==null
         || deadline_param.isEmpty()){
             bad_request=1;
-            /*response.sendError();
-            throw new UnavailableException("Parameter/s missing");*/
         }
 
         try{
             initialPrice= Float.parseFloat(initialPrice_param);
             minRaise = Float.parseFloat(minRaise_param);
-            //deadline = deadline_param;
+            deadline = Date.valueOf(deadline_param);
         }catch(NumberFormatException e){
+            bad_request=1;
+        }catch(Exception e){
             bad_request=1;
         }
 
@@ -57,8 +57,8 @@ public class SellHelperServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter/s missing");
         }
 
-        //Per ottenere idCreator serve parte Marco
-        int idCreator = 0;
+        //Forse andrebbe controllato (?)
+        int idCreator = (Integer) request.getSession().getAttribute("user");
         try{
             am.insertNewAuction(itemName,itemImage, itemDescription, initialPrice, minRaise, deadline, idCreator);
         }catch (SQLException sqle){
