@@ -57,7 +57,7 @@ public class SellServlet extends HttpServlet {
             throw new UnavailableException("Error executing query");
         }
 
-        HttpSession s = request.getSession();
+
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
         String path = "/WEB-INF/Sell.html";

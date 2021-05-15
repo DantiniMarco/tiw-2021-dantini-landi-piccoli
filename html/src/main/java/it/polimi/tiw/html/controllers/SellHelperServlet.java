@@ -119,7 +119,7 @@ public class SellHelperServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
         }
 
-        HttpSession s = request.getSession();
+
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
         String path = "/WEB-INF/Sell.html";
