@@ -47,7 +47,7 @@ public class SellHelperServlet extends HttpServlet {
         String itemName = request.getParameter("itemName");
         //String itemImage = request.getParameter("itemImage");
         final Part filePart = request.getPart("itemImage");
-        final String fileName = getFileName(filePart);
+        String fileName = getFileName(filePart);
         System.out.println(fileName);
         String itemDescription = request.getParameter("itemDescription");
         String initialPrice_param = request.getParameter("initialPrice");
@@ -117,6 +117,9 @@ public class SellHelperServlet extends HttpServlet {
 
         User user = (User) request.getSession().getAttribute("user");
         int idCreator = user.getIdUser();
+        if(fileName.isEmpty()){
+            fileName=null;
+        }
         try{
             am.insertNewAuction(itemName,fileName, itemDescription, initialPrice, minRaise, deadline, idCreator);
         }catch (SQLException sqle){
