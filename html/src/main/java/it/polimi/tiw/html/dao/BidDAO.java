@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class BidDAO {
@@ -21,9 +22,10 @@ public class BidDAO {
      * @param auctionId of the current auction
      * @return a list o bids for the current auction
      */
-    public List<Bid> findBidsByIdAuction(int auctionId) {
+    public List<Bid> findBidsByIdAuction(int auctionId) throws SQLException {
         List<Bid> bids = new ArrayList<>();
-        String query = "SELECT * FROM bid WHERE idauction = ? ORDER BY datetime DESC";
+        String query = "SELECT idbid, bidprice, UNIX_TIMESTAMP(datetime) AS datetime, idbidder, idauction" +
+                " FROM bid WHERE idauction = ? ORDER BY datetime DESC";
         PreparedStatement pstatement = null;
         ResultSet result = null;
         try {
@@ -34,7 +36,7 @@ public class BidDAO {
                 Bid bid = new Bid();
                 bid.setIdBid(result.getInt("idbid"));
                 bid.setBidPrice(result.getFloat("bidprice"));
-                bid.setDateTime(result.getDate("datetime"));
+                bid.setDateTime(new Date(result.getLong("datetime")*1000));
                 bid.setIdBidder(result.getInt("idbidder"));
                 bid.setIdAuction(result.getInt("idauction"));
                 bids.add(bid);
@@ -49,6 +51,7 @@ public class BidDAO {
                 }
             }catch(SQLException e1){
                 e1.printStackTrace();
+                throw new SQLException(e1);
             }
             try{
                 if(pstatement!=null){
@@ -56,6 +59,7 @@ public class BidDAO {
                 }
             }catch(SQLException e2){
                 e2.printStackTrace();
+                throw new SQLException(e2);
             }
         }
 

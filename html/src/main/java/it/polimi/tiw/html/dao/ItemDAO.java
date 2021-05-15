@@ -45,5 +45,43 @@ public class ItemDAO {
 
         return -1;
     }
+
+    /**
+     * @author Marco D'Antini
+     * @param
+     * @return the item with its attributes
+     */
+    public Item getItemById(int idauction) throws SQLException {
+        String query = "SELECT name, description, image FROM (item NATURAL JOIN auction) WHERE idauction = ?";
+        ResultSet result = null;
+        Item item = new Item();
+        PreparedStatement pstatement = null;
+        try{
+            pstatement = con.prepareStatement(query);
+            pstatement.setInt(1, idauction );
+            result = pstatement.executeQuery();
+            while(result.next()){
+                item.setIdItem(idauction);
+                item.setName(result.getString("name"));
+                item.setDescription(result.getString("description"));
+                item.setImage(result.getString("image"));
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException(e);
+        } finally {
+            try {
+                result.close();
+            } catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                pstatement.close();
+            } catch (Exception e2) {
+                throw new SQLException(e2);
+            }
+        }
+        return item;
+    }
 }
 

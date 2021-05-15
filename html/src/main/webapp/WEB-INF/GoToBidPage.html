@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GoToBidPage</title>
+    <link href="../css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+</head>
+<body>
+<div class="topnav">
+    <h1>TIW 2021 Auction Website</h1>
+    <a th:href="@{/Logout}">Logout</a>
+    <a th:href="@{/Sell}">Sell</a>
+    <a class="active" th:href="@{/GetSearchedAuction}">Buy</a>
+    <a th:href="@{/Home}">Home Page</a>
+</div>
+<div align="left">
+    <h1>Use this page to add a new Bid for the searched item</h1>
+</div>
+<div>
+    <br>
+    <br>
+    <h1 th:text = "${'Name : '+ item.getName()}"></h1>
+    <br>
+    <h2 th:text = "${'Description : '+ item.getDescription()}"></h2>
+    <br>
+    <img th:href = "${'ImageServlet?' + item.getImage()}">
+</div>
+</body>
+<table th:if="${bids != null}">
+    <thead>
+    <tr>
+        <th>ID Bid</th>
+        <th>Bid Price</th>
+        <th>Deadline</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="a : ${bids}">
+
+        <td th:text="${a.getIdBid()}"></td>
+        <td th:text="${a.getBidPrice()}"></td>
+        <td th:text="${#dates.format(a.getDateTime(), 'dd-MM-yyyy HH:mm')}"></td>
+    </tr>
+    </tbody>
+</table>
+</html>
