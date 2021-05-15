@@ -1,5 +1,6 @@
 package it.polimi.tiw.html.controllers;
 
+import it.polimi.tiw.html.beans.User;
 import it.polimi.tiw.html.dao.AuctionDAO;
 import it.polimi.tiw.html.utils.ConnectionHandler;
 import org.thymeleaf.TemplateEngine;
@@ -112,12 +113,13 @@ public class SellHelperServlet extends HttpServlet {
         }
 
         //Forse andrebbe controllato (?)
-        int idCreator = (Integer) request.getSession().getAttribute("user");
-        try{
+        User user = (User) request.getSession().getAttribute("user");
+        System.out.println(user);
+        /*try{
             am.insertNewAuction(itemName,itemImage, itemDescription, initialPrice, minRaise, deadline, idCreator);
         }catch (SQLException sqle){
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
-        }
+        }*/
 
 
         ServletContext servletContext = getServletContext();
