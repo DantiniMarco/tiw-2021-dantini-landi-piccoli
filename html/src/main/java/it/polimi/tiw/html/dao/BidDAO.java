@@ -2,10 +2,8 @@ package it.polimi.tiw.html.dao;
 
 import it.polimi.tiw.html.beans.Bid;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -64,5 +62,41 @@ public class BidDAO {
         }
 
         return bids;
+    }
+
+    /**
+     * @author Marco D'Antini
+     * query used to insert a new legit Bid into the daatabase called by  GotoBidPage
+     * @param bidPrice
+     * @param idBidder
+     * @param idAuction
+     * @return the idBid of the bid added in the database, 0 in case of db error
+     * @throws SQLException
+     */
+    public int insertNewBid(float bidPrice, int idBidder, int idAuction)throws SQLException{
+        ResultSet result;
+        Date date = new Date();
+        Long dateTime = date.getTime();
+        int idBid;
+        String query = "INSERT INTO bid ( bidprice, datetime, idbidder, idauction) VALUES (?,?,?,?)";
+        PreparedStatement pstatement = null;
+
+        try{
+            pstatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            pstatement.setFloat(1, bidPrice);
+            pstatement.setLong(2, dateTime*1000);
+            pstatement.setInt(3, idBidder);
+            pstatement.setInt(4, idAuction);
+            int affectedRows = pstatement.executeUpdate();
+            if(affectedRows == 0){
+                return -1;
+            }
+            result = pstatement.getGeneratedKeys();
+            if(result!= null && result.next())
+                return result.getInt(1);
+        }catch (SQLException sqle){
+            sqle.printStackTrace();
+        }
+        return -1;
     }
 }
