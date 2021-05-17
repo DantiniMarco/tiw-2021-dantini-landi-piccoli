@@ -79,7 +79,7 @@ public class SellHelperServlet extends HttpServlet {
         }
         if (filePart.getSize() > 0) {
             try {
-                out = new FileOutputStream(new File(System.getProperty("catalina.home") + "\\img" + File.separator
+                out = new FileOutputStream(new File(System.getProperty("catalina.home") + File.separator + "img" + File.separator
                         + fileName));
                 filecontent = filePart.getInputStream();
 
@@ -113,6 +113,7 @@ public class SellHelperServlet extends HttpServlet {
         }
         if (bad_request == 1) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter/s missing");
+            return;
         }
 
         User user = (User) request.getSession().getAttribute("user");
