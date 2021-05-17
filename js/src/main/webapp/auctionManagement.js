@@ -44,7 +44,7 @@
 	    };
 
 
-	    this.refresh = function(currentMission) {
+	    this.refresh = function() {
 	      alertContainer.textContent = "";
 	    };
 	  }
