@@ -27,6 +27,7 @@ public class ClosedAuctionDetailsServlet extends HttpServlet {
     private Connection con;
     private TemplateEngine templateEngine;
 
+    @Override
     public void init() throws ServletException {
         ServletContext servletContext = getServletContext();
         con = ConnectionHandler.getConnection(getServletContext());
@@ -52,6 +53,7 @@ public class ClosedAuctionDetailsServlet extends HttpServlet {
         doGet(request, response);
     }
 
+    @Override
     public void destroy(){
         try{
             if(con!=null){

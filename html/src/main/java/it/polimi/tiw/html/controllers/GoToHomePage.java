@@ -4,8 +4,6 @@ package it.polimi.tiw.html.controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -13,9 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import it.polimi.tiw.html.beans.User;
 import it.polimi.tiw.html.utils.ConnectionHandler;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -32,6 +28,7 @@ public class GoToHomePage extends HttpServlet {
         super();
     }
 
+    @Override
     public void init() throws ServletException {
         ServletContext servletContext = getServletContext();
         ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
@@ -42,6 +39,7 @@ public class GoToHomePage extends HttpServlet {
         connection = ConnectionHandler.getConnection(getServletContext());
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Redirect to the Home page
@@ -51,11 +49,13 @@ public class GoToHomePage extends HttpServlet {
         templateEngine.process(path, ctx, response.getWriter());
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         doGet(request, response);
     }
 
+    @Override
     public void destroy() {
         try {
             ConnectionHandler.closeConnection(connection);

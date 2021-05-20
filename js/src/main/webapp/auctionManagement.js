@@ -33,9 +33,9 @@
 	  }
 
 	  function PageOrchestrator() {
-	    var alertContainer = document.getElementById("id_alert");
+	    let alertContainer = document.getElementById("id_alert");
 	    this.start = function() {
-	      personalMessage = new PersonalMessage(alertContainer, document.getElementById("id_username"));
+	      let personalMessage = new PersonalMessage(alertContainer, document.getElementById("id_username"));
 	      //personalMessage.show();
 
 	      document.querySelector("a[href='Logout']").addEventListener('click', () => {

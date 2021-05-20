@@ -19,6 +19,7 @@ public class CheckIfAlreadyLoggedIn implements Filter {
     /**
      * @see Filter#destroy()
      */
+    @Override
     public void destroy() {
         // TODO Auto-generated method stub
     }
@@ -31,7 +32,6 @@ public class CheckIfAlreadyLoggedIn implements Filter {
 
         System.out.print("Login checker filter executing ...\n");
 
-        // java.lang.String loginpath = "/index.html";
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         String homepath = req.getServletContext().getContextPath() + "/HomeACT.html";
@@ -48,6 +48,7 @@ public class CheckIfAlreadyLoggedIn implements Filter {
     /**
      * @see Filter#init(FilterConfig)
      */
+    @Override
     public void init(FilterConfig fConfig) throws ServletException {
         // TODO Auto-generated method stub
     }

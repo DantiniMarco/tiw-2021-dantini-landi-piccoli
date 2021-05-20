@@ -26,46 +26,33 @@ public class AuctionDAO {
      * @return
      * @throws SQLException
      */
-    public LinkedHashMap<Auction, String> findOpenAuction(String keyword) throws SQLException {
+    public Map<Auction, String> findOpenAuction(String keyword) throws SQLException {
         LinkedHashMap<Auction, String> searchedList= new LinkedHashMap<Auction, String>();
 
         String query = "SELECT idauction, UNIX_TIMESTAMP(deadline) AS deadline, minraise, initialprice, name FROM " +
                 "(item NATURAL JOIN auction) WHERE (item.name LIKE ? OR " +
                 "item.description LIKE ?) AND auction.deadline >= " +
                 "CURDATE() ORDER BY auction.deadline DESC";
-        ResultSet result = null;
-        PreparedStatement pstatement = null;
-        try {
-            pstatement = con.prepareStatement(query);
+        try (PreparedStatement pstatement = con.prepareStatement(query)) {
             pstatement.setString(1, "%" + keyword + "%");
             pstatement.setString(2, "%" + keyword + "%");
-            result = pstatement.executeQuery();
-            if (!result.isBeforeFirst()) // no results
-                return null;
-            else {
-                while (result.next()) {
-                    Auction auction = new Auction();
-                    auction.setInitialPrice(result.getInt("initialprice"));
-                    auction.setMinRaise(result.getInt("minraise"));
-                    auction.setDeadline(new Date(result.getLong("deadline")*1000));
-                    auction.setIdAuction(result.getInt("idauction"));
-                    searchedList.put(auction, result.getString("name"));
+            try (ResultSet result = pstatement.executeQuery()) {
+                if (!result.isBeforeFirst()) // no results
+                    return null;
+                else {
+                    while (result.next()) {
+                        Auction auction = new Auction();
+                        auction.setInitialPrice(result.getInt("initialprice"));
+                        auction.setMinRaise(result.getInt("minraise"));
+                        auction.setDeadline(new Date(result.getLong("deadline") * 1000));
+                        auction.setIdAuction(result.getInt("idauction"));
+                        searchedList.put(auction, result.getString("name"));
+                    }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new SQLException(e);
-        } finally {
-            try {
-                result.close();
-            } catch (Exception e1) {
-                throw new SQLException(e1);
-            }
-            try {
-                pstatement.close();
-            } catch (Exception e2) {
-                throw new SQLException(e2);
-            }
         }
         return searchedList;
     }

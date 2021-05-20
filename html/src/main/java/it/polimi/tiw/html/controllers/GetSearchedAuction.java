@@ -4,12 +4,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.TreeMap;
+import java.util.*;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
@@ -19,11 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import it.polimi.tiw.html.beans.Item;
-import it.polimi.tiw.html.beans.User;
 import it.polimi.tiw.html.dao.AuctionDAO;
-import it.polimi.tiw.html.dao.ItemDAO;
-import org.apache.commons.text.StringEscapeUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -77,7 +69,7 @@ public class GetSearchedAuction extends HttpServlet {
             }
             else{
             AuctionDAO aDAO = new AuctionDAO(connection);
-            LinkedHashMap<Auction, String> searchedList;
+            Map<Auction, String> searchedList;
             try{
                 searchedList = aDAO.findOpenAuction(keyWord);
                 if(searchedList == null || searchedList.isEmpty()){

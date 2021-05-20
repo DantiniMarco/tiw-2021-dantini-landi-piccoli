@@ -28,13 +28,14 @@ public class CheckLogin extends HttpServlet {
         super();
     }
 
+    @Override
     public void init() throws ServletException {
         connection = ConnectionHandler.getConnection(getServletContext());
     }
 
-
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
         // obtain and escape params
         String usrn = null;
         String pwd = null;
@@ -74,6 +75,7 @@ public class CheckLogin extends HttpServlet {
 
     }
 
+    @Override
     public void destroy() {
         try {
             ConnectionHandler.closeConnection(connection);

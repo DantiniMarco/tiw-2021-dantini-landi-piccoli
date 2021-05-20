@@ -3,7 +3,6 @@ package it.polimi.tiw.html.dao;
 import it.polimi.tiw.html.beans.Bid;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,41 +23,22 @@ public class BidDAO {
         List<Bid> bids = new ArrayList<>();
         String query = "SELECT idbid, bidprice, UNIX_TIMESTAMP(datetime) AS datetime, idbidder, idauction" +
                 " FROM bid WHERE idauction = ? ORDER BY datetime DESC";
-        PreparedStatement pstatement = null;
-        ResultSet result = null;
-        try {
-            pstatement = con.prepareStatement(query);
+        try (PreparedStatement pstatement = con.prepareStatement(query)) {
             pstatement.setInt(1, auctionId);
-            result = pstatement.executeQuery();
-            while (result.next()) {
-                Bid bid = new Bid();
-                bid.setIdBid(result.getInt("idbid"));
-                bid.setBidPrice(result.getFloat("bidprice"));
-                bid.setDateTime(new Date(result.getLong("datetime")*1000));
-                bid.setIdBidder(result.getInt("idbidder"));
-                bid.setIdAuction(result.getInt("idauction"));
-                bids.add(bid);
+            try (ResultSet result = pstatement.executeQuery()) {
+                while (result.next()) {
+                    Bid bid = new Bid();
+                    bid.setIdBid(result.getInt("idbid"));
+                    bid.setBidPrice(result.getFloat("bidprice"));
+                    bid.setDateTime(new Date(result.getLong("datetime") * 1000));
+                    bid.setIdBidder(result.getInt("idbidder"));
+                    bid.setIdAuction(result.getInt("idauction"));
+                    bids.add(bid);
+                }
             }
 
         } catch (SQLException sqle) {
             sqle.printStackTrace();
-        }finally {
-            try{
-                if(result!=null){
-                    result.close();
-                }
-            }catch(SQLException e1){
-                e1.printStackTrace();
-                throw new SQLException(e1);
-            }
-            try{
-                if(pstatement!=null){
-                    pstatement.close();
-                }
-            }catch(SQLException e2){
-                e2.printStackTrace();
-                throw new SQLException(e2);
-            }
         }
 
         return bids;
@@ -77,18 +57,15 @@ public class BidDAO {
         ResultSet result;
         Date date = new Date();
         Long dateTime = date.getTime();
-        int idBid;
         String query = "INSERT INTO bid ( bidprice, datetime, idbidder, idauction) VALUES (?,?,?,?)";
-        PreparedStatement pstatement = null;
 
-        try{
-            pstatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        try (PreparedStatement pstatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pstatement.setFloat(1, bidPrice);
-            pstatement.setLong(2, dateTime*1000);
+            pstatement.setLong(2, dateTime * 1000);
             pstatement.setInt(3, idBidder);
             pstatement.setInt(4, idAuction);
             int affectedRows = pstatement.executeUpdate();
-            if(affectedRows == 0){
+            if (affectedRows == 0) {
                 return -1;
             }
             result = pstatement.getGeneratedKeys();

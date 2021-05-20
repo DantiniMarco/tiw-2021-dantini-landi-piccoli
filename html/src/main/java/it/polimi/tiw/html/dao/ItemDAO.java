@@ -24,15 +24,13 @@ public class ItemDAO {
     public int insertNewItem(Item newItem){
         ResultSet result;
         String query = "INSERT INTO item (name, image, description) VALUES (?, ?, ?)";
-        PreparedStatement pstatement = null;
 
-        try{
-            pstatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        try (PreparedStatement pstatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pstatement.setString(1, newItem.getName());
             pstatement.setString(2, newItem.getImage());
             pstatement.setString(3, newItem.getDescription());
             int affectedRows = pstatement.executeUpdate();
-            if(affectedRows == 0){
+            if (affectedRows == 0) {
                 return -1;
             }
             result = pstatement.getGeneratedKeys();
@@ -53,33 +51,20 @@ public class ItemDAO {
      */
     public Item getItemById(int idauction) throws SQLException {
         String query = "SELECT name, description, image FROM (item NATURAL JOIN auction) WHERE idauction = ?";
-        ResultSet result = null;
         Item item = new Item();
-        PreparedStatement pstatement = null;
-        try{
-            pstatement = con.prepareStatement(query);
-            pstatement.setInt(1, idauction );
-            result = pstatement.executeQuery();
-            while(result.next()){
-                item.setIdItem(idauction);
-                item.setName(result.getString("name"));
-                item.setDescription(result.getString("description"));
-                item.setImage(result.getString("image"));
+        try (PreparedStatement pstatement = con.prepareStatement(query)) {
+            pstatement.setInt(1, idauction);
+            try (ResultSet result = pstatement.executeQuery()) {
+                while (result.next()) {
+                    item.setIdItem(idauction);
+                    item.setName(result.getString("name"));
+                    item.setDescription(result.getString("description"));
+                    item.setImage(result.getString("image"));
+                }
             }
         }catch (SQLException e) {
             e.printStackTrace();
             throw new SQLException(e);
-        } finally {
-            try {
-                result.close();
-            } catch (Exception e1) {
-                throw new SQLException(e1);
-            }
-            try {
-                pstatement.close();
-            } catch (Exception e2) {
-                throw new SQLException(e2);
-            }
         }
         return item;
     }

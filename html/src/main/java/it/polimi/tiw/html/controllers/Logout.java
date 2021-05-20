@@ -17,6 +17,7 @@ public class Logout extends HttpServlet {
         super();
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -28,6 +29,7 @@ public class Logout extends HttpServlet {
         response.sendRedirect(path);
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         doGet(request, response);
