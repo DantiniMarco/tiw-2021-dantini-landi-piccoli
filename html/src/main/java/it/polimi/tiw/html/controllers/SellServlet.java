@@ -16,6 +16,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.UnavailableException;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,7 +29,6 @@ public class SellServlet extends HttpServlet {
     private Connection con;
     private TemplateEngine templateEngine;
 
-    @Override
     public void init() throws ServletException{
         ServletContext servletContext = getServletContext();
         con = ConnectionHandler.getConnection(getServletContext());
@@ -57,9 +58,12 @@ public class SellServlet extends HttpServlet {
         }
 
 
+
+        String path = "/WEB-INF/Sell.html";
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
-        String path = "/WEB-INF/Sell.html";
+        ctx.setVariable("openAuctions", openAuctions);
+        ctx.setVariable("closedAuctions", closedAuctions);
         templateEngine.process(path, ctx, response.getWriter());
 
     }
@@ -69,7 +73,6 @@ public class SellServlet extends HttpServlet {
         doGet(request, response);
     }
 
-    @Override
     public void destroy(){
         try{
             if(con!=null){

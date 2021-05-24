@@ -13,9 +13,29 @@
     <a th:href="@{/GetSearchedAuction}">Buy</a>
     <a th:href="@{/Home}">Home Page</a>
 </div>
+<h3><center>Open auctions</center></h3>
+<table align="center">
+    <thead>
+        <tr>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr></tr>
+    </tbody>
+</table>
+<h3><center>Closed auctions</center></h3>
+<table align="center">
+    <thead>
+
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
 <h3>Add new auction</h3>
 <form action="SellHelperServlet" method="POST" enctype="multipart/form-data">
-    <div class="container"
+    <div class="container">
         <label for="itemName">Name: </label><input id="itemName" name ="itemName" placeholder="iPhone" required><br><br>
         <label for="itemImage">Image: </label><input type="file" id="itemImage" name ="itemImage"><br><br>
         <label for="itemDescription">Description: </label><input id="itemDescription" name ="itemDescription" placeholder="Good phone?" required><br><br>
