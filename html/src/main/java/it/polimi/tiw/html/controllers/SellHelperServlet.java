@@ -34,11 +34,6 @@ public class SellHelperServlet extends HttpServlet {
     public void init() throws ServletException {
         ServletContext servletContext = getServletContext();
         con = ConnectionHandler.getConnection(getServletContext());
-        ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-        templateResolver.setTemplateMode(TemplateMode.HTML);
-        this.templateEngine = new TemplateEngine();
-        this.templateEngine.setTemplateResolver(templateResolver);
-        templateResolver.setSuffix(".html");
     }
 
     @Override
@@ -124,11 +119,7 @@ public class SellHelperServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
         }
 
-
-        ServletContext servletContext = getServletContext();
-        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-        String path = "/WEB-INF/Sell.html";
-        templateEngine.process(path, ctx, response.getWriter());
+        response.sendRedirect("SellServlet");
     }
 
     @Override
