@@ -23,7 +23,7 @@
     <br>
     <h2 th:text = "${'Description : '+ item.getDescription()}"></h2>
     <br>
-    <img style="max-height: 300px; max-width: 300px;" th:src = "@{/ImageServlet(name=${item.getImage()})}">
+    <img style="max-height: 300px; max-width: 300px;" alt="No image found" th:src = "@{/ImageServlet(name=${item.getImage()})}">
 </div>
 </body>
 <div align="left">
@@ -43,6 +43,7 @@
         <input type="hidden" name="item" th:value="${item}">
     </div>
 </form>
+<br>
 <table th:if="${bids != null}">
     <thead>
     <tr>

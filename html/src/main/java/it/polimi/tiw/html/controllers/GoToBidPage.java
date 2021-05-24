@@ -34,6 +34,8 @@ public class GoToBidPage extends HttpServlet{
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
     private TemplateEngine templateEngine;
+    private float currMaxPrice;
+    private int idAuctionPub = 0;
     public GoToBidPage(){super();}
 
 
@@ -62,7 +64,6 @@ public class GoToBidPage extends HttpServlet{
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException{
         int idAuction;
-        float currMaxPrice = 0;
         Item item ;
         List<Bid> bids;
 
@@ -72,6 +73,7 @@ public class GoToBidPage extends HttpServlet{
 
         try{
             idAuction = Integer.parseInt(request.getParameter("idauction"));
+            idAuctionPub = idAuction;
         } catch ( NumberFormatException | NullPointerException e){
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "incorrect param values");
             return;

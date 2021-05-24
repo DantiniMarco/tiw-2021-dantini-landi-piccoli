@@ -10,7 +10,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import it.polimi.tiw.html.beans.User;
 import it.polimi.tiw.html.dao.UserDAO;
@@ -31,6 +30,7 @@ public class Login extends HttpServlet {
         super();
     }
 
+    @Override
     public void init() throws ServletException {
         connection = ConnectionHandler.getConnection(getServletContext());
         ServletContext servletContext = getServletContext();
@@ -41,6 +41,7 @@ public class Login extends HttpServlet {
         templateResolver.setSuffix(".html");
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // obtain and escape params
@@ -87,6 +88,7 @@ public class Login extends HttpServlet {
 
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String path = "/index.html";
@@ -95,6 +97,7 @@ public class Login extends HttpServlet {
         templateEngine.process(path, ctx, response.getWriter());
     }
 
+    @Override
     public void destroy() {
         try {
             ConnectionHandler.closeConnection(connection);

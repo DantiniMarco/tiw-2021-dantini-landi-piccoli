@@ -33,13 +33,6 @@
         <filter-class>it.polimi.tiw.html.filters.CheckIfAlreadyLoggedIn</filter-class>
     </filter>
     <filter-mapping>
-        <filter-name>NoCacher</filter-name>
-        <url-pattern>/Home</url-pattern>
-        <url-pattern>/Login</url-pattern>
-        <url-pattern>/Logout</url-pattern>
-        <url-pattern>/GetSearchedAuction</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
         <filter-name>CheckIfAlreadyLoggedIn</filter-name>
         <url-pattern>/Login</url-pattern>
     </filter-mapping>

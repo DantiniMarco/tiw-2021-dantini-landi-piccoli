@@ -10,7 +10,6 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -20,7 +19,6 @@ import java.sql.SQLException;
 import java.sql.Date;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
@@ -32,6 +30,7 @@ public class SellHelperServlet extends HttpServlet {
     private Connection con;
     private TemplateEngine templateEngine;
 
+    @Override
     public void init() throws ServletException {
         ServletContext servletContext = getServletContext();
         con = ConnectionHandler.getConnection(getServletContext());
@@ -45,7 +44,6 @@ public class SellHelperServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String itemName = request.getParameter("itemName");
-        //String itemImage = request.getParameter("itemImage");
         final Part filePart = request.getPart("itemImage");
         String fileName = getFileName(filePart);
         System.out.println(fileName);
@@ -60,9 +58,8 @@ public class SellHelperServlet extends HttpServlet {
         AuctionDAO am = new AuctionDAO(con);
         OutputStream out = null;
         InputStream filecontent = null;
-        //final PrintWriter writer = response.getWriter();
         System.out.println(System.getProperty("catalina.home"));
-        if (itemName == null || itemName.isEmpty() || filePart == null || itemDescription == null || itemDescription.isEmpty()
+        if (itemName == null || itemName.isEmpty() || itemDescription == null || itemDescription.isEmpty()
                 || initialPrice_param == null || initialPrice_param.isEmpty() || minRaise_param == null || minRaise_param.isEmpty() || deadline_param == null
                 || deadline_param.isEmpty()) {
             bad_request = 1;
@@ -77,6 +74,7 @@ public class SellHelperServlet extends HttpServlet {
         } catch (Exception e) {
             bad_request = 1;
         }
+
         if (filePart.getSize() > 0) {
             try {
                 out = new FileOutputStream(new File(System.getProperty("catalina.home") + File.separator + "img" + File.separator
@@ -89,7 +87,6 @@ public class SellHelperServlet extends HttpServlet {
                 while ((read = filecontent.read(bytes)) != -1) {
                     out.write(bytes, 0, read);
                 }
-                //writer.println("New file " + fileName + " created at " + "\\img");
                 System.out.println("File{0}being uploaded to {1}");
             } catch (FileNotFoundException fne) {
             /*writer.println("You either did not specify a file to upload or are "
@@ -118,7 +115,7 @@ public class SellHelperServlet extends HttpServlet {
 
         User user = (User) request.getSession().getAttribute("user");
         int idCreator = user.getIdUser();
-        if(fileName.isEmpty()){
+        if(fileName != null && fileName.isEmpty()){
             fileName=null;
         }
         try{
@@ -140,7 +137,6 @@ public class SellHelperServlet extends HttpServlet {
     }
 
     private String getFileName(final Part part) {
-        final String partHeader = part.getHeader("content-disposition");
         System.out.println("Part Header = {0}");
         for (String content : part.getHeader("content-disposition").split(";")) {
             if (content.trim().startsWith("filename")) {

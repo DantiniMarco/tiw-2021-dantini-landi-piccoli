@@ -1,6 +1,6 @@
-package it.polimi.tiw.html.dao;
+package it.polimi.tiw.js.dao;
 
-import it.polimi.tiw.html.beans.Item;
+import it.polimi.tiw.js.beans.Item;
 
 import java.sql.*;
 

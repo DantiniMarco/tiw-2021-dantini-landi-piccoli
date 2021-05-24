@@ -13,15 +13,37 @@
     <a th:href="@{/GetSearchedAuction}">Buy</a>
     <a th:href="@{/Home}">Home Page</a>
 </div>
+<h3><center>Open auctions</center></h3>
+<table align="center">
+    <thead>
+        <tr>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr></tr>
+    </tbody>
+</table>
+<h3><center>Closed auctions</center></h3>
+<table align="center">
+    <thead>
+
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
 <h3>Add new auction</h3>
 <form action="SellHelperServlet" method="POST" enctype="multipart/form-data">
-    <label for="itemName">Name: </label><input id="itemName" name ="itemName" placeholder="iPhone" required><br><br>
-    <label for="itemImage">Image: </label><input type="file" id="itemImage" name ="itemImage"><br><br>
-    <label for="itemDescription">Description: </label><input id="itemDescription" name ="itemDescription" placeholder="Good phone?" required><br><br>
-    <label for="initialPrice"></label>Initial Price: <input id="initialPrice" name ="initialPrice" placeholder="500" required><br><br>
-    <label for="minRaise"></label>Minimum Raise: <input id="minRaise" name ="minRaise" placeholder="10" required><br><br>
-    <label for="deadline"></label>Deadline: <input id="deadline" name ="deadline" type="date" required><br><br>
-    <input type="submit" value="Submit">
+    <div class="container">
+        <label for="itemName">Name: </label><input id="itemName" name ="itemName" placeholder="iPhone" required><br><br>
+        <label for="itemImage">Image: </label><input type="file" id="itemImage" name ="itemImage"><br><br>
+        <label for="itemDescription">Description: </label><input id="itemDescription" name ="itemDescription" placeholder="Good phone?" required><br><br>
+        <label for="initialPrice"></label>Initial Price: <input id="initialPrice" name ="initialPrice" placeholder="500" required><br><br>
+        <label for="minRaise"></label>Minimum Raise: <input id="minRaise" name ="minRaise" placeholder="10" required><br><br>
+        <label for="deadline"></label>Deadline: <input id="deadline" name ="deadline" type="date" required><br><br>
+        <input type="submit" value="Submit">
+    </div>
 </form>
 </body>
 </html>

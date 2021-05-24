@@ -16,6 +16,14 @@ h1{
 h2{
     text-align: center;
 }
+
+h3{
+    text-align: center;
+}
+
+h4{
+    text-align: center;
+}
 /* Style the links inside the navigation bar */
 .topnav a {
     float: right;

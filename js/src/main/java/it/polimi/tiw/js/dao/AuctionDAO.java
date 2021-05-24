@@ -1,14 +1,14 @@
-package it.polimi.tiw.html.dao;
+package it.polimi.tiw.js.dao;
+
+import it.polimi.tiw.js.beans.Auction;
+import it.polimi.tiw.js.beans.AuctionStatus;
+import it.polimi.tiw.js.beans.Item;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-
-import it.polimi.tiw.html.beans.Auction;
-import it.polimi.tiw.html.beans.AuctionStatus;
-import it.polimi.tiw.html.beans.Item;
 
 
 public class AuctionDAO {

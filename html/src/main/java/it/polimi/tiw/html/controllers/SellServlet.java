@@ -58,9 +58,12 @@ public class SellServlet extends HttpServlet {
         }
 
 
+
+        String path = "/WEB-INF/Sell.html";
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
-        String path = "/WEB-INF/Sell.html";
+        ctx.setVariable("openAuctions", openAuctions);
+        ctx.setVariable("closedAuctions", closedAuctions);
         templateEngine.process(path, ctx, response.getWriter());
 
     }

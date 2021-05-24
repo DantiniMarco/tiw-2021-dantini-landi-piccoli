@@ -1,6 +1,8 @@
 package it.polimi.tiw.js.beans;
 
-public enum AuctionStatus {
+import java.io.Serializable;
+
+public enum AuctionStatus implements Serializable {
     OPEN(0), CLOSED(1);
 
     private final int value;
@@ -14,12 +16,11 @@ public enum AuctionStatus {
     }
 
     public static AuctionStatus getAuctionStatusFromInt(int value) {
-        switch (value){
-            case 0:
-                return AuctionStatus.OPEN;
-            case 1:
-                return AuctionStatus.CLOSED;
+        if (value == 0) {
+            return AuctionStatus.OPEN;
+        } else if (value == 1) {
+            return AuctionStatus.CLOSED;
         }
-        return null;
+        throw new IllegalStateException("Unexpected value: " + value);
     }
 }

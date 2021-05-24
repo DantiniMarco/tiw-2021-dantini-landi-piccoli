@@ -1,9 +1,8 @@
-package it.polimi.tiw.html.dao;
+package it.polimi.tiw.js.dao;
 
-import it.polimi.tiw.html.beans.Bid;
+import it.polimi.tiw.js.beans.Bid;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,17 +57,15 @@ public class BidDAO {
         ResultSet result;
         Date date = new Date();
         Long dateTime = date.getTime();
-        int idBid;
-        String query = "INSERT INTO bid ( bidprice, datetime, idbidder, idauction) VALUES (?,now(),?,?)";
-        PreparedStatement pstatement = null;
+        String query = "INSERT INTO bid ( bidprice, datetime, idbidder, idauction) VALUES (?,?,?,?)";
 
-        try{
-            pstatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        try (PreparedStatement pstatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pstatement.setFloat(1, bidPrice);
-            pstatement.setInt(2, idBidder);
-            pstatement.setInt(3, idAuction);
+            pstatement.setLong(2, dateTime * 1000);
+            pstatement.setInt(3, idBidder);
+            pstatement.setInt(4, idAuction);
             int affectedRows = pstatement.executeUpdate();
-            if(affectedRows == 0){
+            if (affectedRows == 0) {
                 return -1;
             }
             result = pstatement.getGeneratedKeys();

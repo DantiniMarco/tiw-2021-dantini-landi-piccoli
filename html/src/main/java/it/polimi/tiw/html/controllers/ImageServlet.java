@@ -11,22 +11,14 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import it.polimi.tiw.html.beans.User;
-import it.polimi.tiw.html.dao.UserDAO;
-import org.apache.commons.text.StringEscapeUtils;
 import it.polimi.tiw.html.utils.ConnectionHandler;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 @WebServlet("/ImageServlet")
 public class ImageServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
-    private TemplateEngine templateEngine;
 
     public ImageServlet() {
         super();
@@ -39,8 +31,15 @@ public class ImageServlet extends HttpServlet {
         System.out.println(request.getParameter("name"));
         ServletOutputStream out;
         out = response.getOutputStream();
-        FileInputStream flinp = new FileInputStream(System.getProperty("catalina.home") + File.separator + "img" + File.separator
-                + request.getParameter("name"));
+        FileInputStream flinp;
+        try {
+            flinp = new FileInputStream(System.getProperty("catalina.home") + File.separator + "img" + File.separator
+                    + request.getParameter("name"));
+        }catch(IOException e){
+            System.out.println(getServletContext().getRealPath("/img"));
+            flinp = new FileInputStream(getServletContext().getRealPath("/img") + File.separator
+                    + "noimage.png");
+        }
         BufferedInputStream buffinp = new BufferedInputStream(flinp);
         BufferedOutputStream buffoup = new BufferedOutputStream(out);
         int ch=0;
