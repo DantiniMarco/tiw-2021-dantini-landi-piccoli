@@ -78,15 +78,14 @@ public class BidDAO {
         Date date = new Date();
         Long dateTime = date.getTime();
         int idBid;
-        String query = "INSERT INTO bid ( bidprice, datetime, idbidder, idauction) VALUES (?,?,?,?)";
+        String query = "INSERT INTO bid ( bidprice, datetime, idbidder, idauction) VALUES (?,now(),?,?)";
         PreparedStatement pstatement = null;
 
         try{
             pstatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             pstatement.setFloat(1, bidPrice);
-            pstatement.setLong(2, dateTime*1000);
-            pstatement.setInt(3, idBidder);
-            pstatement.setInt(4, idAuction);
+            pstatement.setInt(2, idBidder);
+            pstatement.setInt(3, idAuction);
             int affectedRows = pstatement.executeUpdate();
             if(affectedRows == 0){
                 return -1;

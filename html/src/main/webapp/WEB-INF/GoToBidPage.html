@@ -32,12 +32,15 @@
 <div align="left">
     <h4 th:text = "${'The actual max price for this auctions is: '+ currMax}"></h4>
 </div>
-<form action = "GoToBidPage" method="post">
+<form action = "#" th:action ="@{/CreateBid}" method="POST">
     <div class="container">
         <label for="price"><b>Make a new bid</b></label>
         <input type="text" placeholder="Type here..." id="price" name="price" required> <br>
         <button type="submit">Submit</button>
         <p th:text="${errorMsg}"></p>
+        <input type="hidden" name="idauction" th:value="${idauction}">
+        <input type="hidden" name="currMax" th:value="${currMax}">
+        <input type="hidden" name="item" th:value="${item}">
     </div>
 </form>
 <table th:if="${bids != null}">

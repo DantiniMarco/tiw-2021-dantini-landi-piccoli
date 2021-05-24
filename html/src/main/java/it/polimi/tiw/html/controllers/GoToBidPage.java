@@ -34,8 +34,6 @@ public class GoToBidPage extends HttpServlet{
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
     private TemplateEngine templateEngine;
-    private float currMaxPrice;
-    private int idAuctionPub = 0;
     public GoToBidPage(){super();}
 
 
@@ -64,6 +62,7 @@ public class GoToBidPage extends HttpServlet{
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException{
         int idAuction;
+        float currMaxPrice = 0;
         Item item ;
         List<Bid> bids;
 
@@ -73,7 +72,6 @@ public class GoToBidPage extends HttpServlet{
 
         try{
             idAuction = Integer.parseInt(request.getParameter("idauction"));
-            idAuctionPub = idAuction;
         } catch ( NumberFormatException | NullPointerException e){
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "incorrect param values");
             return;
@@ -104,44 +102,12 @@ public class GoToBidPage extends HttpServlet{
                         currMaxPrice = b.getBidPrice();
                 }
                 ctx.setVariable("bids", bids);
+                ctx.setVariable("idauction", idAuction);
                 ctx.setVariable("currMax", currMaxPrice);
         }catch(SQLException e){
             response.sendError(500, "Database access failed");
         }
 
-        String path = "/WEB-INF/GoToBidPage.html";
-        templateEngine.process(path, ctx, response.getWriter());
-    }
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException{
-        ServletContext servletContext = getServletContext();
-        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-        String price = request.getParameter("price");
-        Float fPrice = (float) 0;
-        BidDAO bidDAO = new BidDAO(connection);
-        User user = (User) request.getSession().getAttribute("user");
-        //Auction auction = (Auction) request.getSession().getAttribute("auction");
-        int idBidder = user.getIdUser();
-        int idAuction = idAuctionPub;
-
-        if ( price == null || price.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter missing");
-        }
-        try{
-            fPrice = Float.parseFloat(price);
-        }catch(NumberFormatException e){
-            ctx.setVariable("errorMsg", "Format wrong!");
-        }
-        if(currMaxPrice< fPrice){
-            try{
-                bidDAO.insertNewBid(fPrice, idBidder,idAuction);
-            } catch (SQLException sqle) {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
-            }
-
-        }else{
-            ctx.setVariable("errorMsg", "This price is too low.");
-        }
         String path = "/WEB-INF/GoToBidPage.html";
         templateEngine.process(path, ctx, response.getWriter());
     }
