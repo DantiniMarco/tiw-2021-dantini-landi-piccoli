@@ -4,6 +4,7 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
@@ -30,8 +31,15 @@ public class ImageServlet extends HttpServlet {
         System.out.println(request.getParameter("name"));
         ServletOutputStream out;
         out = response.getOutputStream();
-        FileInputStream flinp = new FileInputStream(System.getProperty("catalina.home") + File.separator + "img" + File.separator
-                + request.getParameter("name"));
+        FileInputStream flinp;
+        try {
+            flinp = new FileInputStream(System.getProperty("catalina.home") + File.separator + "img" + File.separator
+                    + request.getParameter("name"));
+        }catch(IOException e){
+            System.out.println(getServletContext().getRealPath("/img"));
+            flinp = new FileInputStream(getServletContext().getRealPath("/img") + File.separator
+                    + "noimage.png");
+        }
         BufferedInputStream buffinp = new BufferedInputStream(flinp);
         BufferedOutputStream buffoup = new BufferedOutputStream(out);
         int ch=0;
