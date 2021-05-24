@@ -2,6 +2,7 @@ package it.polimi.tiw.html.controllers;
 
 import it.polimi.tiw.html.beans.Auction;
 import it.polimi.tiw.html.beans.AuctionStatus;
+import it.polimi.tiw.html.beans.ExtendedAuction;
 import it.polimi.tiw.html.dao.AuctionDAO;
 import it.polimi.tiw.html.utils.ConnectionHandler;
 import org.thymeleaf.TemplateEngine;
@@ -42,7 +43,7 @@ public class SellServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         AuctionDAO am= new AuctionDAO(con);
-        List<Auction> openAuctions, closedAuctions;
+        List<ExtendedAuction> openAuctions, closedAuctions;
         try{
             openAuctions = am.findAuctionsByStatus(AuctionStatus.OPEN);
         }catch(SQLException sql){
@@ -51,7 +52,7 @@ public class SellServlet extends HttpServlet {
         }
 
         try{
-            closedAuctions = am.findAuctionsByStatus(AuctionStatus.OPEN);
+            closedAuctions = am.findAuctionsByStatus(AuctionStatus.CLOSED);
         }catch(SQLException sql){
             sql.printStackTrace();
             throw new UnavailableException("Error executing query");

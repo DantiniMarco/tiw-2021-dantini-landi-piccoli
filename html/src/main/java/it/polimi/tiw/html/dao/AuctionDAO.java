@@ -8,6 +8,7 @@ import java.util.*;
 
 import it.polimi.tiw.html.beans.Auction;
 import it.polimi.tiw.html.beans.AuctionStatus;
+import it.polimi.tiw.html.beans.ExtendedAuction;
 import it.polimi.tiw.html.beans.Item;
 
 
@@ -62,9 +63,9 @@ public class AuctionDAO {
      * @param status of an auction, it can be "0" -> CLOSED or "1" -> OPEN
      * @return a list of auctions for the selected status in ascending order by deadline
      */
-        public List<Auction> findAuctionsByStatus(AuctionStatus status) throws SQLException{
-            List<Auction> auctions = new ArrayList<>();
-            String query = "SELECT * FROM auction WHERE status=? ORDER BY deadline ASC";
+        public List<ExtendedAuction> findAuctionsByStatus(AuctionStatus status) throws SQLException{
+            List<ExtendedAuction> auctions = new ArrayList<>();
+            String query = "SELECT iditem, idauction, initialprice, minraise, UNIX_TIMESTAMP(deadline) AS deadline, idcreator, status, name, image, description FROM auction NATURAL JOIN item WHERE status=? ORDER BY deadline ASC";
             PreparedStatement pstatement = null;
             ResultSet result = null;
 
@@ -73,18 +74,22 @@ public class AuctionDAO {
                 pstatement.setInt(1, status.getValue());
                 result = pstatement.executeQuery();
                 while (result.next()) {
-                    Auction auction = new Auction();
-                    auction.setIdAuction(result.getInt("idAuction"));
+                    ExtendedAuction auction = new ExtendedAuction();
+                    auction.setIdItem(result.getInt("iditem"));
+                    auction.setIdAuction(result.getInt("idauction"));
                     auction.setInitialPrice(result.getFloat("initialprice"));
                     auction.setMinRaise(result.getFloat("minraise"));
-                    auction.setDeadline(new Date(result.getDate("deadline").getTime()));
+                    auction.setDeadline(new Date(result.getLong("deadline") * 1000));
                     auction.setIdCreator(result.getInt("idcreator"));
-                    auction.setIdItem(result.getInt("iditem"));
                     auction.setStatus(AuctionStatus.getAuctionStatusFromInt(result.getInt("status")));
+                    auction.setItemName(result.getString("name"));
+                    auction.setItemImage(result.getString("image"));
+                    auction.setItemDescription(result.getString("description"));
                     auctions.add(auction);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+                System.out.println("Sono nella catch di resultset e pstatement");
                 throw new SQLException(e);
             }finally {
                 try{
@@ -92,6 +97,7 @@ public class AuctionDAO {
                         result.close();
                     }
                 }catch(SQLException e1){
+                    System.out.println("Non riesco a chiudere il resultset");
                     e1.printStackTrace();
                 }
                 try{
@@ -99,6 +105,7 @@ public class AuctionDAO {
                         pstatement.close();
                     }
                 }catch(SQLException e2){
+                    System.out.println("Non riesco a chiudere il pstatement");
                     e2.printStackTrace();
                 }
             }
