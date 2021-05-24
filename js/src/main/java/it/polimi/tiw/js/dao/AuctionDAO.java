@@ -2,6 +2,7 @@ package it.polimi.tiw.js.dao;
 
 import it.polimi.tiw.js.beans.Auction;
 import it.polimi.tiw.js.beans.AuctionStatus;
+import it.polimi.tiw.js.beans.ExtendedAuction;
 import it.polimi.tiw.js.beans.Item;
 
 import java.sql.Connection;
@@ -26,8 +27,8 @@ public class AuctionDAO {
      * @return
      * @throws SQLException
      */
-    public Map<Auction, String> findOpenAuction(String keyword) throws SQLException {
-        LinkedHashMap<Auction, String> searchedList= new LinkedHashMap<Auction, String>();
+    public List<ExtendedAuction> findOpenAuction(String keyword) throws SQLException {
+        List<ExtendedAuction> searchedList= new ArrayList<>();
 
         String query = "SELECT idauction, UNIX_TIMESTAMP(deadline) AS deadline, minraise, initialprice, name FROM " +
                 "(item NATURAL JOIN auction) WHERE (item.name LIKE ? OR " +
@@ -41,12 +42,13 @@ public class AuctionDAO {
                     return null;
                 else {
                     while (result.next()) {
-                        Auction auction = new Auction();
+                        ExtendedAuction auction = new ExtendedAuction();
                         auction.setInitialPrice(result.getInt("initialprice"));
                         auction.setMinRaise(result.getInt("minraise"));
                         auction.setDeadline(new Date(result.getLong("deadline") * 1000));
                         auction.setIdAuction(result.getInt("idauction"));
-                        searchedList.put(auction, result.getString("name"));
+                        auction.setItemName(result.getString("name"));
+                        searchedList.add(auction);
                     }
                 }
             }

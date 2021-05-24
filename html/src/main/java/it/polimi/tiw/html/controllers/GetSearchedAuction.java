@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import it.polimi.tiw.html.beans.ExtendedAuction;
 import it.polimi.tiw.html.dao.AuctionDAO;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -69,7 +70,7 @@ public class GetSearchedAuction extends HttpServlet {
             }
             else{
             AuctionDAO aDAO = new AuctionDAO(connection);
-            Map<Auction, String> searchedList;
+            List<ExtendedAuction> searchedList;
             try{
                 searchedList = aDAO.findOpenAuction(keyWord);
                 if(searchedList == null || searchedList.isEmpty()){
