@@ -12,81 +12,87 @@
 <div class="topnav">
     <h1>TIW 2021 Auction Website</h1>
     <a href="Logout">Logout</a>
-    <a href="HomeACT.html">Sell</a>
-    <a href="HomeACT.html">Buy</a>
-    <a class="active" href="HomeACT.html">Home Page</a>
+    <a id="id_sellbar" href="#">Sell</a>
+    <a id="id_buybar" href="#">Buy</a>
 </div>
 <h1>Welcome to the TIW 2021 Auction Home Page</h1>
 <p align="center">Nice to see you again <span id="id_username"></span></p>
 <div id="id_alert" class="alertmessage"></div>
 <br>
-<form id="id_searchauctionform" action="#">
-    <div class="container">
-        <label for="keyword"><strong>Search for Open Auctions</strong></label>
-        <input type="text" placeholder="Write a key word..." id="keyword" name="keyword" required> <br>
-        <button type="submit">Search</button>
-        <div id="id_alert_search" class="alertmessage"></div>
-        <p id="id_searchalert"></p>
-    </div>
-</form>
-</body>
-<br>
-<br>
-<table id="id_listcontainer">
-    <thead>
-    <tr>
-        <th>ID Auction</th>
-        <th>Item Name</th>
-        <th>Initial Price</th>
-        <th>Minimum Raise</th>
-        <th>Deadline</th>
 
-    </tr>
-    </thead>
-    <tbody id="id_listcontainerbody">
-    </tbody>
-</table>
-<div id="itemDescription" align="center">
-    <br>
-    <br>
-    <h1 id="id_itemnametitle"></h1>
-    <br>
-    <h2 id="id_itemdescriptiontitle"></h2>
-    <br>
-    <img style="max-height: 300px; max-width: 300px;" alt="No image found" id="id_itemimage">
-</div>
-</body>
-<div id="bidInfoForm">
-    <div align="left">
-        <h3>Insert here the price of your bid, make sure that your price is higher than the max in the list </h3>
+<div id="id_buy" class="row">
+    <div class="column">
+        <form id="id_searchauctionform" action="#">
+            <div class="container">
+                <label for="keyword"><strong>Search for Open Auctions</strong></label>
+                <input type="text" placeholder="Write a key word..." id="keyword" name="keyword" required> <br>
+                <button type="submit">Search</button>
+                <div id="id_alert_search" class="alertmessage"></div>
+                <p id="id_searchalert"></p>
+            </div>
+        </form>
+        <br>
+        <br>
+        <table id="id_listcontainer">
+            <thead>
+            <tr>
+                <th>ID Auction</th>
+                <th>Item Name</th>
+                <th>Initial Price</th>
+                <th>Minimum Raise</th>
+                <th>Deadline</th>
+
+            </tr>
+            </thead>
+            <tbody id="id_listcontainerbody">
+            </tbody>
+        </table>
     </div>
-    <div align="left">
-        <h4 id="id_currentPriceTitle"></h4>
-    </div>
-    <form action="#" id="id_bidform">
-        <div class="container">
-            <label for="price"><b>Make a new bid</b></label>
-            <input type="text" placeholder="Type here..." id="price" name="price" required> <br>
-            <button type="submit">Submit</button>
-            <p th:text="${errorMsg}"></p>
+    <div class="column">
+        <div id="itemDescription" align="center">
+            <br>
+            <br>
+            <h1 id="id_itemnametitle"></h1>
+            <br>
+            <h2 id="id_itemdescriptiontitle"></h2>
+            <br>
+            <img style="max-height: 300px; max-width: 300px;" alt="No image found" id="id_itemimage">
         </div>
-    </form>
-    <br>
-    <table id="id_bidlistcontainer">
-        <thead>
-        <tr>
-            <th>ID Bid</th>
-            <th>Bid Price</th>
-            <th>Deadline</th>
+        <div id="bidInfoForm">
+            <div align="left">
+                <h3>Insert here the price of your bid, make sure that your price is higher than the max in the
+                    list </h3>
+            </div>
+            <div align="left">
+                <h4 id="id_currentPriceTitle"></h4>
+            </div>
+            <form action="#" id="id_bidform">
+                <div class="container">
+                    <label for="price"><b>Make a new bid</b></label>
+                    <input type="text" placeholder="Type here..." id="price" name="price" required> <br>
+                    <button type="submit">Submit</button>
+                    <p th:text="${errorMsg}"></p>
+                </div>
+            </form>
+            <br>
+            <table id="id_bidlistcontainer">
+                <thead>
+                <tr>
+                    <th>ID Bid</th>
+                    <th>Bid Price</th>
+                    <th>Deadline</th>
 
-        </tr>
-        </thead>
-        <tbody id="id_bidlistcontainerbody">
-        </tbody>
-    </table>
-    <div th:unless="${bids!= null}">
-        <p th:text="${'No bids found for this item.'}"></p>
+                </tr>
+                </thead>
+                <tbody id="id_bidlistcontainerbody">
+                </tbody>
+            </table>
+        </div>
     </div>
+</div>
+<div id="id_sell" class="row">
+    <div class="column"></div>
+    <div class="column"></div>
 </div>
 </body>
 </html>

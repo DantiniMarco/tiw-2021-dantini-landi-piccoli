@@ -1,7 +1,7 @@
 (function () { // avoid variables ending up in the global scope
 
     // page components
-    var auctionsList, searchForm, pageOrchestrator = new PageOrchestrator(); // main controller
+    var auctionsList, searchForm, auctionDetails, buttonManager, pageOrchestrator = new PageOrchestrator(); // main controller
 
     window.addEventListener("load", () => {
         pageOrchestrator.start(); // initialize the components
@@ -19,6 +19,7 @@
 
         this.reset = function () {
             this.listcontainer.style.visibility = "hidden";
+            this.listcontainer.style.display = "none";
         }
 
         this.show = function (keyword) {
@@ -53,7 +54,7 @@
 
 
         this.update = function (arrayAuctions) {
-            var row, priceCell, raiseCell, dateCell, itemCell, idAuctionCell, linkcell, anchor;
+            var row, priceCell, raiseCell, dateCell, itemCell, idAuctionCell, linkcell, linkText, anchor;
             this.listcontainerbody.innerHTML = ""; // empty the table body
             // build updated list
             var self = this;
@@ -89,8 +90,8 @@
                 row.appendChild(linkcell);
                 self.listcontainerbody.appendChild(row);
             });
-            this.listcontainer.style.visibility = "visible";
-            self.listcontainer.style.display = null
+            self.listcontainer.style.visibility = "visible";
+            self.listcontainer.style.display = null;
         }
 
         this.autoclick = function (missionId) {
@@ -243,10 +244,51 @@
         }
     }
 
+    function ButtonManager(_alert, _buycontainer, _sellcontainer, _buybar, _sellbar) {
+        this.alert = _alert;
+        this.buyContainer = _buycontainer;
+        this.sellContainer = _sellcontainer;
+        this.buyBar = _buybar;
+        this.sellBar = _sellbar;
+        this.buyBar.addEventListener('click', (e) => {
+            this.show("buy")
+        });
+        this.sellBar.addEventListener('click', (e) => {
+            this.show("sell")
+        });
+        this.show = function(buyOrSell) {
+            var self = this;
+            if(buyOrSell === "sell"){
+                self.buyBar.className = null;
+                self.sellBar.className = "active";
+                self.buyContainer.style.visibility = "hidden";
+                self.buyContainer.style.display = "none";
+                self.sellContainer.style.visibility = "visible";
+                self.sellContainer.style.display = null;
+                pageOrchestrator.refresh();
+                return;
+            }
+            self.buyBar.className = "active";
+            self.sellBar.className = null;
+            self.buyContainer.style.visibility = "visible";
+            self.buyContainer.style.display = null;
+            self.sellContainer.style.visibility = "hidden";
+            self.sellContainer.style.display = "none";
+            pageOrchestrator.refresh();
+        };
+    }
+
     function PageOrchestrator() {
         let alertContainer = document.getElementById("id_alert");
         let alertSearchContainer = document.getElementById("id_alert_search");
+        let buyContainer = document.getElementById("id_buy");
+        let sellContainer = document.getElementById("id_sell");
+        let buyBar = document.getElementById("id_buybar");
+        let sellBar = document.getElementById("id_sellbar");
         this.start = function () {
+
+
+
             let personalMessage = new PersonalMessage(alertContainer, document.getElementById("id_username"));
             //personalMessage.show();
             auctionsList = new AuctionList(
@@ -271,9 +313,16 @@
             });
             auctionDetails.registerEvents(this);
 
+
+
             document.querySelector("a[href='Logout']").addEventListener('click', () => {
                 window.sessionStorage.removeItem('username');
             })
+
+            buttonManager = new ButtonManager(alertContainer, buyContainer, sellContainer, buyBar, sellBar);
+
+            buttonManager.show("buy");
+
         };
 
 
