@@ -3,6 +3,7 @@ package it.polimi.tiw.js.controllers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.tiw.js.beans.Auction;
+import it.polimi.tiw.js.beans.ExtendedAuction;
 import it.polimi.tiw.js.dao.AuctionDAO;
 
 import javax.servlet.ServletContext;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 @WebServlet("/GetSearchedAuction")
@@ -46,7 +48,7 @@ public class GetSearchedAuction extends HttpServlet {
         HttpSession s = request.getSession();
         String keyWord = request.getParameter("keyword");
         ServletContext servletContext = getServletContext();
-        Map<Auction, String> searchedList = null;
+        List<ExtendedAuction> searchedList = null;
 
         if( keyWord != null ){
             if(keyWord.length()<3){
@@ -72,7 +74,7 @@ public class GetSearchedAuction extends HttpServlet {
             }
         }
         Gson gson = new GsonBuilder()
-                .setDateFormat("yyyy MMM dd").create();
+                .setDateFormat("dd MMM yyyy HH:mm:ss").create();
         String json = gson.toJson(searchedList);
 
 

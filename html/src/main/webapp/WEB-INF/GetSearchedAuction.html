@@ -41,12 +41,12 @@
     <tbody>
     <tr th:each="a : ${auctions}">
 
-        <td th:text="${a.getKey().getIdAuction()}"></td>
-        <td th:text="${a.getValue()}"></td>
-        <td th:text="${a.getKey().getInitialPrice()}"></td>
-        <td th:text="${a.getKey().getMinRaise()}"></td>
-        <td th:text="${#dates.format(a.getKey().getDeadline(), 'dd-MM-yyyy HH:mm')}"></td>
-        <td><a th:href ="@{/GoToBidPage(idauction=${a.getKey().getIdAuction()})}">Details</a></td>
+        <td th:text="${a.getIdAuction()}"></td>
+        <td th:text="${a.getItemName()}"></td>
+        <td th:text="${a.getInitialPrice()}"></td>
+        <td th:text="${a.getMinRaise()}"></td>
+        <td th:text="${#dates.format(a.getDeadline(), 'dd-MM-yyyy HH:mm')}"></td>
+        <td><a th:href ="@{/GoToBidPage(idauction=${a.getIdAuction()})}">Details</a></td>
     </tr>
     </tbody>
 </table>

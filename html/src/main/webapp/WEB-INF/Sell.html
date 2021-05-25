@@ -17,20 +17,42 @@
 <table align="center">
     <thead>
         <tr>
-            <td></td>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Initial Price</th>
+            <th>Minimum raise</th>
+            <th>Deadline</th>
         </tr>
     </thead>
     <tbody>
-        <tr></tr>
+        <tr th:each="openAuction:${openAuctions}">
+            <td th:text="${openAuction.itemName}"></td>
+            <td th:text="${openAuction.itemDescription}"></td>
+            <td th:text="${openAuction.initialPrice}"></td>
+            <td th:text="${openAuction.minRaise}"></td>
+            <td th:text="${#dates.format(openAuction.getDeadline(), 'dd-MM-yyyy HH:mm')}"></td>
+        </tr>
     </tbody>
 </table>
 <h3><center>Closed auctions</center></h3>
 <table align="center">
     <thead>
-
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Initial Price</th>
+        <th>Minimum raise</th>
+        <th>Deadline</th>
+    </tr>
     </thead>
     <tbody>
-
+        <tr th:each="closedAuction:${closedAuctions}">
+            <td th:text="${closedAuction.itemName}"></td>
+            <td th:text="${closedAuction.itemDescription}"></td>
+            <td th:text="${closedAuction.initialPrice}"></td>
+            <td th:text="${closedAuction.minRaise}"></td>
+            <td th:text="${#dates.format(closedAuction.getDeadline(), 'dd-MM-yyyy HH:mm')}"></td>
+        </tr>
     </tbody>
 </table>
 <h3>Add new auction</h3>

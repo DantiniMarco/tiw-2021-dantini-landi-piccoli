@@ -11,7 +11,8 @@
 
     // Constructors of view components
 
-    function AuctionList(_alert, _listcontainer, _listcontainerbody) {
+    function AuctionList(_searchalert, _alert, _listcontainer, _listcontainerbody) {
+        this.searchalert = _searchalert;
         this.alert = _alert;
         this.listcontainer = _listcontainer;
         this.listcontainerbody = _listcontainerbody;
@@ -27,6 +28,8 @@
                     if (req.readyState == 4) {
                         var message = req.responseText;
                         if (req.status == 200) {
+                            self.searchalert.textContent = ""
+                            self.alert.textContent = ""
                             console.log(req.responseText);
                             var auctionsToShow = JSON.parse(req.responseText);
                             console.log(auctionsToShow);
@@ -35,6 +38,11 @@
                                 return;
                             }
                             self.update(auctionsToShow); // self visible by closure
+                        }
+                        else {
+                            self.searchalert.textContent = req.responseText;
+                            self.listcontainer.style.visibility = "hidden";
+                            self.listcontainer.style.display = "none";
                         }
                     } else {
                         self.alert.textContent = message;
@@ -45,26 +53,26 @@
 
 
         this.update = function (arrayAuctions) {
-            var elem, i, row, destcell, datecell, linkcell, anchor;
+            var row, priceCell, raiseCell, dateCell, itemCell, idAuctionCell, linkcell, anchor;
             this.listcontainerbody.innerHTML = ""; // empty the table body
             // build updated list
             var self = this;
             arrayAuctions.forEach(function (auction) { // self visible here, not this
                 row = document.createElement("tr");
                 idAuctionCell = document.createElement("td");
-                idAuctionCell.textContent = auction.idauction;
+                idAuctionCell.textContent = auction.idAuction;
                 row.appendChild(idAuctionCell);
                 itemCell = document.createElement("td");
-                itemCell.textContent = auction.itemname;
+                itemCell.textContent = auction.itemName;
                 row.appendChild(itemCell);
                 priceCell = document.createElement("td");
-                priceCell.textContent = auction.itemname;
+                priceCell.textContent = auction.initialPrice;
                 row.appendChild(priceCell);
                 raiseCell = document.createElement("td");
-                raiseCell.textContent = auction.itemname;
+                raiseCell.textContent = auction.minRaise;
                 row.appendChild(raiseCell);
                 dateCell = document.createElement("td");
-                dateCell.textContent = auction.itemname;
+                dateCell.textContent = auction.deadline;
                 row.appendChild(dateCell);
                 linkcell = document.createElement("td");
                 anchor = document.createElement("a");
@@ -72,7 +80,7 @@
                 linkText = document.createTextNode("Details");
                 anchor.appendChild(linkText);
                 //anchor.auctionid = auction.id; // make list item clickable
-                anchor.setAttribute('auctionid', auction.id); // set a custom HTML attribute
+                anchor.setAttribute('auctionid', auction.idAuction); // set a custom HTML attribute
                 anchor.addEventListener("click", (e) => {
                     // dependency via module parameter
                     auctionDetails.show(e.target.getAttribute("auctionid")); // the list must know the details container
@@ -82,7 +90,7 @@
                 self.listcontainerbody.appendChild(row);
             });
             this.listcontainer.style.visibility = "visible";
-
+            self.listcontainer.style.display = null
         }
 
         this.autoclick = function (missionId) {
@@ -159,18 +167,109 @@
         }
     }
 
+    function AuctionDetails(options) {
+        this.alert = options['alert'];
+        this.bidlistcontainer = options['bidlistcontainer'];
+        this.bidlistcontainerbody = options['bidlistcontainerbody'];
+        this.bidform = options['bidform'];
+        this.itemName = options['itemName'];
+        this.itemImage = options['itemImage'];
+        this.itemDescription = options['itemDescription'];
+        this.currentPrice = options['currentPrice'];
+
+        this.registerEvents = function(orchestrator) {
+            this.bidform.querySelector('button[type="submit"]').addEventListener('click', (e) => {
+                var form = e.target.closest("form");
+                if (form.checkValidity()) {
+                    var self = this,
+                        missionToReport = form.querySelector("input[type = 'hidden']").value;
+                    makeCall("POST", 'CreateExpensesReport', form,
+                        function(req) {
+                            if (req.readyState == 4) {
+                                var message = req.responseText;
+                                if (req.status == 200) {
+                                    //add bid
+                                    //orchestrator.refresh(missionToReport);
+                                } else {
+                                    self.alert.textContent = message;
+                                }
+                            }
+                        }
+                    );
+                } else {
+                    form.reportValidity();
+                }
+            });
+        }
+
+
+        this.show = function(auctionid) {
+            var self = this;
+            makeCall("GET", "GoToBidPage?idauction=" + auctionid, null,
+                function(req) {
+                    if (req.readyState == 4) {
+                        var message = req.responseText;
+                        if (req.status == 200) {
+                            var formdata = JSON.parse(req.responseText);
+                            self.update(formdata); // self is the object on which the function
+                            // is applied
+
+                        } else {
+                            self.alert.textContent = message;
+
+                        }
+                    }
+                }
+            );
+        };
+
+
+        this.reset = function() {
+            this.itemName.parentNode.style.visibility = "hidden"
+            this.bidform.parentNode.style.visibility = "hidden"
+            this.itemName.parentNode.style.display = "none"
+            this.bidform.parentNode.style.display = "none"
+        }
+
+        this.update = function(formdata) {
+            this.itemName.textContent = formdata.item.name;
+            this.itemImage.src = location.pathname.substring(0, location.pathname.lastIndexOf("/")+1) + "ImageServlet?name=" + formdata.item.image;
+            this.itemDescription.textContent = formdata.item.description;
+            this.currentPrice.textContent = formdata.currMax;
+            this.itemName.parentNode.style.visibility = "visible"
+            this.bidform.parentNode.style.visibility = "visible"
+            this.itemName.parentNode.style.display = null
+            this.bidform.parentNode.style.display = null
+        }
+    }
+
     function PageOrchestrator() {
         let alertContainer = document.getElementById("id_alert");
+        let alertSearchContainer = document.getElementById("id_alert_search");
         this.start = function () {
             let personalMessage = new PersonalMessage(alertContainer, document.getElementById("id_username"));
             //personalMessage.show();
             auctionsList = new AuctionList(
+                alertSearchContainer,
                 alertContainer,
                 document.getElementById("id_listcontainer"),
                 document.getElementById("id_listcontainerbody"));
 
-            searchForm = new SearchAuction(document.getElementById("id_searchauctionform"), alertContainer);
+            searchForm = new SearchAuction(document.getElementById("id_searchauctionform"), alertSearchContainer);
             searchForm.registerEvents(this);
+
+            auctionDetails = new AuctionDetails({ // many parameters, wrap them in an
+                // object
+                alert: alertContainer,
+                bidlistcontainer: document.getElementById("id_bidlistcontainer"),
+                bidlistcontainerbody: document.getElementById("id_bidlistcontainerbody"),
+                bidform: document.getElementById("id_bidform"),
+                itemName: document.getElementById("id_itemnametitle"),
+                itemDescription: document.getElementById("id_itemdescriptiontitle"),
+                itemImage: document.getElementById("id_itemimage"),
+                currentPrice: document.getElementById("id_currentPriceTitle")
+            });
+            auctionDetails.registerEvents(this);
 
             document.querySelector("a[href='Logout']").addEventListener('click', () => {
                 window.sessionStorage.removeItem('username');
@@ -181,7 +280,7 @@
         this.refresh = function(currentAuction) {
             alertContainer.textContent = "";
             auctionsList.reset();
-            //auctionDetails.reset();
+            auctionDetails.reset();
             //searchForm.reset();
             //searchForm.show();
         };

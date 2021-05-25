@@ -40,7 +40,7 @@ public class CheckLogin extends HttpServlet {
         String usrn = null;
         String pwd = null;
         usrn = StringEscapeUtils.escapeJava(request.getParameter("username"));
-        pwd = StringEscapeUtils.escapeJava(request.getParameter("pwd"));
+        pwd = StringEscapeUtils.escapeJava(request.getParameter("password"));
         if (usrn == null || pwd == null || usrn.isEmpty() || pwd.isEmpty() ) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("Credentials must be not null");
