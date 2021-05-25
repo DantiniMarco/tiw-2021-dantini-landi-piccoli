@@ -27,6 +27,8 @@ h2{
 }
 
 .row {
+    margin: auto;
+    max-width: 1500px;
     display: flex;
 }
 

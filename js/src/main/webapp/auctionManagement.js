@@ -17,6 +17,7 @@
         this.listcontainer = _listcontainer;
         this.listcontainerbody = _listcontainerbody;
 
+
         this.reset = function () {
             this.listcontainer.style.visibility = "hidden";
             this.listcontainer.style.display = "none";
@@ -165,6 +166,7 @@
             fieldsets[1].hidden = true;
             fieldsets[2].hidden = true;*/
             //this.form.style.visibility = "hidden";
+
         }
     }
 
@@ -177,6 +179,9 @@
         this.itemImage = options['itemImage'];
         this.itemDescription = options['itemDescription'];
         this.currentPrice = options['currentPrice'];
+        this.buySearchContainer = options['buySearchContainer'];
+        this.buyDetailsContainer = options['buyDetailsContainer'];
+        this.backButton = options['backButton'];
 
         this.registerEvents = function(orchestrator) {
             this.bidform.querySelector('button[type="submit"]').addEventListener('click', (e) => {
@@ -200,6 +205,12 @@
                 } else {
                     form.reportValidity();
                 }
+            });
+            this.backButton.addEventListener('click', (e) => {
+                this.buySearchContainer.style.visibility = "visible"
+                this.buySearchContainer.style.display = null
+                this.buyDetailsContainer.style.visibility = "hidden"
+                this.buyDetailsContainer.style.display = "none"
             });
         }
 
@@ -226,21 +237,25 @@
 
 
         this.reset = function() {
-            this.itemName.parentNode.style.visibility = "hidden"
-            this.bidform.parentNode.style.visibility = "hidden"
-            this.itemName.parentNode.style.display = "none"
-            this.bidform.parentNode.style.display = "none"
+            this.buyDetailsContainer.style.visibility = "hidden"
+            this.buyDetailsContainer.style.display = "none"
+            this.buySearchContainer.style.visibility = "visible"
+            this.buySearchContainer.style.display = null
         }
 
         this.update = function(formdata) {
             this.itemName.textContent = formdata.item.name;
             this.itemImage.src = location.pathname.substring(0, location.pathname.lastIndexOf("/")+1) + "ImageServlet?name=" + formdata.item.image;
             this.itemDescription.textContent = formdata.item.description;
-            this.currentPrice.textContent = formdata.currMax;
-            this.itemName.parentNode.style.visibility = "visible"
+            this.currentPrice.textContent = "The actual max price for this auctions is: " + formdata.currMax;
+            /*this.itemName.parentNode.style.visibility = "visible"
             this.bidform.parentNode.style.visibility = "visible"
             this.itemName.parentNode.style.display = null
-            this.bidform.parentNode.style.display = null
+            this.bidform.parentNode.style.display = null*/
+            this.buySearchContainer.style.visibility = "hidden"
+            this.buySearchContainer.style.display = "none"
+            this.buyDetailsContainer.style.visibility = "visible"
+            this.buyDetailsContainer.style.display = null
         }
     }
 
@@ -282,6 +297,8 @@
         let alertContainer = document.getElementById("id_alert");
         let alertSearchContainer = document.getElementById("id_alert_search");
         let buyContainer = document.getElementById("id_buy");
+        let buySearchContainer = document.getElementById("id_buy_search");
+        let buyDetailsContainer = document.getElementById("id_buy_details");
         let sellContainer = document.getElementById("id_sell");
         let buyBar = document.getElementById("id_buybar");
         let sellBar = document.getElementById("id_sellbar");
@@ -297,6 +314,7 @@
                 document.getElementById("id_listcontainer"),
                 document.getElementById("id_listcontainerbody"));
 
+
             searchForm = new SearchAuction(document.getElementById("id_searchauctionform"), alertSearchContainer);
             searchForm.registerEvents(this);
 
@@ -309,7 +327,10 @@
                 itemName: document.getElementById("id_itemnametitle"),
                 itemDescription: document.getElementById("id_itemdescriptiontitle"),
                 itemImage: document.getElementById("id_itemimage"),
-                currentPrice: document.getElementById("id_currentPriceTitle")
+                currentPrice: document.getElementById("id_currentPriceTitle"),
+                backButton: document.getElementById("id_goBackButtonDetails"),
+                buySearchContainer: buySearchContainer,
+                buyDetailsContainer: buyDetailsContainer
             });
             auctionDetails.registerEvents(this);
 

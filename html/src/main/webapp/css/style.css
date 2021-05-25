@@ -9,6 +9,17 @@ html {
     max-width: 1500px;
     margin: auto;
 }
+
+.row {
+    margin: auto;
+    max-width: 1500px;
+    display: flex;
+}
+
+.column {
+    flex: 50%;
+}
+
 h1{
     text-align: center;
 }

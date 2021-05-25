@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Sell new products!</title>
-    <link href="../css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+    <link href="../css/style.css" th:href="@{/css/style.css}" rel="stylesheet"/>
 </head>
 <body>
 <div class="topnav">
@@ -13,59 +13,74 @@
     <a th:href="@{/GetSearchedAuction}">Buy</a>
     <a th:href="@{/Home}">Home Page</a>
 </div>
-<h3><center>Open auctions</center></h3>
-<table align="center">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Initial Price</th>
-            <th>Minimum raise</th>
-            <th>Deadline</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr th:each="openAuction:${openAuctions}">
-            <td th:text="${openAuction.itemName}"></td>
-            <td th:text="${openAuction.itemDescription}"></td>
-            <td th:text="${openAuction.initialPrice}"></td>
-            <td th:text="${openAuction.minRaise}"></td>
-            <td th:text="${#dates.format(openAuction.getDeadline(), 'dd-MM-yyyy HH:mm')}"></td>
-        </tr>
-    </tbody>
-</table>
-<h3><center>Closed auctions</center></h3>
-<table align="center">
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Initial Price</th>
-        <th>Minimum raise</th>
-        <th>Deadline</th>
-    </tr>
-    </thead>
-    <tbody>
-        <tr th:each="closedAuction:${closedAuctions}">
-            <td th:text="${closedAuction.itemName}"></td>
-            <td th:text="${closedAuction.itemDescription}"></td>
-            <td th:text="${closedAuction.initialPrice}"></td>
-            <td th:text="${closedAuction.minRaise}"></td>
-            <td th:text="${#dates.format(closedAuction.getDeadline(), 'dd-MM-yyyy HH:mm')}"></td>
-        </tr>
-    </tbody>
-</table>
-<h3>Add new auction</h3>
-<form action="SellHelperServlet" method="POST" enctype="multipart/form-data">
-    <div class="container">
-        <label for="itemName">Name: </label><input id="itemName" name ="itemName" placeholder="iPhone" required><br><br>
-        <label for="itemImage">Image: </label><input type="file" id="itemImage" name ="itemImage"><br><br>
-        <label for="itemDescription">Description: </label><input id="itemDescription" name ="itemDescription" placeholder="Good phone?" required><br><br>
-        <label for="initialPrice"></label>Initial Price: <input id="initialPrice" name ="initialPrice" placeholder="500" required><br><br>
-        <label for="minRaise"></label>Minimum Raise: <input id="minRaise" name ="minRaise" placeholder="10" required><br><br>
-        <label for="deadline"></label>Deadline: <input id="deadline" name ="deadline" type="date" required><br><br>
-        <input type="submit" value="Submit">
+<div class="row">
+    <div class="column">
+        <h3>
+            <center>Open auctions</center>
+        </h3>
+        <table align="center">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Initial Price</th>
+                <th>Minimum raise</th>
+                <th>Deadline</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="openAuction:${openAuctions}">
+                <td th:text="${openAuction.itemName}"></td>
+                <td th:text="${openAuction.itemDescription}"></td>
+                <td th:text="${openAuction.initialPrice}"></td>
+                <td th:text="${openAuction.minRaise}"></td>
+                <td th:text="${#dates.format(openAuction.getDeadline(), 'dd-MM-yyyy HH:mm')}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <h3>
+            <center>Closed auctions</center>
+        </h3>
+        <table align="center">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Initial Price</th>
+                <th>Minimum raise</th>
+                <th>Deadline</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="closedAuction:${closedAuctions}">
+                <td th:text="${closedAuction.itemName}"></td>
+                <td th:text="${closedAuction.itemDescription}"></td>
+                <td th:text="${closedAuction.initialPrice}"></td>
+                <td th:text="${closedAuction.minRaise}"></td>
+                <td th:text="${#dates.format(closedAuction.getDeadline(), 'dd-MM-yyyy HH:mm')}"></td>
+            </tr>
+            </tbody>
+        </table>
     </div>
-</form>
+    <div class="column">
+        <h3>Add new auction</h3>
+        <form action="SellHelperServlet" method="POST" enctype="multipart/form-data">
+            <div class="container">
+                <label for="itemName">Name: </label><input id="itemName" name="itemName" placeholder="iPhone"
+                                                           required><br><br>
+                <label for="itemImage">Image: </label><input type="file" id="itemImage" name="itemImage"><br><br>
+                <label for="itemDescription">Description: </label><input id="itemDescription" name="itemDescription"
+                                                                         placeholder="Good phone?" required><br><br>
+                <label for="initialPrice"></label>Initial Price: <input id="initialPrice" name="initialPrice"
+                                                                        placeholder="500" required><br><br>
+                <label for="minRaise"></label>Minimum Raise: <input id="minRaise" name="minRaise" placeholder="10"
+                                                                    required><br><br>
+                <label for="deadline"></label>Deadline: <input id="deadline" name="deadline" type="date"
+                                                               required><br><br>
+                <input type="submit" value="Submit">
+            </div>
+        </form>
+    </div>
+</div>
 </body>
 </html>

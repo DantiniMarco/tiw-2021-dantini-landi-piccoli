@@ -60,6 +60,7 @@ public class CreateBid extends HttpServlet {
 
         Integer idAuction = null;
         Float fPrice;
+        String errorString = "";
         String price = request.getParameter("price");
         fPrice = Float.parseFloat(price);
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
@@ -67,20 +68,21 @@ public class CreateBid extends HttpServlet {
             idAuction = Integer.parseInt(request.getParameter("idauction"));
         }catch (NumberFormatException | NullPointerException e){
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter missing");
+            return;
         }
         try{
              currMaxPrice = Float.parseFloat(request.getParameter("currMax"));
         }catch (NumberFormatException | NullPointerException e){
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter missing");
+            return;
         }
         if (price.isEmpty()) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter missing");
+            return;
         }
-        else if(currMaxPrice> fPrice){
-            ctx.setVariable("errorMsg",
-                    "This price is too low. You may insert an offer higher than the current max.");
-            response.sendRedirect("GoToBidPage");
-
+        else if(currMaxPrice>= fPrice){
+            //request.setAttribute("errorMsg", "This price is too low. You may insert an offer higher than the current max.");
+            errorString = "&error=lowPrice";
         }
         else {
             try {
@@ -88,11 +90,9 @@ public class CreateBid extends HttpServlet {
                 bidDAO.insertNewBid(fPrice, idBidder, idAuction);
             } catch (SQLException sqle) {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
+                return;
             }
-            response.sendRedirect("GoToBidPage");
         }
-
-        String path = "/WEB-INF/GoToBidPage.html";
-        templateEngine.process(path, ctx, response.getWriter());
+        response.sendRedirect(getServletContext().getContextPath() + "/GoToBidPage?idauction=" + idAuction + errorString);
     }
 }

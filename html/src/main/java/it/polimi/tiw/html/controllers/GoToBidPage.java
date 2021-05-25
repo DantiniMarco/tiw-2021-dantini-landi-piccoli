@@ -71,6 +71,10 @@ public class GoToBidPage extends HttpServlet{
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
 
+        if(request.getParameter("error") != null && request.getParameter("error").equals("lowPrice")){
+            ctx.setVariable("errorMsg", "This price is too low. You may insert an offer higher than the current max.");
+        }
+
         try{
             idAuction = Integer.parseInt(request.getParameter("idauction"));
             idAuctionPub = idAuction;
