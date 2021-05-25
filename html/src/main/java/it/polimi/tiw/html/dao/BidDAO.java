@@ -1,6 +1,7 @@
 package it.polimi.tiw.html.dao;
 
 import it.polimi.tiw.html.beans.Bid;
+import it.polimi.tiw.html.beans.ExtendedAuction;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -43,6 +44,32 @@ public class BidDAO {
         }
 
         return bids;
+    }
+
+    /**
+     * @author Marco D'Antini
+     * query used to find the ended auction awarded by the user
+     */
+    public ArrayList<ExtendedAuction> findAwardedBids(int idBidder)throws SQLException{
+        ArrayList<ExtendedAuction> bidsAwarded = new ArrayList<>();
+        String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image " +
+                "FROM (bid NATURAL JOIN auction NATURAL JOIN item) WHERE auction.status = 1 AND bid.idbidder = ?";
+        try (PreparedStatement pstatement = con.prepareStatement(query)) {
+            pstatement.setInt(1, idBidder);
+            try (ResultSet result = pstatement.executeQuery()) {
+                while (result.next()) {
+                    ExtendedAuction exAuction = new ExtendedAuction();
+                    exAuction.setPrice(result.getFloat("bidprice"));
+                    exAuction.setItemName(result.getString("name"));
+                    exAuction.setItemDescription(result.getString("description"));
+                    exAuction.setItemImage(result.getString("image"));
+                    bidsAwarded.add(exAuction);
+                }
+            }}
+        catch (SQLException sqle){
+                sqle.printStackTrace();
+        }
+            return bidsAwarded;
     }
 
     /**

@@ -4,6 +4,15 @@ public class ExtendedAuction extends Auction {
     private String itemName;
     private String itemDescription;
     private String itemImage;
+    private Float price;
+
+    public Float getPrice() {
+        return price;
+    }
+
+    public void setPrice(Float price) {
+        this.price = price;
+    }
 
     public String getItemName() {
         return itemName;
