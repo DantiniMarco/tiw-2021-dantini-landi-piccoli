@@ -3,6 +3,7 @@ package it.polimi.tiw.html.controllers;
 import it.polimi.tiw.html.beans.Auction;
 import it.polimi.tiw.html.beans.AuctionStatus;
 import it.polimi.tiw.html.beans.ExtendedAuction;
+import it.polimi.tiw.html.beans.User;
 import it.polimi.tiw.html.dao.AuctionDAO;
 import it.polimi.tiw.html.utils.ConnectionHandler;
 import org.thymeleaf.TemplateEngine;
@@ -42,17 +43,19 @@ public class SellServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        User user = (User) request.getSession().getAttribute("user");
         AuctionDAO am= new AuctionDAO(con);
         List<ExtendedAuction> openAuctions, closedAuctions;
+
         try{
-            openAuctions = am.findAuctionsByStatus(AuctionStatus.OPEN);
+            openAuctions = am.findAuctionsByIdAndStatus(user.getIdUser(), AuctionStatus.OPEN);
         }catch(SQLException sql){
             sql.printStackTrace();
             throw new UnavailableException("Error executing query");
         }
 
         try{
-            closedAuctions = am.findAuctionsByStatus(AuctionStatus.CLOSED);
+            closedAuctions = am.findAuctionsByIdAndStatus(user.getIdUser(), AuctionStatus.CLOSED);
         }catch(SQLException sql){
             sql.printStackTrace();
             throw new UnavailableException("Error executing query");
