@@ -5,7 +5,6 @@ import it.polimi.tiw.html.beans.ExtendedAuction;
 import it.polimi.tiw.html.beans.ExtendedBid;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

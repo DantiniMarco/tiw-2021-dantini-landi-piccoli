@@ -1,6 +1,8 @@
 package it.polimi.tiw.js.dao;
 
 import it.polimi.tiw.js.beans.Bid;
+import it.polimi.tiw.js.beans.ExtendedAuction;
+import it.polimi.tiw.js.beans.ExtendedBid;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -19,20 +21,17 @@ public class BidDAO {
      * @param auctionId of the current auction
      * @return a list o bids for the current auction
      */
-    public List<Bid> findBidsByIdAuction(int auctionId) throws SQLException {
-        List<Bid> bids = new ArrayList<>();
-        String query = "SELECT idbid, bidprice, UNIX_TIMESTAMP(datetime) AS datetime, idbidder, idauction" +
-                " FROM bid WHERE idauction = ? ORDER BY datetime DESC";
+    public List<ExtendedBid> findBidsByIdAuction(int auctionId) throws SQLException {
+        List<ExtendedBid> bids = new ArrayList<>();
+        String query = "SELECT username, bidprice, UNIX_TIMESTAMP(datetime) AS datetime FROM bid JOIN user ON idbidder=iduser WHERE idauction = ? ORDER BY datetime DESC";
         try (PreparedStatement pstatement = con.prepareStatement(query)) {
             pstatement.setInt(1, auctionId);
             try (ResultSet result = pstatement.executeQuery()) {
                 while (result.next()) {
-                    Bid bid = new Bid();
-                    bid.setIdBid(result.getInt("idbid"));
+                    ExtendedBid bid = new ExtendedBid();
+                    bid.setBidderUsername(result.getString("username"));
                     bid.setBidPrice(result.getFloat("bidprice"));
                     bid.setDateTime(new Date(result.getLong("datetime") * 1000));
-                    bid.setIdBidder(result.getInt("idbidder"));
-                    bid.setIdAuction(result.getInt("idauction"));
                     bids.add(bid);
                 }
             }
@@ -42,6 +41,32 @@ public class BidDAO {
         }
 
         return bids;
+    }
+
+    /**
+     * @author Marco D'Antini
+     * query used to find the ended auction awarded by the user
+     */
+    public ArrayList<ExtendedAuction> findAwardedBids(int idBidder)throws SQLException{
+        ArrayList<ExtendedAuction> bidsAwarded = new ArrayList<>();
+        String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image " +
+                "FROM (bid NATURAL JOIN auction NATURAL JOIN item) WHERE auction.status = 1 AND bid.idbidder = ?";
+        try (PreparedStatement pstatement = con.prepareStatement(query)) {
+            pstatement.setInt(1, idBidder);
+            try (ResultSet result = pstatement.executeQuery()) {
+                while (result.next()) {
+                    ExtendedAuction exAuction = new ExtendedAuction();
+                    exAuction.setPrice(result.getFloat("bidprice"));
+                    exAuction.setItemName(result.getString("name"));
+                    exAuction.setItemDescription(result.getString("description"));
+                    exAuction.setItemImage(result.getString("image"));
+                    bidsAwarded.add(exAuction);
+                }
+            }}
+        catch (SQLException sqle){
+                sqle.printStackTrace();
+        }
+            return bidsAwarded;
     }
 
     /**
@@ -57,15 +82,17 @@ public class BidDAO {
         ResultSet result;
         Date date = new Date();
         Long dateTime = date.getTime();
-        String query = "INSERT INTO bid ( bidprice, datetime, idbidder, idauction) VALUES (?,?,?,?)";
+        int idBid;
+        String query = "INSERT INTO bid ( bidprice, datetime, idbidder, idauction) VALUES (?,now(),?,?)";
+        PreparedStatement pstatement = null;
 
-        try (PreparedStatement pstatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+        try{
+            pstatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             pstatement.setFloat(1, bidPrice);
-            pstatement.setLong(2, dateTime * 1000);
-            pstatement.setInt(3, idBidder);
-            pstatement.setInt(4, idAuction);
+            pstatement.setInt(2, idBidder);
+            pstatement.setInt(3, idAuction);
             int affectedRows = pstatement.executeUpdate();
-            if (affectedRows == 0) {
+            if(affectedRows == 0){
                 return -1;
             }
             result = pstatement.getGeneratedKeys();

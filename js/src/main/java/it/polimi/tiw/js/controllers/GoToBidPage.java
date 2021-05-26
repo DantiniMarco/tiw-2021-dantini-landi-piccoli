@@ -3,6 +3,7 @@ package it.polimi.tiw.js.controllers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.tiw.js.beans.Bid;
+import it.polimi.tiw.js.beans.ExtendedBid;
 import it.polimi.tiw.js.beans.Item;
 import it.polimi.tiw.js.beans.User;
 import it.polimi.tiw.js.dao.BidDAO;
@@ -54,7 +55,7 @@ public class GoToBidPage extends HttpServlet{
         throws ServletException, IOException{
         int idAuction;
         Item item ;
-        List<Bid> bids;
+        List<ExtendedBid> bids;
         Map<String, Object> bidPageInfo = new HashMap<>();
         HttpSession s = request.getSession();
         ServletContext servletContext = getServletContext();
@@ -110,41 +111,6 @@ public class GoToBidPage extends HttpServlet{
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(json);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException{
-        ServletContext servletContext = getServletContext();
-        String price = request.getParameter("price");
-        Float fPrice = (float) 0;
-        BidDAO bidDAO = new BidDAO(connection);
-        User user = (User) request.getSession().getAttribute("user");
-        //Auction auction = (Auction) request.getSession().getAttribute("auction");
-        int idBidder = user.getIdUser();
-        int idAuction = idAuctionPub;
-
-        if ( price == null || price.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter missing");
-        }
-        try{
-            fPrice = Float.parseFloat(price);
-        }catch(NumberFormatException e){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("Format wrong!");
-            return;
-        }
-        if(currMaxPrice< fPrice){
-            try{
-                bidDAO.insertNewBid(fPrice, idBidder,idAuction);
-            } catch (SQLException sqle) {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
-            }
-
-        }else{
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("This price is too low.");
-            return;
-        }
     }
 
     @Override

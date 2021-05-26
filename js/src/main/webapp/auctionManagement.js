@@ -182,20 +182,22 @@
         this.buySearchContainer = options['buySearchContainer'];
         this.buyDetailsContainer = options['buyDetailsContainer'];
         this.backButton = options['backButton'];
+        this.currentAuctionId = '1';
 
         this.registerEvents = function(orchestrator) {
             this.bidform.querySelector('button[type="submit"]').addEventListener('click', (e) => {
+                e.preventDefault();
                 var form = e.target.closest("form");
                 if (form.checkValidity()) {
                     var self = this,
-                        missionToReport = form.querySelector("input[type = 'hidden']").value;
-                    makeCall("POST", 'CreateExpensesReport', form,
+                        idauction = form.querySelector("input[type = 'hidden']").value;
+                    makeCall("POST", 'CreateBid', form,
                         function(req) {
                             if (req.readyState == 4) {
                                 var message = req.responseText;
                                 if (req.status == 200) {
                                     //add bid
-                                    //orchestrator.refresh(missionToReport);
+                                    self.show(self.currentAuctionId);
                                 } else {
                                     self.alert.textContent = message;
                                 }
@@ -217,6 +219,7 @@
 
         this.show = function(auctionid) {
             var self = this;
+            this.currentAuctionId = auctionid;
             makeCall("GET", "GoToBidPage?idauction=" + auctionid, null,
                 function(req) {
                     if (req.readyState == 4) {
@@ -248,10 +251,23 @@
             this.itemImage.src = location.pathname.substring(0, location.pathname.lastIndexOf("/")+1) + "ImageServlet?name=" + formdata.item.image;
             this.itemDescription.textContent = formdata.item.description;
             this.currentPrice.textContent = "The current max price for this auctions is: " + new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(formdata.currMax);
-            /*this.itemName.parentNode.style.visibility = "visible"
-            this.bidform.parentNode.style.visibility = "visible"
-            this.itemName.parentNode.style.display = null
-            this.bidform.parentNode.style.display = null*/
+            this.bidlistcontainerbody.innerHTML = ""; // empty the table body
+            // build updated list
+            var self = this;
+            formdata.bids.forEach(function (bid) { // self visible here, not this
+                row = document.createElement("tr");
+                idBid = document.createElement("td");
+                idBid.textContent = bid.idBid;
+                row.appendChild(idBid);
+                priceCell = document.createElement("td");
+                priceCell.textContent = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(bid.bidPrice);
+                row.appendChild(priceCell);
+                dateCell = document.createElement("td");
+                dateCell.textContent = bid.dateTime;
+                row.appendChild(dateCell);
+                self.bidlistcontainerbody.appendChild(row);
+            });
+            this.bidform.querySelector("input[type = 'hidden']").value = this.currentAuctionId
             this.buySearchContainer.style.visibility = "hidden"
             this.buySearchContainer.style.display = "none"
             this.buyDetailsContainer.style.visibility = "visible"
