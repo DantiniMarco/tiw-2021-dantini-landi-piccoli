@@ -98,8 +98,59 @@
     </div>
 </div>
 <div id="id_sell" class="row">
-    <div class="column"></div>
-    <div class="column"></div>
+    <div class="column">
+        <h3>
+            <center>Open auctions</center>
+        </h3>
+        <table align="center" id="id_sellopencontainer">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Last bid</th>
+                <th>Minimum raise</th>
+                <th>Deadline</th>
+            </tr>
+            </thead>
+            <tbody id="id_sellopencontainerbody">
+            </tbody>
+        </table>
+        <h3>
+            <center>Closed auctions</center>
+        </h3>
+        <table align="center" id="id_sellclosedcontainer">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Last bid</th>
+                <th>Minimum raise</th>
+                <th>Deadline</th>
+            </tr>
+            </thead>
+            <tbody id="id_sellclosedcontainerbody">
+            </tbody>
+        </table>
+    </div>
+    <div class="column">
+        <h3>Add new auction</h3>
+        <form action="SellHelperServlet" method="POST" enctype="multipart/form-data" id="id_addAuctionForm">
+            <div class="container">
+                <label for="itemName">Name: </label><input id="itemName" name="itemName" placeholder="iPhone"
+                                                           required><br><br>
+                <label for="itemImage">Image: </label><input type="file" id="itemImage" name="itemImage"><br><br>
+                <label for="itemDescription">Description: </label><input id="itemDescription" name="itemDescription"
+                                                                         placeholder="Good phone?" required><br><br>
+                <label for="initialPrice"></label>Initial Price: <input id="initialPrice" name="initialPrice"
+                                                                        placeholder="500" required><br><br>
+                <label for="minRaise"></label>Minimum Raise: <input id="minRaise" name="minRaise" placeholder="10"
+                                                                    required><br><br>
+                <label for="deadline"></label>Deadline: <input id="deadline" name="deadline" type="date"
+                                                               required><br><br>
+                <input type="submit" value="Submit">
+            </div>
+        </form>
+    </div>
 </div>
 </body>
 </html>
