@@ -32,8 +32,6 @@ public class GoToBidPage extends HttpServlet{
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
     private TemplateEngine templateEngine;
-    private float currMaxPrice;
-    private int idAuctionPub = 0;
     public GoToBidPage(){super();}
 
 
@@ -64,7 +62,7 @@ public class GoToBidPage extends HttpServlet{
         int idAuction;
         Item item ;
         List<ExtendedBid> bids;
-
+        Float currMaxPrice = null;
         HttpSession s = request.getSession();
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
@@ -75,10 +73,16 @@ public class GoToBidPage extends HttpServlet{
 
         try{
             idAuction = Integer.parseInt(request.getParameter("idauction"));
-            idAuctionPub = idAuction;
         } catch ( NumberFormatException | NullPointerException e){
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "incorrect param values");
             return;
+        }
+        try{
+            BidDAO bidDAO1 = new BidDAO(connection);
+            currMaxPrice = bidDAO1.findPriceForNewBid(idAuction);
+            ctx.setVariable("currMax", currMaxPrice);
+        } catch (SQLException sqle) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
         }
 
 
@@ -96,18 +100,9 @@ public class GoToBidPage extends HttpServlet{
         try{
             BidDAO bidDAO = new BidDAO(connection);
             bids = bidDAO.findBidsByIdAuction(idAuction);
-            if(bids == null || bids.isEmpty()) {
-                currMaxPrice = (float) 0;
 
-                ctx.setVariable("errorMsg", "No bids for this article found.");
-            }else
-                for(Bid b: bids){
-                    if(b.getBidPrice()>currMaxPrice)
-                        currMaxPrice = b.getBidPrice();
-                }
                 ctx.setVariable("bids", bids);
                 ctx.setVariable("idauction", idAuction);
-                ctx.setVariable("currMax", currMaxPrice);
         }catch(SQLException e){
             response.sendError(500, "Database access failed");
         }

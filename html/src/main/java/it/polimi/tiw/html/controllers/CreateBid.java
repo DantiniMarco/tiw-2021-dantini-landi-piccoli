@@ -1,5 +1,6 @@
 package it.polimi.tiw.html.controllers;
 
+import it.polimi.tiw.html.beans.Bid;
 import it.polimi.tiw.html.beans.Item;
 import it.polimi.tiw.html.beans.User;
 import it.polimi.tiw.html.dao.BidDAO;
@@ -70,11 +71,17 @@ public class CreateBid extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter missing");
             return;
         }
-        try{
+        /*try{
              currMaxPrice = Float.parseFloat(request.getParameter("currMax"));
         }catch (NumberFormatException | NullPointerException e){
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter missing");
             return;
+        }*/
+        try{
+            BidDAO bidDAO1 = new BidDAO(connection);
+            currMaxPrice = bidDAO1.findPriceForNewBid(idAuction);
+        } catch (SQLException sqle) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
         }
         if (price.isEmpty()) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter missing");

@@ -16,7 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import it.polimi.tiw.html.beans.ExtendedAuction;
+import it.polimi.tiw.html.beans.User;
 import it.polimi.tiw.html.dao.AuctionDAO;
+import it.polimi.tiw.html.dao.BidDAO;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -30,7 +32,9 @@ public class GetSearchedAuction extends HttpServlet {
     private Connection connection = null;
     private TemplateEngine templateEngine;
 
-    public GetSearchedAuction(){super();}
+    public GetSearchedAuction() {
+        super();
+    }
 
     public void init() throws ServletException {
         ServletContext servletContext = getServletContext();
@@ -55,44 +59,57 @@ public class GetSearchedAuction extends HttpServlet {
     }
 
 
-
-        protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         HttpSession s = request.getSession();
         String keyWord = request.getParameter("keyword");
         ServletContext servletContext = getServletContext();
-        final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
+        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+        User user = (User) request.getSession().getAttribute("user");
+        int idBidder = user.getIdUser();
 
-
-        if( keyWord != null ){
-            if(keyWord.length()<3){
-            ctx.setVariable("errorMsg", "Try again, this keyword is too short.");
+        BidDAO bidDAO = new BidDAO(connection);
+        ArrayList<ExtendedAuction> wonList;
+        try {
+            wonList = bidDAO.findWonBids(idBidder);
+            if (wonList == null || wonList.isEmpty()) {
+                ctx.setVariable("errorMsg", "You haven't won an auction yet");
+            } else {
+                ctx.setVariable("wonList", wonList);
             }
-            else{
-            AuctionDAO aDAO = new AuctionDAO(connection);
-            List<ExtendedAuction> searchedList;
-            try{
-                searchedList = aDAO.findOpenAuction(keyWord);
-                if(searchedList == null || searchedList.isEmpty()){
-                    ctx.setVariable("errorMsg", "This keyword is not matching to any open auction.");
-                } else{
-                    ctx.setVariable("auctions", searchedList);
+        } catch (SQLException e) {
+            response.sendError(500, "Database access failed");
+        }
+        if (keyWord != null) {
+            if (keyWord.length() < 3) {
+                ctx.setVariable("errorMsg", "Try again, this keyword is too short.");
+            } else {
+                AuctionDAO aDAO = new AuctionDAO(connection);
+                List<ExtendedAuction> searchedList;
+                try {
+                    searchedList = aDAO.findOpenAuction(keyWord);
+                    if (searchedList == null || searchedList.isEmpty()) {
+                        ctx.setVariable("errorMsg", "This keyword is not matching to any open auction.");
+                    } else {
+                        ctx.setVariable("auctions", searchedList);
+                    }
+                } catch (SQLException e) {
+                    response.sendError(500, "Database access failed");
                 }
-            } catch(SQLException e){
-                response.sendError(500, "Database access failed");
-            }
             }
         }
         String path = "/WEB-INF/GetSearchedAuction.html";
         templateEngine.process(path, ctx, response.getWriter());
 
     }
-    public void destroy(){
-        try{
-            if(connection != null){
+
+    public void destroy() {
+        try {
+            if (connection != null) {
                 connection.close();
             }
-        }catch (SQLException sqle){}
+        } catch (SQLException sqle) {
+        }
     }
 
 }

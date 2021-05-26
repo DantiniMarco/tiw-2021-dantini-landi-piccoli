@@ -44,14 +44,12 @@
                 <p th:text="${errorMsg}"></p>
                 <input type="hidden" name="idauction" th:value="${idauction}">
                 <input type="hidden" name="currMax" th:value="${currMax}">
-                <input type="hidden" name="item" th:value="${item}">
             </div>
         </form>
         <br>
         <table th:if="${bids != null}">
             <thead>
             <tr>
-                <th>ID Bid</th>
                 <th>Bid Price</th>
                 <th>Date of Bid</th>
 
@@ -60,7 +58,6 @@
             <tbody>
             <tr th:each="a : ${bids}">
 
-                <td th:text="${a.getIdBid()}"></td>
                 <td><span th:text="${#numbers.formatDecimal(a.getBidPrice(), 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
                 <td th:text="${#dates.format(a.getDateTime(), 'dd-MM-yyyy HH:mm')}"></td>
             </tr>

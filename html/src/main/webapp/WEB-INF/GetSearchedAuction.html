@@ -16,6 +16,28 @@
 <div align="left">
 <h1>Use this page to search an Open Auction</h1>
 </div>
+<p>These are your won auctions:</p>
+<table th:if="${wonList != null}">
+    <thead>
+    <tr>
+        <th>Final price</th>
+        <th>Item Name</th>
+        <th>Description</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="w : ${wonList}">
+
+        <td><span th:text="${#numbers.formatDecimal(w.getPrice(), 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
+        <td th:text="${w.getItemName()}"></td>
+        <td th:text="${w.getItemDescription()}"></td>
+
+    </tr>
+    </tbody>
+</table>
+<br>
+<br>
 <form action = "GetSearchedAuction" method="get">
     <div class="container">
         <label for="keyword"><strong>Search for Open Auctions</strong></label>
@@ -30,7 +52,6 @@
 <table th:if="${auctions != null}">
     <thead>
     <tr>
-        <th>ID Auction</th>
         <th>Item Name</th>
         <th>Initial Price</th>
         <th>Minimum Raise</th>
@@ -41,13 +62,14 @@
     <tbody>
     <tr th:each="a : ${auctions}">
 
-        <td th:text="${a.getIdAuction()}"></td>
         <td th:text="${a.getItemName()}"></td>
         <td><span th:text="${#numbers.formatDecimal(a.getInitialPrice(), 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
         <td><span th:text="${#numbers.formatDecimal(a.getMinRaise(), 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
         <td th:text="${#dates.format(a.getDeadline(), 'dd-MM-yyyy HH:mm')}"></td>
-        <td><a th:href ="@{/GoToBidPage(idauction=${a.getIdAuction()})}">Details</a></td>
+        <td><a th:href ="@{/GoToBidPage(idauction=${a.getIdAuction()})}">Make a new bid</a></td>
     </tr>
     </tbody>
 </table>
+<br>
+<br>
 </html>

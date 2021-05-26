@@ -47,10 +47,13 @@ public class BidDAO {
      * @author Marco D'Antini
      * query used to find the ended auction awarded by the user
      */
-    public ArrayList<ExtendedAuction> findAwardedBids(int idBidder)throws SQLException{
+    public ArrayList<ExtendedAuction> findWonBids(int idBidder)throws SQLException{
         ArrayList<ExtendedAuction> bidsAwarded = new ArrayList<>();
-        String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image " +
-                "FROM (bid NATURAL JOIN auction NATURAL JOIN item) WHERE auction.status = 1 AND bid.idbidder = ?";
+        String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image FROM (bid NATURAL JOIN auction a2 NATURAL JOIN item) WHERE a2.status = 1 AND" +
+                " bid.idbidder = ? AND bidprice = (SELECT MAX(bidprice) FROM bid NATURAL JOIN auction a1" +
+                " WHERE a1.iditem = a2.iditem)";
+        /*String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image " +
+                "FROM (bid NATURAL JOIN auction NATURAL JOIN item) WHERE auction.status = 1 AND bid.idbidder = ?";*/
         try (PreparedStatement pstatement = con.prepareStatement(query)) {
             pstatement.setInt(1, idBidder);
             try (ResultSet result = pstatement.executeQuery()) {
@@ -102,5 +105,33 @@ public class BidDAO {
             sqle.printStackTrace();
         }
         return -1;
+    }
+
+    /**
+     * @author Marco D'Antini
+     * query the minimum raise and the maximum price offered in the list of bids
+     * @return the actual minimum price for a new bid
+     */
+    public float findPriceForNewBid(int idAuction) throws SQLException {
+        Float actualPrice = null;
+        String query = "SELECT MAX(bidprice), minraise FROM (bid NATURAL JOIN auction) WHERE idauction = ?";
+        String query2 = "SELECT initialprice, minraise FROM auction WHERE idauction = ? ";
+        try {
+            con.setAutoCommit(false);
+            PreparedStatement pstatement = con.prepareStatement(query);
+            pstatement.setInt(1, idAuction);
+            ResultSet result = pstatement.executeQuery();
+            if(result!=null){
+                actualPrice = result.getFloat("MAX(bidprice)") + result.getFloat("minraise");
+            }else{
+                pstatement = con.prepareStatement(query2);
+                result = pstatement.executeQuery();
+                actualPrice = result.getFloat("initailprice") + result.getFloat("minraise");
+                con.commit();
+            }
+        } catch( SQLException sqle){
+            sqle.printStackTrace();
+        }
+        return actualPrice;
     }
 }
