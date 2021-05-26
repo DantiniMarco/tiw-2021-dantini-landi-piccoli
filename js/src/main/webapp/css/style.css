@@ -16,6 +16,16 @@ h1{
 h2{
     text-align: center;
 }
+
+#id_buy{
+    margin: auto;
+    max-width: 1500px;
+}
+
+#id_sell{
+    margin: auto;
+    max-width: 1500px;
+}
 /* Style the links inside the navigation bar */
 .topnav a {
     float: right;
@@ -27,8 +37,6 @@ h2{
 }
 
 .row {
-    margin: auto;
-    max-width: 1500px;
     display: flex;
 }
 

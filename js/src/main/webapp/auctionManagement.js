@@ -68,10 +68,10 @@
                 itemCell.textContent = auction.itemName;
                 row.appendChild(itemCell);
                 priceCell = document.createElement("td");
-                priceCell.textContent = auction.initialPrice;
+                priceCell.textContent = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(auction.initialPrice);
                 row.appendChild(priceCell);
                 raiseCell = document.createElement("td");
-                raiseCell.textContent = auction.minRaise;
+                raiseCell.textContent = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(auction.minRaise);
                 row.appendChild(raiseCell);
                 dateCell = document.createElement("td");
                 dateCell.textContent = auction.deadline;
@@ -247,7 +247,7 @@
             this.itemName.textContent = formdata.item.name;
             this.itemImage.src = location.pathname.substring(0, location.pathname.lastIndexOf("/")+1) + "ImageServlet?name=" + formdata.item.image;
             this.itemDescription.textContent = formdata.item.description;
-            this.currentPrice.textContent = "The actual max price for this auctions is: " + formdata.currMax;
+            this.currentPrice.textContent = "The current max price for this auctions is: " + new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(formdata.currMax);
             /*this.itemName.parentNode.style.visibility = "visible"
             this.bidform.parentNode.style.visibility = "visible"
             this.itemName.parentNode.style.display = null
