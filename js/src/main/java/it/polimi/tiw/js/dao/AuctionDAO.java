@@ -64,28 +64,26 @@ public class AuctionDAO {
      * @param status of an auction, it can be "0" -> CLOSED or "1" -> OPEN
      * @return a list of auctions for the selected status in ascending order by deadline
      */
-        public List<ExtendedAuction> findAuctionsByStatus(AuctionStatus status) throws SQLException{
+        public List<ExtendedAuction> findAuctionsByIdAndStatus(int idUser, AuctionStatus status) throws SQLException{
             List<ExtendedAuction> auctions = new ArrayList<>();
-            String query = "SELECT iditem, idauction, initialprice, minraise, UNIX_TIMESTAMP(deadline) AS deadline, idcreator, status, name, image, description FROM auction NATURAL JOIN item WHERE status=? ORDER BY deadline ASC";
+            //FIXME: must fix SQL query
+            String query = "SELECT item.name, item.image, item.description, max(bid.bidprice) AS price, auction.minraise, UNIX_TIMESTAMP(auction.deadline) AS deadline FROM auction NATURAL JOIN item LEFT JOIN bid ON auction.idauction=bid.idauction JOIN user ON auction.idcreator=user.iduser WHERE user.iduser=? AND auction.status=? GROUP BY auction.idauction ORDER BY auction.deadline ASC";
             PreparedStatement pstatement = null;
             ResultSet result = null;
 
             try {
                 pstatement = con.prepareStatement(query);
-                pstatement.setInt(1, status.getValue());
+                pstatement.setInt(1, idUser);
+                pstatement.setInt(2, status.getValue());
                 result = pstatement.executeQuery();
                 while (result.next()) {
                     ExtendedAuction auction = new ExtendedAuction();
-                    auction.setIdItem(result.getInt("iditem"));
-                    auction.setIdAuction(result.getInt("idauction"));
-                    auction.setInitialPrice(result.getFloat("initialprice"));
-                    auction.setMinRaise(result.getFloat("minraise"));
-                    auction.setDeadline(new Date(result.getLong("deadline") * 1000));
-                    auction.setIdCreator(result.getInt("idcreator"));
-                    auction.setStatus(AuctionStatus.getAuctionStatusFromInt(result.getInt("status")));
                     auction.setItemName(result.getString("name"));
                     auction.setItemImage(result.getString("image"));
                     auction.setItemDescription(result.getString("description"));
+                    auction.setPrice(result.getFloat("price"));
+                    auction.setMinRaise(result.getFloat("minraise"));
+                    auction.setDeadline(new Date(result.getLong("deadline") * 1000));
                     auctions.add(auction);
                 }
             } catch (SQLException e) {
@@ -200,7 +198,7 @@ public class AuctionDAO {
         String query = "SELECT * FROM auction WHERE idauction = ?";
         PreparedStatement pstatement = null;
         ResultSet result = null;
-        Auction auction = new Auction();
+        ExtendedAuction auction = new ExtendedAuction();
 
         try{
             pstatement = con.prepareStatement(query);
