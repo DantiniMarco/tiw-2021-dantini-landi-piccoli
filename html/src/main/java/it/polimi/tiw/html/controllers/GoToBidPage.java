@@ -17,9 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import it.polimi.tiw.html.beans.Bid;
-import it.polimi.tiw.html.beans.Item;
-import it.polimi.tiw.html.beans.User;
+import it.polimi.tiw.html.beans.*;
 import it.polimi.tiw.html.dao.AuctionDAO;
 import it.polimi.tiw.html.dao.BidDAO;
 import it.polimi.tiw.html.dao.ItemDAO;
@@ -28,7 +26,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-import it.polimi.tiw.html.beans.Auction;
+
 @WebServlet("/GoToBidPage")
 public class GoToBidPage extends HttpServlet{
     private static final long serialVersionUID = 1L;
@@ -65,7 +63,7 @@ public class GoToBidPage extends HttpServlet{
         throws ServletException, IOException{
         int idAuction;
         Item item ;
-        List<Bid> bids;
+        List<ExtendedBid> bids;
 
         HttpSession s = request.getSession();
         ServletContext servletContext = getServletContext();

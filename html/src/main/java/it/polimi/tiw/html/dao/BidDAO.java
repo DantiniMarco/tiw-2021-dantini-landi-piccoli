@@ -2,6 +2,7 @@ package it.polimi.tiw.html.dao;
 
 import it.polimi.tiw.html.beans.Bid;
 import it.polimi.tiw.html.beans.ExtendedAuction;
+import it.polimi.tiw.html.beans.ExtendedBid;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -21,20 +22,17 @@ public class BidDAO {
      * @param auctionId of the current auction
      * @return a list o bids for the current auction
      */
-    public List<Bid> findBidsByIdAuction(int auctionId) throws SQLException {
-        List<Bid> bids = new ArrayList<>();
-        String query = "SELECT idbid, bidprice, UNIX_TIMESTAMP(datetime) AS datetime, idbidder, idauction" +
-                " FROM bid WHERE idauction = ? ORDER BY datetime DESC";
+    public List<ExtendedBid> findBidsByIdAuction(int auctionId) throws SQLException {
+        List<ExtendedBid> bids = new ArrayList<>();
+        String query = "SELECT username, bidprice, UNIX_TIMESTAMP(datetime) AS datetime FROM bid JOIN user ON idbidder=iduser WHERE idauction = ? ORDER BY datetime DESC";
         try (PreparedStatement pstatement = con.prepareStatement(query)) {
             pstatement.setInt(1, auctionId);
             try (ResultSet result = pstatement.executeQuery()) {
                 while (result.next()) {
-                    Bid bid = new Bid();
-                    bid.setIdBid(result.getInt("idbid"));
+                    ExtendedBid bid = new ExtendedBid();
+                    bid.setBidderUsername(result.getString("username"));
                     bid.setBidPrice(result.getFloat("bidprice"));
                     bid.setDateTime(new Date(result.getLong("datetime") * 1000));
-                    bid.setIdBidder(result.getInt("idbidder"));
-                    bid.setIdAuction(result.getInt("idauction"));
                     bids.add(bid);
                 }
             }
