@@ -254,6 +254,9 @@
             this.bidlistcontainerbody.innerHTML = ""; // empty the table body
             // build updated list
             var self = this;
+            if(formdata.bids.length === 0){
+                console.log("No bids")
+            }
             formdata.bids.forEach(function (bid) { // self visible here, not this
                 row = document.createElement("tr");
                 idBid = document.createElement("td");

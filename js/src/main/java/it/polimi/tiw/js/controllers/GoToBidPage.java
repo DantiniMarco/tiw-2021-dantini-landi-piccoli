@@ -26,12 +26,15 @@ import java.util.List;
 import java.util.Map;
 
 @WebServlet("/GoToBidPage")
-public class GoToBidPage extends HttpServlet{
+public class GoToBidPage extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
     private float currMaxPrice;
     private int idAuctionPub = 0;
-    public GoToBidPage(){super();}
+
+    public GoToBidPage() {
+        super();
+    }
 
     @Override
     public void init() throws ServletException {
@@ -52,52 +55,49 @@ public class GoToBidPage extends HttpServlet{
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException{
+            throws ServletException, IOException {
         int idAuction;
-        Item item ;
+        Item item;
         List<ExtendedBid> bids;
         Map<String, Object> bidPageInfo = new HashMap<>();
         HttpSession s = request.getSession();
         ServletContext servletContext = getServletContext();
 
-        try{
+        try {
             idAuction = Integer.parseInt(request.getParameter("idauction"));
             idAuctionPub = idAuction;
-        } catch ( NumberFormatException | NullPointerException e){
+        } catch (NumberFormatException | NullPointerException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "incorrect param values");
             return;
         }
 
 
-        try{
+        try {
             ItemDAO itemDAO = new ItemDAO(connection);
             item = itemDAO.getItemById(idAuction);
-            if(item == null){
+            if (item == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 response.getWriter().println("No info for this article found.");
                 return;
-            }else {
+            } else {
                 bidPageInfo.put("item", item);
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             response.sendError(500, "Database access failed");
         }
-        try{
+        try {
             BidDAO bidDAO = new BidDAO(connection);
             bids = bidDAO.findBidsByIdAuction(idAuction);
-            if(bids == null || bids.isEmpty()) {
+            if (bids == null || bids.isEmpty()) {
                 currMaxPrice = (float) 0;
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                response.getWriter().println("No bids for this article found.");
-                return;
-            }else
-                for(Bid b: bids){
-                    if(b.getBidPrice()>currMaxPrice)
+            } else
+                for (Bid b : bids) {
+                    if (b.getBidPrice() > currMaxPrice)
                         currMaxPrice = b.getBidPrice();
                 }
-                bidPageInfo.put("bids", bids);
-                bidPageInfo.put("currMax", currMaxPrice);
-        }catch(SQLException e){
+            bidPageInfo.put("bids", bids);
+            bidPageInfo.put("currMax", currMaxPrice);
+        } catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("Database access failed");
             return;
@@ -114,11 +114,12 @@ public class GoToBidPage extends HttpServlet{
     }
 
     @Override
-    public void destroy(){
-        try{
-            if(connection != null){
+    public void destroy() {
+        try {
+            if (connection != null) {
                 connection.close();
             }
-        }catch (SQLException sqle){}
+        } catch (SQLException sqle) {
+        }
     }
 }
