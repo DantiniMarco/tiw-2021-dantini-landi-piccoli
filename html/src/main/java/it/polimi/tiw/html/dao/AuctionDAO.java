@@ -66,7 +66,7 @@ public class AuctionDAO {
      */
         public List<ExtendedAuction> findAuctionsByStatus(AuctionStatus status) throws SQLException{
             List<ExtendedAuction> auctions = new ArrayList<>();
-            String query = "SELECT iditem, idauction, initialprice, minraise, UNIX_TIMESTAMP(deadline) AS deadline, idcreator, status, name, image, description FROM auction NATURAL JOIN item WHERE status=? ORDER BY deadline ASC";
+            String query = "SELECT minraise, UNIX_TIMESTAMP(deadline) AS deadline, name, image, description, max(bidprice) AS price FROM auction NATURAL JOIN item NATURAL JOIN bid WHERE status=? GROUP BY idauction ORDER BY deadline ASC";
             PreparedStatement pstatement = null;
             ResultSet result = null;
 
@@ -76,13 +76,9 @@ public class AuctionDAO {
                 result = pstatement.executeQuery();
                 while (result.next()) {
                     ExtendedAuction auction = new ExtendedAuction();
-                    auction.setIdItem(result.getInt("iditem"));
-                    auction.setIdAuction(result.getInt("idauction"));
-                    auction.setInitialPrice(result.getFloat("initialprice"));
+                    auction.setPrice(result.getFloat("price"));
                     auction.setMinRaise(result.getFloat("minraise"));
                     auction.setDeadline(new Date(result.getLong("deadline") * 1000));
-                    auction.setIdCreator(result.getInt("idcreator"));
-                    auction.setStatus(AuctionStatus.getAuctionStatusFromInt(result.getInt("status")));
                     auction.setItemName(result.getString("name"));
                     auction.setItemImage(result.getString("image"));
                     auction.setItemDescription(result.getString("description"));
@@ -203,7 +199,7 @@ public class AuctionDAO {
         String query = "SELECT * FROM auction WHERE idauction = ?";
         PreparedStatement pstatement = null;
         ResultSet result = null;
-        Auction auction = new Auction();
+        ExtendedAuction auction = new ExtendedAuction();
 
         try{
             pstatement = con.prepareStatement(query);

@@ -23,7 +23,7 @@
             <tr>
                 <th>Name</th>
                 <th>Description</th>
-                <th>Initial Price</th>
+                <th>Last bid</th>
                 <th>Minimum raise</th>
                 <th>Deadline</th>
             </tr>
@@ -32,7 +32,7 @@
             <tr th:each="openAuction:${openAuctions}">
                 <td th:text="${openAuction.itemName}"></td>
                 <td th:text="${openAuction.itemDescription}"></td>
-                <td th:text="${openAuction.initialPrice}"></td>
+                <td th:text="${openAuction.price}"></td>
                 <td th:text="${openAuction.minRaise}"></td>
                 <td th:text="${#dates.format(openAuction.getDeadline(), 'dd-MM-yyyy HH:mm')}"></td>
             </tr>
@@ -46,7 +46,7 @@
             <tr>
                 <th>Name</th>
                 <th>Description</th>
-                <th>Initial Price</th>
+                <th>Last bid</th>
                 <th>Minimum raise</th>
                 <th>Deadline</th>
             </tr>
@@ -55,7 +55,7 @@
             <tr th:each="closedAuction:${closedAuctions}">
                 <td th:text="${closedAuction.itemName}"></td>
                 <td th:text="${closedAuction.itemDescription}"></td>
-                <td th:text="${closedAuction.initialPrice}"></td>
+                <td th:text="${closedAuction.price}"></td>
                 <td th:text="${closedAuction.minRaise}"></td>
                 <td th:text="${#dates.format(closedAuction.getDeadline(), 'dd-MM-yyyy HH:mm')}"></td>
             </tr>
