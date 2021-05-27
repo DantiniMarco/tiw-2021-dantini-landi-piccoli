@@ -25,9 +25,9 @@
                         self.userdata = JSON.parse(req.responseText);
                         console.log(self.userdata);
                         self.messagecontainer.textContent = self.userdata.username;
+                    } else {
+                        self.alert.textContent = message;
                     }
-                } else {
-                    self.alert.textContent = message;
                 }
             }
         );

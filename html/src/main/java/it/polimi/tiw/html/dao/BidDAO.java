@@ -86,7 +86,6 @@ public class BidDAO {
         Date date = new Date();
         String query = "INSERT INTO bid ( bidprice, datetime, idbidder, idauction) VALUES (?,now(),?,?)";
 
-
         try (PreparedStatement pstatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pstatement.setFloat(1, bidPrice);
             pstatement.setInt(2, idBidder);
@@ -97,7 +96,6 @@ public class BidDAO {
             }
             result = pstatement.getGeneratedKeys();
             if (result != null && result.next()) {
-                con.commit();
                 return result.getInt(1);
             }
         } catch (SQLException sqle) {
@@ -128,11 +126,13 @@ public class BidDAO {
                     if (result != null && result.next()) {
                         actualPrice = result.getFloat("initialprice") + result.getFloat("minraise");
                     }
-                    con.commit();
                 }
             }
         } catch (SQLException sqle) {
+            con.rollback();
             sqle.printStackTrace();
+        } finally {
+            con.setAutoCommit(true);
         }
         return actualPrice;
     }

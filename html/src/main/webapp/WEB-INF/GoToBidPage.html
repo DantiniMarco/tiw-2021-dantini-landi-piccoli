@@ -34,7 +34,7 @@
             <h3>Insert here the price of your bid, make sure that your price is higher than the max in the list </h3>
         </div>
         <div align="left">
-            <h4 ><span th:text="${'The actual max price for this auctions is: '+ #numbers.formatDecimal(currMax, 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></h4>
+            <h4 ><span th:text="${'The minimum bet is: '+ #numbers.formatDecimal(currMax, 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></h4>
         </div>
         <form action="#" th:action="@{/CreateBid}" method="POST">
             <div class="container">
