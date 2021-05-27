@@ -33,7 +33,6 @@ public class BidDAO {
                     bid.setDateTime(new Date(result.getLong("datetime") * 1000));
                     bids.add(bid);
                 }
-                con.commit();
             }
 
         } catch (SQLException sqle) {

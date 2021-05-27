@@ -44,12 +44,20 @@ public class GoToBidPage extends HttpServlet {
         Item item;
         List<ExtendedBid> bids;
         Map<String, Object> bidPageInfo = new HashMap<>();
+        float currMaxPrice;
 
         try {
             idAuction = Integer.parseInt(request.getParameter("idauction"));
         } catch (NumberFormatException | NullPointerException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "incorrect param values");
             return;
+        }
+        try {
+            BidDAO bidDAO1 = new BidDAO(connection);
+            currMaxPrice = bidDAO1.findPriceForNewBid(idAuction);
+            bidPageInfo.put("currMax", currMaxPrice);
+        } catch (SQLException sqle) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
         }
 
 
@@ -67,18 +75,9 @@ public class GoToBidPage extends HttpServlet {
             response.sendError(500, "Database access failed");
         }
         try {
-            float currMaxPrice = 0;
             BidDAO bidDAO = new BidDAO(connection);
             bids = bidDAO.findBidsByIdAuction(idAuction);
-            if (bids == null || bids.isEmpty()) {
-                currMaxPrice = (float) 0;
-            } else
-                for (Bid b : bids) {
-                    if (b.getBidPrice() > currMaxPrice)
-                        currMaxPrice = b.getBidPrice();
-                }
             bidPageInfo.put("bids", bids);
-            bidPageInfo.put("currMax", currMaxPrice);
         } catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("Database access failed");
