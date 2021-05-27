@@ -103,6 +103,7 @@ public class GoToBidPage extends HttpServlet {
                 connection.close();
             }
         } catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
     }
 }

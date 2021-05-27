@@ -13,7 +13,7 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
             makeCall("POST", 'SellHelperServlet', form,
                 function (req) {
                     if (req.readyState === 4) {
-                        var message = req.responseText;
+                        let message = req.responseText;
                         if (req.status === 200) {
                             //has added auction
                             self.show();
@@ -53,8 +53,6 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
                         self.listcontainer.style.visibility = "hidden";
                         self.listcontainer.style.display = "none";
                     }
-                } else {
-                    self.alert.textContent = req.responseText;
                 }
             }
         );
@@ -116,14 +114,6 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
         self.listopenbody.style.display = null;
         self.listclosedbody.style.visibility = "visible";
         self.listclosedbody.style.display = null;
-    }
-
-    this.autoclick = function (missionId) {
-        var e = new Event("click");
-        var selector = "a[auctionid='" + auctionId + "']";
-        var anchorToClick =
-            (auctionId) ? document.querySelector(selector) : this.listcontainerbody.querySelectorAll("a")[0];
-        if (anchorToClick) anchorToClick.dispatchEvent(e);
     }
 
 }

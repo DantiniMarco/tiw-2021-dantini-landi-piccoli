@@ -25,9 +25,9 @@
                         self.userdata = JSON.parse(req.responseText);
                         console.log(self.userdata);
                         self.messagecontainer.textContent = self.userdata.username;
+                    } else {
+                        self.alert.textContent = message;
                     }
-                } else {
-                    self.alert.textContent = message;
                 }
             }
         );
@@ -46,7 +46,7 @@
             this.show("sell")
         });
         this.show = function (buyOrSell) {
-            var self = this;
+            let self = this;
             if (buyOrSell === "sell") {
                 self.buyBar.className = null;
                 self.sellBar.className = "active";
@@ -54,6 +54,7 @@
                 self.buyContainer.style.display = "none";
                 self.sellContainer.style.visibility = "visible";
                 self.sellContainer.style.display = null;
+                localStorage.setItem("lastAction", "sell");
                 pageOrchestrator.refresh(buyOrSell);
                 return;
             }
@@ -63,6 +64,7 @@
             self.buyContainer.style.display = null;
             self.sellContainer.style.visibility = "hidden";
             self.sellContainer.style.display = "none";
+            localStorage.setItem("lastAction", "buy");
             pageOrchestrator.refresh(buyOrSell);
         };
     }
@@ -118,10 +120,20 @@
             document.querySelector("a[href='Logout']").addEventListener('click', () => {
                 window.sessionStorage.removeItem('username');
             })
+            let expirationDate = JSON.parse(localStorage.getItem("expirationDate"));
+            let currentDate = new Date();
+            if(expirationDate == null || expirationDate < currentDate.getDate()){
+                currentDate.setMonth(currentDate.getMonth() + 1)
+                localStorage.setItem("expirationDate", JSON.stringify(currentDate));
+                localStorage.setItem("lastAction", "buy");
+                localStorage.setItem("auctionsVisited", null);
+            }
+            let lastAction = localStorage.getItem("lastAction")
+            let auctionsVisited = localStorage.getItem("auctionsVisited")
 
             buttonManager = new ButtonManager(alertContainer, buyContainer, sellContainer, buyBar, sellBar);
 
-            buttonManager.show("buy");
+            buttonManager.show(lastAction, auctionsVisited);
 
         };
 

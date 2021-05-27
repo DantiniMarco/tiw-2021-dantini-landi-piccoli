@@ -10,8 +10,9 @@
     if (form.checkValidity()) {
       makeCall("POST", 'CheckLogin', e.target.closest("form"),
         function(req) {
-          if (req.readyState == XMLHttpRequest.DONE) {
-            var message = req.responseText;
+          if (req.readyState === XMLHttpRequest.DONE) {
+            let message = req.responseText;
+            e.target.closest("form").reset();
             switch (req.status) {
               case 200:
             	sessionStorage.setItem('username', message);
@@ -29,7 +30,7 @@
             }
           }
         }
-      );
+      , false);
     } else {
     	 form.reportValidity();
     }

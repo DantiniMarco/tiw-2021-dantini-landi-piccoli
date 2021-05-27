@@ -1,6 +1,5 @@
 package it.polimi.tiw.js.dao;
 
-import it.polimi.tiw.js.beans.Bid;
 import it.polimi.tiw.js.beans.ExtendedAuction;
 import it.polimi.tiw.js.beans.ExtendedBid;
 
@@ -47,10 +46,13 @@ public class BidDAO {
      * @author Marco D'Antini
      * query used to find the ended auction awarded by the user
      */
-    public List<ExtendedAuction> findAwardedBids(int idBidder) throws SQLException {
+    public List<ExtendedAuction> findWonBids(int idBidder) throws SQLException {
         ArrayList<ExtendedAuction> bidsAwarded = new ArrayList<>();
-        String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image " +
-                "FROM (bid NATURAL JOIN auction NATURAL JOIN item) WHERE auction.status = 1 AND bid.idbidder = ?";
+        String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image FROM (bid NATURAL JOIN auction a2 NATURAL JOIN item) WHERE a2.status = 1 AND" +
+                " bid.idbidder = ? AND bidprice = (SELECT MAX(bidprice) FROM bid NATURAL JOIN auction a1" +
+                " WHERE a1.iditem = a2.iditem)";
+        /*String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image " +
+                "FROM (bid NATURAL JOIN auction NATURAL JOIN item) WHERE auction.status = 1 AND bid.idbidder = ?";*/
         try (PreparedStatement pstatement = con.prepareStatement(query)) {
             pstatement.setInt(1, idBidder);
             try (ResultSet result = pstatement.executeQuery()) {
@@ -83,7 +85,6 @@ public class BidDAO {
         Date date = new Date();
         String query = "INSERT INTO bid ( bidprice, datetime, idbidder, idauction) VALUES (?,now(),?,?)";
 
-
         try (PreparedStatement pstatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pstatement.setFloat(1, bidPrice);
             pstatement.setInt(2, idBidder);
@@ -93,11 +94,45 @@ public class BidDAO {
                 return -1;
             }
             result = pstatement.getGeneratedKeys();
-            if (result != null && result.next())
+            if (result != null && result.next()) {
                 return result.getInt(1);
+            }
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
         return -1;
+    }
+
+    /**
+     * @return the actual minimum price for a new bid
+     * @author Marco D'Antini
+     * query the minimum raise and the maximum price offered in the list of bids
+     */
+    public float findPriceForNewBid(int idAuction) throws SQLException {
+        Float actualPrice = null;
+        String query = "SELECT MAX(bidprice), minraise FROM (bid NATURAL JOIN auction) WHERE idauction = ?";
+        String query2 = "SELECT initialprice, minraise FROM auction WHERE idauction = ? ";
+        try {
+            con.setAutoCommit(false);
+            try (PreparedStatement pstatement = con.prepareStatement(query);
+                 PreparedStatement pstatement2 = con.prepareStatement(query2)) {
+                pstatement.setInt(1, idAuction);
+                ResultSet result = pstatement.executeQuery();
+                if (result != null && result.next()) {
+                    actualPrice = result.getFloat("MAX(bidprice)") + result.getFloat("minraise");
+                } else {
+                    result = pstatement2.executeQuery();
+                    if (result != null && result.next()) {
+                        actualPrice = result.getFloat("initialprice") + result.getFloat("minraise");
+                    }
+                }
+            }
+        } catch (SQLException sqle) {
+            con.rollback();
+            sqle.printStackTrace();
+        } finally {
+            con.setAutoCommit(true);
+        }
+        return actualPrice;
     }
 }

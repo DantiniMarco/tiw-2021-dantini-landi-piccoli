@@ -163,8 +163,8 @@ function AuctionDetails(options) {
                         let formdata = JSON.parse(req.responseText);
                         self.update(formdata); // self is the object on which the function
                         // is applied
-
-                    } else {
+                    }
+                    else {
                         self.alert.textContent = message;
 
                     }
@@ -184,7 +184,7 @@ function AuctionDetails(options) {
         this.itemName.textContent = formdata.item.name;
         this.itemImage.src = location.pathname.substring(0, location.pathname.lastIndexOf("/") + 1) + "ImageServlet?name=" + formdata.item.image;
         this.itemDescription.textContent = formdata.item.description;
-        this.currentPrice.textContent = "The current max price for this auctions is: " + new Intl.NumberFormat('it-IT', {
+        this.currentPrice.textContent = "The minimum bet is: " + new Intl.NumberFormat('it-IT', {
             style: 'currency',
             currency: 'EUR'
         }).format(formdata.currMax);
