@@ -218,3 +218,6 @@ function AuctionDetails(options) {
         this.buyDetailsContainer.style.display = null
     }
 }
+
+// TODO: Marco da fare
+function WonAndLatestAuction() {}

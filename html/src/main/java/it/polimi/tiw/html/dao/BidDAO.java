@@ -22,7 +22,8 @@ public class BidDAO {
      */
     public List<ExtendedBid> findBidsByIdAuction(int auctionId) throws SQLException {
         List<ExtendedBid> bids = new ArrayList<>();
-        String query = "SELECT username, bidprice, UNIX_TIMESTAMP(datetime) AS datetime FROM bid JOIN user ON idbidder=iduser WHERE idauction = ? ORDER BY datetime DESC";
+        String query = "SELECT username, bidprice, UNIX_TIMESTAMP(datetime) AS datetime " +
+                "FROM bid JOIN user ON idbidder=iduser WHERE idauction = ? ORDER BY datetime DESC";
         try (PreparedStatement pstatement = con.prepareStatement(query)) {
             pstatement.setInt(1, auctionId);
             try (ResultSet result = pstatement.executeQuery()) {
@@ -48,7 +49,8 @@ public class BidDAO {
      */
     public List<ExtendedAuction> findWonBids(int idBidder) throws SQLException {
         ArrayList<ExtendedAuction> bidsAwarded = new ArrayList<>();
-        String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image FROM (bid NATURAL JOIN auction a2 NATURAL JOIN item) WHERE a2.status = 1 AND" +
+        String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image " +
+                "FROM (bid NATURAL JOIN auction a2 NATURAL JOIN item) WHERE a2.status = 1 AND" +
                 " bid.idbidder = ? AND bidprice = (SELECT MAX(bidprice) FROM bid NATURAL JOIN auction a1" +
                 " WHERE a1.iditem = a2.iditem)";
         /*String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image " +
@@ -141,21 +143,22 @@ public class BidDAO {
      * @param auctionId
      * @return id of the winner
      */
-    public int findWinnerIdByAuctionId(int auctionId) throws SQLException{
-        String query = "SELECT idbidder FROM auction LEFT JOIN bid ON auction.idauction = bid.idauction WHERE auction.idauction = ? AND bidprice = (SELECT max(bidprice) FROM bid WHERE bid.idauction = ?)";
+    public int findWinnerIdByAuctionId(int auctionId) throws SQLException {
+        String query = "SELECT idbidder FROM auction LEFT JOIN bid ON auction.idauction = bid.idauction " +
+                "WHERE auction.idauction = ? AND bidprice = (SELECT max(bidprice) FROM bid WHERE bid.idauction = ?)";
         PreparedStatement pstatement = null;
         ResultSet result = null;
-        int resultId=0;
+        int resultId = 0;
 
-        try{
+        try {
             pstatement = con.prepareStatement(query);
             pstatement.setInt(1, auctionId);
             pstatement.setInt(2, auctionId);
             result = pstatement.executeQuery();
-            if(result.next()==true){
+            if (result.next() == true) {
                 resultId = result.getInt("idbidder");
             }
-        }catch(SQLException sqle){
+        } catch (SQLException sqle) {
             throw new SQLException(sqle);
         }
 

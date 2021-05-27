@@ -82,6 +82,8 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
         dateCell = document.createElement("td");
         dateCell.textContent = auction.deadline;
         row.appendChild(dateCell);
+
+        // TODO: Alfredo da fare
         /*linkcell = document.createElement("td");
         anchor = document.createElement("a");
         linkcell.appendChild(anchor);
@@ -117,3 +119,6 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
     }
 
 }
+
+// TODO: Alfredo da fare
+function AuctionDetailsSell() {}
