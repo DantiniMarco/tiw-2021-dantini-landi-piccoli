@@ -27,7 +27,6 @@ import java.util.Map;
 public class GoToBidPage extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
-    private float currMaxPrice;
 
     public GoToBidPage() {
         super();
@@ -68,6 +67,7 @@ public class GoToBidPage extends HttpServlet {
             response.sendError(500, "Database access failed");
         }
         try {
+            float currMaxPrice = 0;
             BidDAO bidDAO = new BidDAO(connection);
             bids = bidDAO.findBidsByIdAuction(idAuction);
             if (bids == null || bids.isEmpty()) {
