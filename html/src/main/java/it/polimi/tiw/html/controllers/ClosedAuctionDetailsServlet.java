@@ -39,7 +39,7 @@ public class ClosedAuctionDetailsServlet extends HttpServlet {
 
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
-        String path = "";
+        String path = "/WEB-INF/AuctionsDetails.html";
         templateEngine.process(path, ctx, response.getWriter());
     }
 

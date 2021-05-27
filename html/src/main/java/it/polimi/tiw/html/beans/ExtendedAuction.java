@@ -5,6 +5,15 @@ public class ExtendedAuction extends Auction {
     private String itemDescription;
     private String itemImage;
     private Float price;
+    private int winnerId;
+
+    public int getWinnerId() {
+        return winnerId;
+    }
+
+    public void setWinnerId(int winnerId) {
+        this.winnerId = winnerId;
+    }
 
     public Float getPrice() {
         return price;

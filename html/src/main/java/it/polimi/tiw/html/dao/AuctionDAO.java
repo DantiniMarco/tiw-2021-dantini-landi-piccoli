@@ -132,8 +132,8 @@ public class AuctionDAO {
             PreparedStatement pstatement = null;
             int result = 0;
             String query= "INSERT INTO auction (initialprice, minraise, deadline, idcreator, iditem, status) VALUES (?,?,?,?,?,?)";
+            con.setAutoCommit(false);
             try{
-                con.setAutoCommit(false);
                 itemId=im.insertNewItem(newItem);
                 if(itemId==-1){
                     throw new SQLException();
@@ -147,9 +147,9 @@ public class AuctionDAO {
                 pstatement.setInt(6, AuctionStatus.OPEN.getValue());
                 result= pstatement.executeUpdate();
                 con.commit();
-
             }catch(SQLException sqle){
                 sqle.printStackTrace();
+                con.rollback();
             }finally {
                 try{
                     if(pstatement!=null){
@@ -158,6 +158,7 @@ public class AuctionDAO {
                 }catch(SQLException e1){
                     e1.printStackTrace();
                 }
+                con.setAutoCommit(true);
             }
 
             return result;
@@ -198,8 +199,8 @@ public class AuctionDAO {
      * @param auctionId of the auction needed
      * @return the required auction
      */
-    public Auction findAuctionById(int auctionId) throws SQLException{
-        String query = "SELECT * FROM auction WHERE idauction = ?";
+    public ExtendedAuction findAuctionById(int auctionId) throws SQLException{
+        String query = "SELECT item.name, item.image, item.description, max(bid.bidprice) AS price, auction.minraise, UNIX_TIMESTAMP(auction.deadline) AS deadline, auction.status FROM auction NATURAL JOIN item LEFT JOIN bid ON auction.idauction=bid.idauction WHERE auction.idauction = ?";
         PreparedStatement pstatement = null;
         ResultSet result = null;
         ExtendedAuction auction = new ExtendedAuction();
@@ -208,13 +209,14 @@ public class AuctionDAO {
             pstatement = con.prepareStatement(query);
             pstatement.setInt(1, auctionId);
             result=pstatement.executeQuery();
-            auction.setIdAuction(result.getInt("auctionId"));
-            auction.setInitialPrice(result.getFloat("initialprice"));
+            auction.setIdAuction(auctionId);
+            auction.setItemName(result.getString("name"));
+            auction.setItemImage(result.getString("image"));
+            auction.setItemDescription(result.getString("description"));
+            auction.setPrice(result.getFloat("price"));
             auction.setMinRaise(result.getFloat("minraise"));
-            auction.setDeadline(result.getDate("deadline"));
-            auction.setIdCreator(result.getInt("idcreator"));
-            auction.setIdItem(result.getInt("iditem"));
-            auction.setStatus(AuctionStatus.OPEN);
+            auction.setDeadline(new Date(result.getLong("deadline") * 1000));
+            auction.setStatus(AuctionStatus.getAuctionStatusFromInt(result.getInt("status")));
         }catch (SQLException sqle){
             sqle.printStackTrace();
             throw new SQLException(sqle);
