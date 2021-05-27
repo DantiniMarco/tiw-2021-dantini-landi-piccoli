@@ -79,9 +79,7 @@ public class SellServlet extends HttpServlet {
     @Override
     public void destroy(){
         try{
-            if(connection !=null){
-                connection.close();
-            }
+            ConnectionHandler.closeConnection(connection);
         }catch (SQLException sql){
             sql.printStackTrace();
         }

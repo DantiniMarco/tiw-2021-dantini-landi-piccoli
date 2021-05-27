@@ -2,22 +2,16 @@ package it.polimi.tiw.html.controllers;
 
 import it.polimi.tiw.html.utils.ConnectionHandler;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-@WebServlet("/ClosedAuctionDetailsServlet")
-public class ClosedAuctionDetailsServlet extends HttpServlet {
+public class AuctionDetailsServletHelper extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Connection con;
     private TemplateEngine templateEngine;
@@ -34,29 +28,11 @@ public class ClosedAuctionDetailsServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-
-        ServletContext servletContext = getServletContext();
-        final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
-        String path = "/WEB-INF/AuctionsDetails.html";
-        templateEngine.process(path, ctx, response.getWriter());
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
-    }
-
-    @Override
     public void destroy(){
         try{
-            if(con!=null){
-                con.close();
-            }
+            ConnectionHandler.closeConnection(con);
         }catch (SQLException sql){
             sql.printStackTrace();
         }
     }
-
 }

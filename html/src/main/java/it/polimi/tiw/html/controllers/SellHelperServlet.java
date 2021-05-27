@@ -129,13 +129,11 @@ public class SellHelperServlet extends HttpServlet {
     }
 
     @Override
-    public void destroy() {
-        try {
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
+    public void destroy(){
+        try{
+            ConnectionHandler.closeConnection(connection);
+        }catch (SQLException sql){
+            sql.printStackTrace();
         }
     }
 }

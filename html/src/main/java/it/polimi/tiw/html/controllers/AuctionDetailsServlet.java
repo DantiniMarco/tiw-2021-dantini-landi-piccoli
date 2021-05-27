@@ -1,10 +1,9 @@
 package it.polimi.tiw.html.controllers;
 
-import it.polimi.tiw.html.beans.Auction;
-import it.polimi.tiw.html.beans.ExtendedAuction;
-import it.polimi.tiw.html.beans.ExtendedBid;
+import it.polimi.tiw.html.beans.*;
 import it.polimi.tiw.html.dao.AuctionDAO;
 import it.polimi.tiw.html.dao.BidDAO;
+import it.polimi.tiw.html.dao.UserDAO;
 import it.polimi.tiw.html.utils.ConnectionHandler;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -25,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/AuctionDetailsServlet")
-public class OpenAuctionDetailsServlet extends HttpServlet {
+public class AuctionDetailsServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Connection con;
     private TemplateEngine templateEngine;
@@ -46,6 +45,9 @@ public class OpenAuctionDetailsServlet extends HttpServlet {
         String id_param = request.getParameter("auctionId");
         boolean bad_request=false;
         int id = -1;
+        int winnerId = -1;
+        User winner = null;
+        List<ExtendedBid> bids = null;
 
         if(id_param==null || id_param.isEmpty()){
             bad_request=true;
@@ -64,9 +66,9 @@ public class OpenAuctionDetailsServlet extends HttpServlet {
         }
 
         ExtendedAuction auction = new ExtendedAuction();
-        List<ExtendedBid> bids = new ArrayList<>();
         AuctionDAO am = new AuctionDAO(con);
         BidDAO bm = new BidDAO(con);
+        UserDAO um = new UserDAO(con);
 
         try{
            auction = am.findAuctionById(id);
@@ -74,15 +76,40 @@ public class OpenAuctionDetailsServlet extends HttpServlet {
             sqle1.printStackTrace();
             throw new UnavailableException("Issue from database");
         }
-        try{
-            bids = bm.findBidsByIdAuction(id);
-        }catch (SQLException sqle2){
-            throw new UnavailableException("Issue from database");
+        if(auction.getStatus().getValue() == AuctionStatus.OPEN.getValue()){
+            try{
+                bids = new ArrayList<>();
+                bids = bm.findBidsByIdAuction(id);
+            }catch (SQLException sqle2){
+                throw new UnavailableException("Issue from database");
+            }
+        }else{
+            try{
+                con.setAutoCommit(false);
+                try{
+                    winnerId = bm.findWinnerIdByAuctionId(id);
+                    winner = new User();
+                    winner = um.getUserById(winnerId);
+                }catch (SQLException sqle1){
+                    con.rollback();
+                    throw new UnavailableException("Issue from database");
+                }finally{
+                    con.setAutoCommit(true);
+                }
+            }catch (SQLException sqle2){
+                sqle2.printStackTrace();
+                throw new UnavailableException("Issue form database");
+            }
         }
+
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
         ctx.setVariable("auctionData", auction);
-        ctx.setVariable("bids", bids);
+        if(auction.getStatus().getValue() == AuctionStatus.OPEN.getValue()){
+            ctx.setVariable("bids", bids);
+        }else{
+            ctx.setVariable("winner", winner);
+        }
         String path = "/WEB-INF/AuctionDetails.html";
         templateEngine.process(path, ctx, response.getWriter());
 
@@ -96,9 +123,7 @@ public class OpenAuctionDetailsServlet extends HttpServlet {
     @Override
     public void destroy(){
         try{
-            if(con!=null){
-                con.close();
-            }
+            ConnectionHandler.closeConnection(con);
         }catch (SQLException sql){
             sql.printStackTrace();
         }

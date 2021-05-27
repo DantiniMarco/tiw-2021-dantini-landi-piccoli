@@ -136,4 +136,30 @@ public class BidDAO {
         }
         return actualPrice;
     }
+
+    /***
+     * @author Alfredo Landi
+     * @param auctionId
+     * @return id of the winner
+     */
+    public int findWinnerIdByAuctionId(int auctionId) throws SQLException{
+        String query = "SELECT idbidder FROM auction LEFT JOIN bid ON auction.idauction = bid.idauction WHERE auction.idauction = ? AND bidprice = (SELECT max(bidprice) FROM bid WHERE bid.idauction = ?)";
+        PreparedStatement pstatement = null;
+        ResultSet result = null;
+        int resultId=0;
+
+        try{
+            pstatement = con.prepareStatement(query);
+            pstatement.setInt(1, auctionId);
+            pstatement.setInt(2, auctionId);
+            result = pstatement.executeQuery();
+            if(result.next()==true){
+                resultId = result.getInt("idbidder");
+            }
+        }catch(SQLException sqle){
+            throw new SQLException(sqle);
+        }
+
+        return resultId;
+    }
 }

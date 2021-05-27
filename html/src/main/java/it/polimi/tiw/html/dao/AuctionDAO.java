@@ -68,7 +68,7 @@ public class AuctionDAO {
         public List<ExtendedAuction> findAuctionsByIdAndStatus(int idUser, AuctionStatus status) throws SQLException{
             List<ExtendedAuction> auctions = new ArrayList<>();
             //FIXME: must fix SQL query
-            String query = "SELECT item.name, item.image, item.description, max(bid.bidprice) AS price, auction.minraise, UNIX_TIMESTAMP(auction.deadline) AS deadline FROM auction NATURAL JOIN item LEFT JOIN bid ON auction.idauction=bid.idauction JOIN user ON auction.idcreator=user.iduser WHERE user.iduser=? AND auction.status=? GROUP BY auction.idauction ORDER BY auction.deadline ASC";
+            String query = "SELECT auction.idauction, item.name, item.image, item.description, max(bid.bidprice) AS price, auction.minraise, UNIX_TIMESTAMP(auction.deadline) AS deadline FROM auction NATURAL JOIN item LEFT JOIN bid ON auction.idauction=bid.idauction JOIN user ON auction.idcreator=user.iduser WHERE user.iduser=? AND auction.status=? GROUP BY auction.idauction ORDER BY auction.deadline ASC";
             PreparedStatement pstatement = null;
             ResultSet result = null;
 
@@ -79,6 +79,7 @@ public class AuctionDAO {
                 result = pstatement.executeQuery();
                 while (result.next()) {
                     ExtendedAuction auction = new ExtendedAuction();
+                    auction.setIdAuction(result.getInt("idauction"));
                     auction.setItemName(result.getString("name"));
                     auction.setItemImage(result.getString("image"));
                     auction.setItemDescription(result.getString("description"));
