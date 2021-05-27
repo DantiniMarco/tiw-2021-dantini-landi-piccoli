@@ -171,7 +171,7 @@ public class AuctionDAO {
      * @param auctionId of the auction to close
      * @return 0 for success, 1 for unsuccess
      */
-    public int closeAuction(int auctionId){
+    public int closeAuction(int auctionId) throws SQLException{
         int code=0;
         String query = "UPDATE auction SET status=? WHERE idauction = ?";
         PreparedStatement pstatement = null;
@@ -182,6 +182,7 @@ public class AuctionDAO {
             code = pstatement.executeUpdate();
         }catch(SQLException sqle){
             sqle.printStackTrace();
+            throw new SQLException(sqle);
         }finally {
             try{
                 if(pstatement!=null){
@@ -211,13 +212,15 @@ public class AuctionDAO {
             pstatement.setInt(1, auctionId);
             result=pstatement.executeQuery();
             auction.setIdAuction(auctionId);
-            auction.setItemName(result.getString("name"));
-            auction.setItemImage(result.getString("image"));
-            auction.setItemDescription(result.getString("description"));
-            auction.setPrice(result.getFloat("price"));
-            auction.setMinRaise(result.getFloat("minraise"));
-            auction.setDeadline(new Date(result.getLong("deadline") * 1000));
-            auction.setStatus(AuctionStatus.getAuctionStatusFromInt(result.getInt("status")));
+            while(result.next()){
+                auction.setItemName(result.getString("name"));
+                auction.setItemImage(result.getString("image"));
+                auction.setItemDescription(result.getString("description"));
+                auction.setPrice(result.getFloat("price"));
+                auction.setMinRaise(result.getFloat("minraise"));
+                auction.setDeadline(new Date(result.getLong("deadline") * 1000));
+                auction.setStatus(AuctionStatus.getAuctionStatusFromInt(result.getInt("status")));
+            }
         }catch (SQLException sqle){
             sqle.printStackTrace();
             throw new SQLException(sqle);
@@ -241,6 +244,31 @@ public class AuctionDAO {
         return auction;
     }
 
+    /***
+     * @author Alfredo Landi
+     * @param usernameId of the current user
+     * @return a list of auction ids for the selected user
+     * @throws SQLException
+     */
+    public List<Integer> findAuctionIdsByUsernameId(int usernameId) throws SQLException{
+        String query = "SELECT idauction FROM auction WHERE idcreator = ?";
+        PreparedStatement pstatement = null;
+        ResultSet result = null;
+        List<Integer> ids = new ArrayList<>();
+        int id = 0;
+        try{
+            pstatement = con.prepareStatement(query);
+            pstatement.setInt(1, usernameId);
+            result = pstatement.executeQuery();
+            while(result.next()){
+                id = result.getInt("idauction");
+                ids.add(id);
+            }
+        }catch (SQLException sqle){
+            throw new SQLException(sqle);
+        }
 
+        return ids;
+    }
 
 }

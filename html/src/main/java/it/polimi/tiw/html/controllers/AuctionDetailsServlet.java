@@ -42,6 +42,7 @@ public class AuctionDetailsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        AuctionDAO am = new AuctionDAO(con);
         String id_param = request.getParameter("auctionId");
         boolean bad_request=false;
         int id = -1;
@@ -60,13 +61,25 @@ public class AuctionDetailsServlet extends HttpServlet {
             bad_request=true;
         }
 
+        User user = (User) request.getSession().getAttribute("user");
+        List<Integer> ids = null;
+        try{
+            ids = am.findAuctionIdsByUsernameId(user.getIdUser());
+        }catch(SQLException sqle){
+            sqle.printStackTrace();
+            throw new UnavailableException("Issue from database");
+        }
+
+        if(!ids.contains(id)){
+            bad_request = true;
+        }
+
         if(bad_request==true){
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             throw new UnavailableException("Id parameter missing");
         }
 
         ExtendedAuction auction = new ExtendedAuction();
-        AuctionDAO am = new AuctionDAO(con);
         BidDAO bm = new BidDAO(con);
         UserDAO um = new UserDAO(con);
 
@@ -78,7 +91,6 @@ public class AuctionDetailsServlet extends HttpServlet {
         }
         if(auction.getStatus().getValue() == AuctionStatus.OPEN.getValue()){
             try{
-                bids = new ArrayList<>();
                 bids = bm.findBidsByIdAuction(id);
             }catch (SQLException sqle2){
                 throw new UnavailableException("Issue from database");
@@ -88,8 +100,9 @@ public class AuctionDetailsServlet extends HttpServlet {
                 con.setAutoCommit(false);
                 try{
                     winnerId = bm.findWinnerIdByAuctionId(id);
-                    winner = new User();
-                    winner = um.getUserById(winnerId);
+                    if(winnerId>0){
+                        winner = um.getUserById(winnerId);
+                    }
                 }catch (SQLException sqle1){
                     con.rollback();
                     throw new UnavailableException("Issue from database");
@@ -105,11 +118,8 @@ public class AuctionDetailsServlet extends HttpServlet {
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
         ctx.setVariable("auctionData", auction);
-        if(auction.getStatus().getValue() == AuctionStatus.OPEN.getValue()){
-            ctx.setVariable("bids", bids);
-        }else{
-            ctx.setVariable("winner", winner);
-        }
+        ctx.setVariable("bids", bids);
+        ctx.setVariable("winner", winner);
         String path = "/WEB-INF/AuctionDetails.html";
         templateEngine.process(path, ctx, response.getWriter());
 
@@ -128,4 +138,5 @@ public class AuctionDetailsServlet extends HttpServlet {
             sql.printStackTrace();
         }
     }
+
 }

@@ -5,6 +5,7 @@ import it.polimi.tiw.html.dao.AuctionDAO;
 import it.polimi.tiw.html.utils.ConnectionHandler;
 
 import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -18,6 +19,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.util.UUID;
+import java.text.DateFormat;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 
 @WebServlet("/SellHelperServlet")
 @MultipartConfig
@@ -37,10 +41,11 @@ public class SellHelperServlet extends HttpServlet {
         String fileName = getFileName(filePart);
         System.out.println(fileName);
         String itemDescription = request.getParameter("itemDescription");
-        String initialPriceParam = request.getParameter("initialPrice");
-        String minRaiseParam = request.getParameter("minRaise");
-        String deadlineParam = request.getParameter("deadline");
-        int bad_request = 0;
+        String initialPrice_param = request.getParameter("initialPrice");
+        String minRaise_param = request.getParameter("minRaise");
+        String deadlineDate_param = request.getParameter("deadlineDate");
+        String deadlineTime_param = request.getParameter("deadlineTime");
+        boolean bad_request = false;
         float initialPrice = 0;
         float minRaise = 0;
         Date deadline = null;
@@ -48,17 +53,21 @@ public class SellHelperServlet extends HttpServlet {
         InputStream filecontent = null;
         System.out.println(System.getProperty("catalina.home"));
         if (itemName == null || itemName.isEmpty() || itemDescription == null || itemDescription.isEmpty()
-                || initialPriceParam == null || initialPriceParam.isEmpty() || minRaiseParam == null || minRaiseParam.isEmpty() || deadlineParam == null
-                || deadlineParam.isEmpty()) {
-            bad_request = 1;
+                || initialPrice_param == null || initialPrice_param.isEmpty() || minRaise_param == null || minRaise_param.isEmpty()
+                || deadlineDate_param == null || deadlineDate_param.isEmpty() || deadlineTime_param == null || deadlineTime_param.isEmpty()) {
+            bad_request = true;
         }
 
         try {
-            initialPrice = Float.parseFloat(initialPriceParam);
-            minRaise = Float.parseFloat(minRaiseParam);
-            deadline = Date.valueOf(deadlineParam);
+            initialPrice = Float.parseFloat(initialPrice_param);
+            minRaise = Float.parseFloat(minRaise_param);
+            java.util.Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(deadlineDate_param + " " + deadlineTime_param);
+            deadline = new Date(date.getTime());
+        } catch (NumberFormatException e) {
+            bad_request = true;
         } catch (Exception e) {
-            bad_request = 1;
+            e.printStackTrace();
+            bad_request = true;
         }
         UUID uuid = UUID.randomUUID();
         String newFileName = uuid.toString() + (fileName != null ? fileName.substring(fileName.indexOf(".")) : "");
@@ -83,7 +92,7 @@ public class SellHelperServlet extends HttpServlet {
                 //writer.println("<br/> ERROR: " + fne.getMessage());
 
                 System.out.println("Problems during file upload. Error: {0}");
-                bad_request = 1;
+                bad_request = true;
             } finally {
                 if (filecontent != null) {
                     filecontent.close();
@@ -93,9 +102,9 @@ public class SellHelperServlet extends HttpServlet {
             }*/
             }
         }
-        if (bad_request == 1) {
+        if (bad_request == true) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter/s missing");
-            return;
+            throw new UnavailableException("Parameter/s missing");
         }
 
         User user = (User) request.getSession().getAttribute("user");

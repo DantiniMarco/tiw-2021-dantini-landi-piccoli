@@ -53,11 +53,11 @@
             </thead>
             <tbody>
             <tr th:each="closedAuction:${closedAuctions}">
-                <td><a th:href="@{/AuctionsDetailsServlet(auctionId=${closedAuction.idAuction})}"><span th:text="${closedAuction.itemName}"></span></a></td>
-                <td><a th:href="@{/AuctionsDetailsServlet(auctionId=${closedAuction.idAuction})}"><span th:text="${closedAuction.itemDescription}"></span></a></td>
-                <td><a th:href="@{/AuctionsDetailsServlet(auctionId=${closedAuction.idAuction})}"><span th:text="${closedAuction.price}"></span></a></td>
-                <td><a th:href="@{/AuctionsDetailsServlet(auctionId=${closedAuction.idAuction})}"><span th:text="${closedAuction.minRaise}"></span></a></td>
-                <td><a th:href="@{/AuctionsDetailsServlet(auctionId=${closedAuction.idAuction})}"><span th:text="${#dates.format(closedAuction.getDeadline(), 'dd-MM-yyyy HH:mm')}"></span></a></td>
+                <td><a th:href="@{/AuctionDetailsServlet(auctionId=${closedAuction.idAuction})}"><span th:text="${closedAuction.itemName}"></span></a></td>
+                <td><a th:href="@{/AuctionDetailsServlet(auctionId=${closedAuction.idAuction})}"><span th:text="${closedAuction.itemDescription}"></span></a></td>
+                <td><a th:href="@{/AuctionDetailsServlet(auctionId=${closedAuction.idAuction})}"><span th:text="${closedAuction.price}"></span></a></td>
+                <td><a th:href="@{/AuctionDetailsServlet(auctionId=${closedAuction.idAuction})}"><span th:text="${closedAuction.minRaise}"></span></a></td>
+                <td><a th:href="@{/AuctionDetailsServlet(auctionId=${closedAuction.idAuction})}"><span th:text="${#dates.format(closedAuction.getDeadline(), 'dd-MM-yyyy HH:mm')}"></span></a></td>
             </tr>
             </tbody>
         </table>
@@ -71,12 +71,13 @@
                 <label for="itemImage">Image: </label><input type="file" id="itemImage" name="itemImage"><br><br>
                 <label for="itemDescription">Description: </label><input id="itemDescription" name="itemDescription"
                                                                          placeholder="Good phone?" required><br><br>
-                <label for="initialPrice"></label>Initial Price: <input id="initialPrice" name="initialPrice"
+                <label for="initialPrice">Initial Price: </label><input id="initialPrice" name="initialPrice"
                                                                         placeholder="500" required><br><br>
-                <label for="minRaise"></label>Minimum Raise: <input id="minRaise" name="minRaise" placeholder="10"
+                <label for="minRaise">Minimum Raise: </label><input id="minRaise" name="minRaise" placeholder="10"
                                                                     required><br><br>
-                <label for="deadline"></label>Deadline: <input id="deadline" name="deadline" type="date"
+                <label for="deadlineDate"></label>Last aviable date: <input id="deadlineDate" name="deadlineDate" type="date"
                                                                required><br><br>
+                <label for="deadlineTime">Last aviable time: </label><input id="deadlineTime" name="deadlineTime" type="time" required><br><br>
                 <input type="submit" value="Submit">
             </div>
         </form>

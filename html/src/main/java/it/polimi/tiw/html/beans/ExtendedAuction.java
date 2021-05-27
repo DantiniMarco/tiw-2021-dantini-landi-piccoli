@@ -38,4 +38,20 @@ public class ExtendedAuction extends Auction {
     public void setItemImage(String itemImage) {
         this.itemImage = itemImage;
     }
+
+    public boolean isOpen(){
+        if(this.getStatus().getValue()==0){
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isClose(){
+        if(this.getStatus().getValue()==1){
+            return true;
+        }
+
+        return false;
+    }
 }
