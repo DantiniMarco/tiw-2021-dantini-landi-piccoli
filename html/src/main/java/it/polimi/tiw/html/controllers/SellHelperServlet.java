@@ -37,9 +37,9 @@ public class SellHelperServlet extends HttpServlet {
         String fileName = getFileName(filePart);
         System.out.println(fileName);
         String itemDescription = request.getParameter("itemDescription");
-        String initialPrice_param = request.getParameter("initialPrice");
-        String minRaise_param = request.getParameter("minRaise");
-        String deadline_param = request.getParameter("deadline");
+        String initialPriceParam = request.getParameter("initialPrice");
+        String minRaiseParam = request.getParameter("minRaise");
+        String deadlineParam = request.getParameter("deadline");
         int bad_request = 0;
         float initialPrice = 0;
         float minRaise = 0;
@@ -48,17 +48,15 @@ public class SellHelperServlet extends HttpServlet {
         InputStream filecontent = null;
         System.out.println(System.getProperty("catalina.home"));
         if (itemName == null || itemName.isEmpty() || itemDescription == null || itemDescription.isEmpty()
-                || initialPrice_param == null || initialPrice_param.isEmpty() || minRaise_param == null || minRaise_param.isEmpty() || deadline_param == null
-                || deadline_param.isEmpty()) {
+                || initialPriceParam == null || initialPriceParam.isEmpty() || minRaiseParam == null || minRaiseParam.isEmpty() || deadlineParam == null
+                || deadlineParam.isEmpty()) {
             bad_request = 1;
         }
 
         try {
-            initialPrice = Float.parseFloat(initialPrice_param);
-            minRaise = Float.parseFloat(minRaise_param);
-            deadline = Date.valueOf(deadline_param);
-        } catch (NumberFormatException e) {
-            bad_request = 1;
+            initialPrice = Float.parseFloat(initialPriceParam);
+            minRaise = Float.parseFloat(minRaiseParam);
+            deadline = Date.valueOf(deadlineParam);
         } catch (Exception e) {
             bad_request = 1;
         }

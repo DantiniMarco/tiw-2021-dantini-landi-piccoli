@@ -15,16 +15,17 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.UUID;
 
 @WebServlet("/SellHelperServlet")
 @MultipartConfig
 public class SellHelperServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private Connection con;
+    private Connection connection;
 
     @Override
     public void init() throws ServletException {
-        con = ConnectionHandler.getConnection(getServletContext());
+        connection = ConnectionHandler.getConnection(getServletContext());
     }
 
     @Override
@@ -41,7 +42,7 @@ public class SellHelperServlet extends HttpServlet {
         float initialPrice = 0;
         float minRaise = 0;
         Date deadline = null;
-        AuctionDAO am = new AuctionDAO(con);
+        AuctionDAO am = new AuctionDAO(connection);
         InputStream filecontent = null;
         System.out.println(System.getProperty("catalina.home"));
         if (itemName == null || itemName.isEmpty() || itemDescription == null || itemDescription.isEmpty()
@@ -57,10 +58,11 @@ public class SellHelperServlet extends HttpServlet {
         } catch (Exception e) {
             bad_request = 1;
         }
-
+        UUID uuid = UUID.randomUUID();
+        String newFileName = uuid.toString() + (fileName != null ? fileName.substring(fileName.indexOf(".")) : "");
         if (filePart.getSize() > 0) {
             try (OutputStream out = new FileOutputStream(new File(System.getProperty("catalina.home") + File.separator + "img" + File.separator
-                    + fileName))) {
+                    + newFileName))) {
 
                 filecontent = filePart.getInputStream();
 
@@ -96,12 +98,12 @@ public class SellHelperServlet extends HttpServlet {
 
         User user = (User) request.getSession().getAttribute("user");
         int idCreator = user.getIdUser();
-        if(fileName != null && fileName.isEmpty()){
-            fileName=null;
+        if (fileName != null && fileName.isEmpty()) {
+            newFileName = null;
         }
-        try{
-            am.insertNewAuction(itemName,fileName, itemDescription, initialPrice, minRaise, deadline, idCreator);
-        }catch (SQLException sqle){
+        try {
+            am.insertNewAuction(itemName, newFileName, itemDescription, initialPrice, minRaise, deadline, idCreator);
+        } catch (SQLException sqle) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
             return;
         }
@@ -126,13 +128,11 @@ public class SellHelperServlet extends HttpServlet {
     }
 
     @Override
-    public void destroy() {
-        try {
-            if (con != null) {
-                con.close();
-            }
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
+    public void destroy(){
+        try{
+            ConnectionHandler.closeConnection(connection);
+        }catch (SQLException sql){
+            sql.printStackTrace();
         }
     }
 }
