@@ -1,10 +1,11 @@
-function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclosedbody, _addauctionform) {
+function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclosedbody, _addauctionform, _username) {
     this.alert = _alert;
     this.listopen = _listopen;
     this.listopenbody = _listopenbody;
     this.listclosed = _listclosed;
     this.listclosedbody = _listclosedbody;
     this.addauctionform = _addauctionform;
+    this.username = _username;
     this.addauctionform.querySelector('button[type="submit"]').addEventListener('click', (e) => {
         e.preventDefault();
         let form = e.target.closest("form");
@@ -16,6 +17,9 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
                         let message = req.responseText;
                         if (req.status === 200) {
                             //has added auction
+                            let userDataStored = JSON.parse(localStorage.getItem("userData"));
+                            userDataStored[self.username].lastAction = "sell";
+                            localStorage.setItem("userData", JSON.stringify(userDataStored));
                             self.show();
                         } else {
                             self.alert.textContent = message;

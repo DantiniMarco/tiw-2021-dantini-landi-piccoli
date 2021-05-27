@@ -88,16 +88,20 @@ function AuctionList(_searchalert, _alert, _listcontainer, _listcontainerbody, _
 
 }
 
-function SearchAuction(formId, alert, auctionsListInt) {
+function SearchAuction(formId, alert, auctionsListInt, username) {
     this.form = formId;
     this.alert = alert;
     this.auctionsListInt = auctionsListInt;
+    this.username = username
 
     this.registerEvents = function (orchestrator) {
         // Manage submit button
         this.form.querySelector('button[type="submit"]').addEventListener('click', (e) => {
             e.preventDefault();
             console.log(new FormData(e.target.form));
+            let userDataStored = JSON.parse(localStorage.getItem("userData"));
+            userDataStored[this.username].lastAction = "buy";
+            localStorage.setItem("userData", JSON.stringify(userDataStored));
             this.auctionsListInt.show(new FormData(e.target.form).get("keyword"));
         });
     };

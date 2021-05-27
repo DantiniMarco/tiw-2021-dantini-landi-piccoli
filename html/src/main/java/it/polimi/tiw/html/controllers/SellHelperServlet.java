@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
+import java.util.UUID;
 
 @WebServlet("/SellHelperServlet")
 @MultipartConfig
@@ -61,10 +62,11 @@ public class SellHelperServlet extends HttpServlet {
         } catch (Exception e) {
             bad_request = 1;
         }
-
+        UUID uuid = UUID.randomUUID();
+        String newFileName = uuid.toString() + (fileName != null ? fileName.substring(fileName.indexOf(".")) : "");
         if (filePart.getSize() > 0) {
             try (OutputStream out = new FileOutputStream(new File(System.getProperty("catalina.home") + File.separator + "img" + File.separator
-                    + fileName))) {
+                    + newFileName))) {
 
                 filecontent = filePart.getInputStream();
 
@@ -101,10 +103,10 @@ public class SellHelperServlet extends HttpServlet {
         User user = (User) request.getSession().getAttribute("user");
         int idCreator = user.getIdUser();
         if (fileName != null && fileName.isEmpty()) {
-            fileName = null;
+            newFileName = null;
         }
         try {
-            am.insertNewAuction(itemName, fileName, itemDescription, initialPrice, minRaise, deadline, idCreator);
+            am.insertNewAuction(itemName, newFileName, itemDescription, initialPrice, minRaise, deadline, idCreator);
         } catch (SQLException sqle) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
         }

@@ -1,11 +1,24 @@
 (function () { // avoid variables ending up in the global scope
 
     // page components
-    let auctionsList, auctionsListSell, searchForm, auctionDetails, buttonManager,
+    let auctionsList, auctionsListSell, searchForm, auctionDetails, buttonManager, userData,
         pageOrchestrator = new PageOrchestrator(); // main controller
     window.addEventListener("load", () => {
-        pageOrchestrator.start(); // initialize the components
-        pageOrchestrator.refresh();
+        makeCall("GET", "GetUserData", null,
+            function (req) {
+                let message = req.responseText;
+                if (req.readyState === 4) {
+                    if (req.status === 200) {
+                        console.log(req.responseText)
+                        userData = JSON.parse(req.responseText);
+                        pageOrchestrator.start(); // initialize the components
+                        pageOrchestrator.refresh();
+                    } else {
+                        self.alert.textContent = message;
+                    }
+                }
+            }
+        );
     }, false);
 
 
@@ -16,21 +29,8 @@
         this.userdata = null;
         this.messagecontainer = _messagecontainer;
         let self = this;
-        makeCall("GET", "GetUserData", null,
-            function (req) {
-                let message = req.responseText;
-                if (req.readyState === 4) {
-                    if (req.status === 200) {
-                        console.log(req.responseText);
-                        self.userdata = JSON.parse(req.responseText);
-                        console.log(self.userdata);
-                        self.messagecontainer.textContent = self.userdata.username;
-                    } else {
-                        self.alert.textContent = message;
-                    }
-                }
-            }
-        );
+        self.messagecontainer.textContent = userData.firstName + " " + userData.lastName + " (" + userData.username + ")";
+
     }
 
     function ButtonManager(_alert, _buycontainer, _sellcontainer, _buybar, _sellbar) {
@@ -54,7 +54,6 @@
                 self.buyContainer.style.display = "none";
                 self.sellContainer.style.visibility = "visible";
                 self.sellContainer.style.display = null;
-                localStorage.setItem("lastAction", "sell");
                 pageOrchestrator.refresh(buyOrSell);
                 return;
             }
@@ -64,7 +63,6 @@
             self.buyContainer.style.display = null;
             self.sellContainer.style.visibility = "hidden";
             self.sellContainer.style.display = "none";
-            localStorage.setItem("lastAction", "buy");
             pageOrchestrator.refresh(buyOrSell);
         };
     }
@@ -110,27 +108,43 @@
                 document.getElementById("id_sellopencontainerbody"),
                 document.getElementById("id_sellclosedcontainer"),
                 document.getElementById("id_sellclosedcontainerbody"),
-                document.getElementById("id_addAuctionForm"));
+                document.getElementById("id_addAuctionForm"),
+                userData.username);
 
 
-            searchForm = new SearchAuction(document.getElementById("id_searchauctionform"), alertSearchContainer, auctionsList);
+            searchForm = new SearchAuction(document.getElementById("id_searchauctionform"), alertSearchContainer, auctionsList, userData.username);
             searchForm.registerEvents(this);
 
 
             document.querySelector("a[href='Logout']").addEventListener('click', () => {
                 window.sessionStorage.removeItem('username');
             })
-            let expirationDate = JSON.parse(localStorage.getItem("expirationDate"));
-            let currentDate = new Date();
-            if(expirationDate == null || expirationDate < currentDate.getDate()){
-                currentDate.setMonth(currentDate.getMonth() + 1)
-                localStorage.setItem("expirationDate", JSON.stringify(currentDate));
-                localStorage.setItem("lastAction", "buy");
-                localStorage.setItem("auctionsVisited", null);
+            let userDataStored = JSON.parse(localStorage.getItem("userData"));
+            if(userDataStored == null) {
+                userDataStored = {};
             }
-            let lastAction = localStorage.getItem("lastAction")
-            let auctionsVisited = localStorage.getItem("auctionsVisited")
+            if(userDataStored[userData.username] == null){
+                userDataStored[userData.username] = {}
+            }
+            //let expirationDate = JSON.parse(localStorage.getItem("expirationDate"));
+            let expirationDate = userDataStored[userData.username].expirationDate;
+            let currentDate = new Date();
+            let userDataToStore = userDataStored;
+            let lastAction;
+            let auctionsVisited;
 
+            if (expirationDate == null || expirationDate < currentDate.getDate()) {
+                currentDate.setMonth(currentDate.getMonth() + 1)
+                userDataToStore[userData.username].expirationDate = currentDate;
+                lastAction = "buy"
+                userDataToStore[userData.username].lastAction = lastAction
+                auctionsVisited = null
+                userDataToStore[userData.username].auctionsVisited = auctionsVisited;
+                localStorage.setItem("userData", JSON.stringify(userDataToStore));
+            }else {
+                lastAction = userDataStored[userData.username].lastAction
+                auctionsVisited = userDataStored[userData.username].auctionsVisited
+            }
             buttonManager = new ButtonManager(alertContainer, buyContainer, sellContainer, buyBar, sellBar);
 
             buttonManager.show(lastAction, auctionsVisited);
