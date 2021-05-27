@@ -1,7 +1,5 @@
 package it.polimi.tiw.js.controllers;
 
-import it.polimi.tiw.js.utils.ConnectionHandler;
-
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
@@ -9,13 +7,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 @WebServlet("/ImageServlet")
 public class ImageServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private Connection connection = null;
 
     public ImageServlet() {
         super();
@@ -37,24 +32,14 @@ public class ImageServlet extends HttpServlet {
             flinp = new FileInputStream(getServletContext().getRealPath("/img") + File.separator
                     + "noimage.png");
         }
-        BufferedInputStream buffinp = new BufferedInputStream(flinp);
-        BufferedOutputStream buffoup = new BufferedOutputStream(out);
-        int ch=0;
-        while ((ch=buffinp.read()) != -1) {
-            buffoup.write(ch);
+        try (BufferedOutputStream buffoup = new BufferedOutputStream(out);BufferedInputStream buffinp = new BufferedInputStream(flinp)) {
+            int ch = 0;
+            while ((ch = buffinp.read()) != -1) {
+                buffoup.write(ch);
+            }
         }
-        buffinp.close();
         flinp.close();
-        buffoup.close();
         out.close();
 
-    }
-
-    public void destroy() {
-        try {
-            ConnectionHandler.closeConnection(connection);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }

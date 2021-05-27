@@ -1,7 +1,8 @@
 (function () { // avoid variables ending up in the global scope
 
     // page components
-    var auctionsList, auctionsListSell, searchForm, auctionDetails, buttonManager, pageOrchestrator = new PageOrchestrator(); // main controller
+    var auctionsList, auctionsListSell, searchForm, auctionDetails, buttonManager,
+        pageOrchestrator = new PageOrchestrator(); // main controller
     window.addEventListener("load", () => {
         pageOrchestrator.start(); // initialize the components
         pageOrchestrator.refresh();
@@ -26,21 +27,19 @@
             var self = this;
             makeCall("GET", "GetSearchedAuction?keyword=" + keyword, null,
                 function (req) {
-                    if (req.readyState == 4) {
-                        var message = req.responseText;
-                        if (req.status == 200) {
+                    if (req.readyState === 4) {
+                        if (req.status === 200) {
                             self.searchalert.textContent = ""
                             self.alert.textContent = ""
                             console.log(req.responseText);
                             var auctionsToShow = JSON.parse(req.responseText);
                             console.log(auctionsToShow);
-                            if (auctionsToShow.length == 0) {
+                            if (auctionsToShow.length === 0) {
                                 self.alert.textContent = "No auctions found!";
                                 return;
                             }
                             self.update(auctionsToShow); // self visible by closure
-                        }
-                        else {
+                        } else {
                             self.searchalert.textContent = req.responseText;
                             self.listcontainer.style.visibility = "hidden";
                             self.listcontainer.style.display = "none";
@@ -67,10 +66,16 @@
                 itemCell.textContent = auction.itemName;
                 row.appendChild(itemCell);
                 priceCell = document.createElement("td");
-                priceCell.textContent = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(auction.initialPrice);
+                priceCell.textContent = new Intl.NumberFormat('it-IT', {
+                    style: 'currency',
+                    currency: 'EUR'
+                }).format(auction.initialPrice);
                 row.appendChild(priceCell);
                 raiseCell = document.createElement("td");
-                raiseCell.textContent = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(auction.minRaise);
+                raiseCell.textContent = new Intl.NumberFormat('it-IT', {
+                    style: 'currency',
+                    currency: 'EUR'
+                }).format(auction.minRaise);
                 row.appendChild(raiseCell);
                 dateCell = document.createElement("td");
                 dateCell.textContent = auction.deadline;
@@ -117,10 +122,10 @@
             if (form.checkValidity()) {
                 var self = this
                 makeCall("POST", 'SellHelperServlet', form,
-                    function(req) {
-                        if (req.readyState == 4) {
+                    function (req) {
+                        if (req.readyState === 4) {
                             var message = req.responseText;
-                            if (req.status == 200) {
+                            if (req.status === 200) {
                                 //has added auction
                                 self.show();
                             } else {
@@ -143,20 +148,18 @@
             var self = this;
             makeCall("GET", "SellServlet", null,
                 function (req) {
-                    if (req.readyState == 4) {
-                        var message = req.responseText;
-                        if (req.status == 200) {
+                    if (req.readyState === 4) {
+                        if (req.status === 200) {
                             self.alert.textContent = ""
                             console.log(req.responseText);
                             var auctionsToShow = JSON.parse(req.responseText);
                             console.log(auctionsToShow);
-                            if (auctionsToShow.length == 0) {
+                            if (auctionsToShow.length === 0) {
                                 self.alert.textContent = "No auctions found!";
                                 return;
                             }
                             self.update(auctionsToShow); // self visible by closure
-                        }
-                        else {
+                        } else {
                             self.searchalert.textContent = req.responseText;
                             self.listcontainer.style.visibility = "hidden";
                             self.listcontainer.style.display = "none";
@@ -170,7 +173,7 @@
 
 
         this.update = function (arrayAuctions) {
-            var row, priceCell, raiseCell, dateCell, itemCell, itemDescCell, idAuctionCell, linkcell, linkText, anchor;
+            var row, priceCell, raiseCell, dateCell, itemCell, itemDescCell, linkcell, linkText, anchor;
             this.listopenbody.innerHTML = ""; // empty the table body
             this.listclosedbody.innerHTML = ""; // empty the table body
             // build updated list
@@ -184,10 +187,16 @@
                 itemDescCell.textContent = auction.itemDescription;
                 row.appendChild(itemDescCell);
                 priceCell = document.createElement("td");
-                priceCell.textContent = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(auction.price);
+                priceCell.textContent = new Intl.NumberFormat('it-IT', {
+                    style: 'currency',
+                    currency: 'EUR'
+                }).format(auction.price);
                 row.appendChild(priceCell);
                 raiseCell = document.createElement("td");
-                raiseCell.textContent = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(auction.minRaise);
+                raiseCell.textContent = new Intl.NumberFormat('it-IT', {
+                    style: 'currency',
+                    currency: 'EUR'
+                }).format(auction.minRaise);
                 row.appendChild(raiseCell);
                 dateCell = document.createElement("td");
                 dateCell.textContent = auction.deadline;
@@ -216,10 +225,16 @@
                 itemDescCell.textContent = auction.itemDescription;
                 row.appendChild(itemDescCell);
                 priceCell = document.createElement("td");
-                priceCell.textContent = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(auction.price);
+                priceCell.textContent = new Intl.NumberFormat('it-IT', {
+                    style: 'currency',
+                    currency: 'EUR'
+                }).format(auction.price);
                 row.appendChild(priceCell);
                 raiseCell = document.createElement("td");
-                raiseCell.textContent = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(auction.minRaise);
+                raiseCell.textContent = new Intl.NumberFormat('it-IT', {
+                    style: 'currency',
+                    currency: 'EUR'
+                }).format(auction.minRaise);
                 row.appendChild(raiseCell);
                 dateCell = document.createElement("td");
                 dateCell.textContent = auction.deadline;
@@ -263,9 +278,9 @@
         var self = this;
         makeCall("GET", "GetUserData", null,
             function (req) {
-                if (req.readyState == 4) {
-                    var message = req.responseText;
-                    if (req.status == 200) {
+                let message = req.responseText;
+                if (req.readyState === 4) {
+                    if (req.status === 200) {
                         console.log(req.responseText);
                         self.userdata = JSON.parse(req.responseText);
                         console.log(self.userdata);
@@ -280,36 +295,20 @@
 
     function SearchAuction(formId, alert) {
         // minimum date the user can choose, in this case now and in the future
-        var now = new Date(),
-            formattedDate = now.toISOString().substring(0, 10);
+        let now = new Date()
         this.form = formId;
         this.alert = alert;
 
-        //this.form.querySelector('input[type="date"]').setAttribute("min", formattedDate);
-
-        this.registerEvents = function(orchestrator) {
+        this.registerEvents = function (orchestrator) {
             // Manage submit button
             this.form.querySelector('button[type="submit"]').addEventListener('click', (e) => {
                 e.preventDefault();
-                var eventfieldset = e.target.closest("fieldset"),
-                    valid = true;
-                /*for (i = 0; i < eventfieldset.elements.length; i++) {
-                    if (!eventfieldset.elements[i].checkValidity()) {
-                        eventfieldset.elements[i].reportValidity();
-                        valid = false;
-                        break;
-                    }
-                }*/
-
-                if (valid) {
-                    var self = this;
-                    console.log(new FormData(e.target.form));
-                    auctionsList.show(new FormData(e.target.form).get("keyword"));
-                }
+                console.log(new FormData(e.target.form));
+                auctionsList.show(new FormData(e.target.form).get("keyword"));
             });
         };
 
-        this.reset = function() {
+        this.reset = function () {
             /*var fieldsets = document.querySelectorAll("#" + this.form.id + " fieldset");
             fieldsets[0].hidden = false;
             fieldsets[1].hidden = true;
@@ -333,18 +332,17 @@
         this.backButton = options['backButton'];
         this.currentAuctionId = '1';
 
-        this.registerEvents = function(orchestrator) {
+        this.registerEvents = function (orchestrator) {
             this.bidform.querySelector('button[type="submit"]').addEventListener('click', (e) => {
                 e.preventDefault();
-                var form = e.target.closest("form");
+                let form = e.target.closest("form");
                 if (form.checkValidity()) {
-                    var self = this,
-                        idauction = form.querySelector("input[type = 'hidden']").value;
+                    let self = this;
                     makeCall("POST", 'CreateBid', form,
-                        function(req) {
-                            if (req.readyState == 4) {
-                                var message = req.responseText;
-                                if (req.status == 200) {
+                        function (req) {
+                            if (req.readyState === 4) {
+                                let message = req.responseText;
+                                if (req.status === 200) {
                                     //add bid
                                     self.show(self.currentAuctionId);
                                 } else {
@@ -366,15 +364,15 @@
         }
 
 
-        this.show = function(auctionid) {
+        this.show = function (auctionid) {
             var self = this;
             this.currentAuctionId = auctionid;
             makeCall("GET", "GoToBidPage?idauction=" + auctionid, null,
-                function(req) {
-                    if (req.readyState == 4) {
-                        var message = req.responseText;
-                        if (req.status == 200) {
-                            var formdata = JSON.parse(req.responseText);
+                function (req) {
+                    if (req.readyState === 4) {
+                        let message = req.responseText;
+                        if (req.status === 200) {
+                            let formdata = JSON.parse(req.responseText);
                             self.update(formdata); // self is the object on which the function
                             // is applied
 
@@ -388,23 +386,26 @@
         };
 
 
-        this.reset = function() {
+        this.reset = function () {
             this.buyDetailsContainer.style.visibility = "hidden"
             this.buyDetailsContainer.style.display = "none"
             this.buySearchContainer.style.visibility = "visible"
             this.buySearchContainer.style.display = null
         }
 
-        this.update = function(formdata) {
+        this.update = function (formdata) {
             this.itemName.textContent = formdata.item.name;
-            this.itemImage.src = location.pathname.substring(0, location.pathname.lastIndexOf("/")+1) + "ImageServlet?name=" + formdata.item.image;
+            this.itemImage.src = location.pathname.substring(0, location.pathname.lastIndexOf("/") + 1) + "ImageServlet?name=" + formdata.item.image;
             this.itemDescription.textContent = formdata.item.description;
-            this.currentPrice.textContent = "The current max price for this auctions is: " + new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(formdata.currMax);
+            this.currentPrice.textContent = "The current max price for this auctions is: " + new Intl.NumberFormat('it-IT', {
+                style: 'currency',
+                currency: 'EUR'
+            }).format(formdata.currMax);
             this.bidlistcontainerbody.innerHTML = ""; // empty the table body
             var row, idBid, priceCell, dateCell;
             // build updated list
             var self = this;
-            if(formdata.bids.length === 0){
+            if (formdata.bids.length === 0) {
                 console.log("No bids")
             }
             formdata.bids.forEach(function (bid) { // self visible here, not this
@@ -413,7 +414,10 @@
                 idBid.textContent = bid.idBid;
                 row.appendChild(idBid);
                 priceCell = document.createElement("td");
-                priceCell.textContent = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(bid.bidPrice);
+                priceCell.textContent = new Intl.NumberFormat('it-IT', {
+                    style: 'currency',
+                    currency: 'EUR'
+                }).format(bid.bidPrice);
                 row.appendChild(priceCell);
                 dateCell = document.createElement("td");
                 dateCell.textContent = bid.dateTime;
@@ -440,9 +444,9 @@
         this.sellBar.addEventListener('click', (e) => {
             this.show("sell")
         });
-        this.show = function(buyOrSell) {
+        this.show = function (buyOrSell) {
             var self = this;
-            if(buyOrSell === "sell"){
+            if (buyOrSell === "sell") {
                 self.buyBar.className = null;
                 self.sellBar.className = "active";
                 self.buyContainer.style.visibility = "hidden";
@@ -474,9 +478,8 @@
         this.start = function () {
 
 
+            new PersonalMessage(alertContainer, document.getElementById("id_username"));
 
-            let personalMessage = new PersonalMessage(alertContainer, document.getElementById("id_username"));
-            //personalMessage.show();
             auctionsList = new AuctionList(
                 alertSearchContainer,
                 alertContainer,
@@ -512,7 +515,6 @@
             auctionDetails.registerEvents(this);
 
 
-
             document.querySelector("a[href='Logout']").addEventListener('click', () => {
                 window.sessionStorage.removeItem('username');
             })
@@ -524,12 +526,12 @@
         };
 
 
-        this.refresh = function(buyOrSell) {
+        this.refresh = function (buyOrSell) {
             alertContainer.textContent = "";
-            if(buyOrSell == "buy") {
+            if (buyOrSell === "buy") {
                 auctionsList.reset();
                 auctionDetails.reset();
-            }else{
+            } else {
                 auctionsListSell.reset();
                 auctionsListSell.show();
             }

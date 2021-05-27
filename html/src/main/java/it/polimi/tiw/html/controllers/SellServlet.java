@@ -1,6 +1,5 @@
 package it.polimi.tiw.html.controllers;
 
-import it.polimi.tiw.html.beans.Auction;
 import it.polimi.tiw.html.beans.AuctionStatus;
 import it.polimi.tiw.html.beans.ExtendedAuction;
 import it.polimi.tiw.html.beans.User;
@@ -18,8 +17,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.UnavailableException;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,12 +25,13 @@ import java.util.List;
 @WebServlet("/SellServlet")
 public class SellServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private Connection con;
+    private Connection connection;
     private TemplateEngine templateEngine;
 
+    @Override
     public void init() throws ServletException{
         ServletContext servletContext = getServletContext();
-        con = ConnectionHandler.getConnection(getServletContext());
+        connection = ConnectionHandler.getConnection(getServletContext());
         ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
         templateResolver.setTemplateMode(TemplateMode.HTML);
         this.templateEngine = new TemplateEngine();
@@ -44,8 +42,9 @@ public class SellServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         User user = (User) request.getSession().getAttribute("user");
-        AuctionDAO am= new AuctionDAO(con);
-        List<ExtendedAuction> openAuctions, closedAuctions;
+        AuctionDAO am= new AuctionDAO(connection);
+        List<ExtendedAuction> openAuctions;
+        List<ExtendedAuction> closedAuctions;
 
         try{
             openAuctions = am.findAuctionsByIdAndStatus(user.getIdUser(), AuctionStatus.OPEN);
@@ -77,10 +76,11 @@ public class SellServlet extends HttpServlet {
         doGet(request, response);
     }
 
+    @Override
     public void destroy(){
         try{
-            if(con!=null){
-                con.close();
+            if(connection !=null){
+                connection.close();
             }
         }catch (SQLException sql){
             sql.printStackTrace();

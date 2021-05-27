@@ -2,13 +2,11 @@ package it.polimi.tiw.html.controllers;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.*;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,12 +17,11 @@ import it.polimi.tiw.html.beans.ExtendedAuction;
 import it.polimi.tiw.html.beans.User;
 import it.polimi.tiw.html.dao.AuctionDAO;
 import it.polimi.tiw.html.dao.BidDAO;
+import it.polimi.tiw.html.utils.ConnectionHandler;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-
-import it.polimi.tiw.html.beans.Auction;
 
 @WebServlet("/GetSearchedAuction")
 public class GetSearchedAuction extends HttpServlet {
@@ -43,19 +40,7 @@ public class GetSearchedAuction extends HttpServlet {
         this.templateEngine = new TemplateEngine();
         this.templateEngine.setTemplateResolver(templateResolver);
         templateResolver.setSuffix(".html");
-        try {
-            ServletContext context = getServletContext();
-            String driver = context.getInitParameter("dbDriver");
-            String url = context.getInitParameter("dbUrl");
-            String user = context.getInitParameter("dbUser");
-            String password = context.getInitParameter("dbPassword");
-            Class.forName(driver);
-            connection = DriverManager.getConnection(url, user, password);
-        } catch (ClassNotFoundException e) {
-            throw new UnavailableException("Can't load database driver");
-        } catch (SQLException e) {
-            throw new UnavailableException("Couldn't get db connection");
-        }
+        connection = ConnectionHandler.getConnection(getServletContext());
     }
 
 
@@ -69,7 +54,7 @@ public class GetSearchedAuction extends HttpServlet {
         int idBidder = user.getIdUser();
 
         BidDAO bidDAO = new BidDAO(connection);
-        ArrayList<ExtendedAuction> wonList;
+        List<ExtendedAuction> wonList;
         try {
             wonList = bidDAO.findWonBids(idBidder);
             if (wonList == null || wonList.isEmpty()) {

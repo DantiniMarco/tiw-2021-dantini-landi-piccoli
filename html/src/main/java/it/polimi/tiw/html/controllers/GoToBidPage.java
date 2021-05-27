@@ -1,40 +1,37 @@
 package it.polimi.tiw.html.controllers;
+
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import it.polimi.tiw.html.beans.*;
-import it.polimi.tiw.html.dao.AuctionDAO;
 import it.polimi.tiw.html.dao.BidDAO;
 import it.polimi.tiw.html.dao.ItemDAO;
-import org.apache.commons.text.StringEscapeUtils;
+import it.polimi.tiw.html.utils.ConnectionHandler;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 @WebServlet("/GoToBidPage")
-public class GoToBidPage extends HttpServlet{
+public class GoToBidPage extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
     private TemplateEngine templateEngine;
-    public GoToBidPage(){super();}
 
+    public GoToBidPage() {
+        super();
+    }
 
+    @Override
     public void init() throws ServletException {
         ServletContext servletContext = getServletContext();
         ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
@@ -42,42 +39,30 @@ public class GoToBidPage extends HttpServlet{
         this.templateEngine = new TemplateEngine();
         this.templateEngine.setTemplateResolver(templateResolver);
         templateResolver.setSuffix(".html");
-        try {
-            ServletContext context = getServletContext();
-            String driver = context.getInitParameter("dbDriver");
-            String url = context.getInitParameter("dbUrl");
-            String user = context.getInitParameter("dbUser");
-            String password = context.getInitParameter("dbPassword");
-            Class.forName(driver);
-            connection = DriverManager.getConnection(url, user, password);
-        } catch (ClassNotFoundException e) {
-            throw new UnavailableException("Can't load database driver");
-        } catch (SQLException e) {
-            throw new UnavailableException("Couldn't get db connection");
-        }
+        connection = ConnectionHandler.getConnection(getServletContext());
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException{
+            throws ServletException, IOException {
         int idAuction;
-        Item item ;
+        Item item;
         List<ExtendedBid> bids;
-        Float currMaxPrice = null;
-        HttpSession s = request.getSession();
+        float currMaxPrice;
         ServletContext servletContext = getServletContext();
-        final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
+        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 
-        if(request.getParameter("error") != null && request.getParameter("error").equals("lowPrice")){
+        if (request.getParameter("error") != null && request.getParameter("error").equals("lowPrice")) {
             ctx.setVariable("errorMsg", "This price is too low. You may insert an offer higher than the current max.");
         }
 
-        try{
+        try {
             idAuction = Integer.parseInt(request.getParameter("idauction"));
-        } catch ( NumberFormatException | NullPointerException e){
+        } catch (NumberFormatException | NullPointerException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "incorrect param values");
             return;
         }
-        try{
+        try {
             BidDAO bidDAO1 = new BidDAO(connection);
             currMaxPrice = bidDAO1.findPriceForNewBid(idAuction);
             ctx.setVariable("currMax", currMaxPrice);
@@ -86,24 +71,24 @@ public class GoToBidPage extends HttpServlet{
         }
 
 
-        try{
+        try {
             ItemDAO itemDAO = new ItemDAO(connection);
             item = itemDAO.getItemById(idAuction);
-            if(item == null){
+            if (item == null) {
                 ctx.setVariable("errorMsg", "No info for this article found.");
-            }else {
+            } else {
                 ctx.setVariable("item", item);
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             response.sendError(500, "Database access failed");
         }
-        try{
+        try {
             BidDAO bidDAO = new BidDAO(connection);
             bids = bidDAO.findBidsByIdAuction(idAuction);
 
-                ctx.setVariable("bids", bids);
-                ctx.setVariable("idauction", idAuction);
-        }catch(SQLException e){
+            ctx.setVariable("bids", bids);
+            ctx.setVariable("idauction", idAuction);
+        } catch (SQLException e) {
             response.sendError(500, "Database access failed");
         }
 
@@ -111,11 +96,13 @@ public class GoToBidPage extends HttpServlet{
         templateEngine.process(path, ctx, response.getWriter());
     }
 
-    public void destroy(){
-        try{
-            if(connection != null){
+    @Override
+    public void destroy() {
+        try {
+            if (connection != null) {
                 connection.close();
             }
-        }catch (SQLException sqle){}
+        } catch (SQLException sqle) {
+        }
     }
 }

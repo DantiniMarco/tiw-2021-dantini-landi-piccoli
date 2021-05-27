@@ -8,7 +8,6 @@ import it.polimi.tiw.js.beans.User;
 import it.polimi.tiw.js.dao.AuctionDAO;
 import it.polimi.tiw.js.utils.ConnectionHandler;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
@@ -25,17 +24,19 @@ import java.util.Map;
 @WebServlet("/SellServlet")
 public class SellServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private Connection con;
+    private Connection connection;
 
+    @Override
     public void init() throws ServletException{
-        con = ConnectionHandler.getConnection(getServletContext());
+        connection = ConnectionHandler.getConnection(getServletContext());
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         User user = (User) request.getSession().getAttribute("user");
-        AuctionDAO am= new AuctionDAO(con);
-        List<ExtendedAuction> openAuctions, closedAuctions;
+        AuctionDAO am= new AuctionDAO(connection);
+        List<ExtendedAuction> openAuctions;
+        List<ExtendedAuction> closedAuctions;
         Map<String, Object> sellPageInfo = new HashMap<>();
 
         try{
@@ -70,10 +71,11 @@ public class SellServlet extends HttpServlet {
         doGet(request, response);
     }
 
+    @Override
     public void destroy(){
         try{
-            if(con!=null){
-                con.close();
+            if(connection !=null){
+                connection.close();
             }
         }catch (SQLException sql){
             sql.printStackTrace();

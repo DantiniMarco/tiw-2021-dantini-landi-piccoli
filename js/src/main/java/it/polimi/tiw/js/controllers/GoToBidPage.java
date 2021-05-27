@@ -5,13 +5,12 @@ import com.google.gson.GsonBuilder;
 import it.polimi.tiw.js.beans.Bid;
 import it.polimi.tiw.js.beans.ExtendedBid;
 import it.polimi.tiw.js.beans.Item;
-import it.polimi.tiw.js.beans.User;
 import it.polimi.tiw.js.dao.BidDAO;
 import it.polimi.tiw.js.dao.ItemDAO;
+import it.polimi.tiw.js.utils.ConnectionHandler;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +28,6 @@ public class GoToBidPage extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
     private float currMaxPrice;
-    private int idAuctionPub = 0;
 
     public GoToBidPage() {
         super();
@@ -38,19 +35,7 @@ public class GoToBidPage extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        try {
-            ServletContext context = getServletContext();
-            String driver = context.getInitParameter("dbDriver");
-            String url = context.getInitParameter("dbUrl");
-            String user = context.getInitParameter("dbUser");
-            String password = context.getInitParameter("dbPassword");
-            Class.forName(driver);
-            connection = DriverManager.getConnection(url, user, password);
-        } catch (ClassNotFoundException e) {
-            throw new UnavailableException("Can't load database driver");
-        } catch (SQLException e) {
-            throw new UnavailableException("Couldn't get db connection");
-        }
+        connection = ConnectionHandler.getConnection(getServletContext());
     }
 
     @Override
@@ -60,12 +45,9 @@ public class GoToBidPage extends HttpServlet {
         Item item;
         List<ExtendedBid> bids;
         Map<String, Object> bidPageInfo = new HashMap<>();
-        HttpSession s = request.getSession();
-        ServletContext servletContext = getServletContext();
 
         try {
             idAuction = Integer.parseInt(request.getParameter("idauction"));
-            idAuctionPub = idAuction;
         } catch (NumberFormatException | NullPointerException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "incorrect param values");
             return;
@@ -120,6 +102,7 @@ public class GoToBidPage extends HttpServlet {
                 connection.close();
             }
         } catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
     }
 }

@@ -2,19 +2,16 @@ package it.polimi.tiw.js.controllers;
 
 import it.polimi.tiw.js.beans.User;
 import it.polimi.tiw.js.dao.BidDAO;
+import it.polimi.tiw.js.utils.ConnectionHandler;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 @WebServlet("/CreateBid")
@@ -25,33 +22,20 @@ public class CreateBid extends HttpServlet {
 
     public CreateBid(){super();}
 
+    @Override
     public void init() throws ServletException {
-        try {
-            ServletContext context = getServletContext();
-            String driver = context.getInitParameter("dbDriver");
-            String url = context.getInitParameter("dbUrl");
-            String user = context.getInitParameter("dbUser");
-            String password = context.getInitParameter("dbPassword");
-            Class.forName(driver);
-            connection = DriverManager.getConnection(url, user, password);
-        } catch (ClassNotFoundException e) {
-            throw new UnavailableException("Can't load database driver");
-        } catch (SQLException e) {
-            throw new UnavailableException("Couldn't get db connection");
-        }
+        connection = ConnectionHandler.getConnection(getServletContext());
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
-        Float currMaxPrice = null;
-        HttpSession session = request.getSession();
-        ServletContext servletContext = getServletContext();
+        float currMaxPrice;
 
         User user = (User) request.getSession().getAttribute("user");
         int idBidder = user.getIdUser();
 
-        Integer idAuction = null;
-        Float fPrice;
-        String errorString = "";
+        int idAuction;
+        float fPrice;
         String price = request.getParameter("price");
         fPrice = Float.parseFloat(price);
         try{

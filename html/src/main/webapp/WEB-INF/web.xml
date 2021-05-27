@@ -25,10 +25,6 @@
         <filter-class>it.polimi.tiw.html.filters.Checker</filter-class>
     </filter>
     <filter>
-        <filter-name>NoCacher</filter-name>
-        <filter-class>it.polimi.tiw.html.filters.NoCacher</filter-class>
-    </filter>
-    <filter>
         <filter-name>CheckIfAlreadyLoggedIn</filter-name>
         <filter-class>it.polimi.tiw.html.filters.CheckIfAlreadyLoggedIn</filter-class>
     </filter>

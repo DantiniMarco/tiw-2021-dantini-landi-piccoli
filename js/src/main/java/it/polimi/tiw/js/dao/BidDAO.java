@@ -12,8 +12,8 @@ import java.util.List;
 public class BidDAO {
     private Connection con;
 
-    public BidDAO(Connection con){
-        this.con=con;
+    public BidDAO(Connection con) {
+        this.con = con;
     }
 
     /***
@@ -47,7 +47,7 @@ public class BidDAO {
      * @author Marco D'Antini
      * query used to find the ended auction awarded by the user
      */
-    public ArrayList<ExtendedAuction> findAwardedBids(int idBidder)throws SQLException{
+    public List<ExtendedAuction> findAwardedBids(int idBidder) throws SQLException {
         ArrayList<ExtendedAuction> bidsAwarded = new ArrayList<>();
         String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image " +
                 "FROM (bid NATURAL JOIN auction NATURAL JOIN item) WHERE auction.status = 1 AND bid.idbidder = ?";
@@ -62,43 +62,40 @@ public class BidDAO {
                     exAuction.setItemImage(result.getString("image"));
                     bidsAwarded.add(exAuction);
                 }
-            }}
-        catch (SQLException sqle){
-                sqle.printStackTrace();
+            }
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
-            return bidsAwarded;
+        return bidsAwarded;
     }
 
     /**
-     * @author Marco D'Antini
-     * query used to insert a new legit Bid into the daatabase called by  GotoBidPage
      * @param bidPrice
      * @param idBidder
      * @param idAuction
      * @return the idBid of the bid added in the database, 0 in case of db error
      * @throws SQLException
+     * @author Marco D'Antini
+     * query used to insert a new legit Bid into the daatabase called by  GotoBidPage
      */
-    public int insertNewBid(float bidPrice, int idBidder, int idAuction)throws SQLException{
+    public int insertNewBid(float bidPrice, int idBidder, int idAuction) throws SQLException {
         ResultSet result;
         Date date = new Date();
-        Long dateTime = date.getTime();
-        int idBid;
         String query = "INSERT INTO bid ( bidprice, datetime, idbidder, idauction) VALUES (?,now(),?,?)";
-        PreparedStatement pstatement = null;
 
-        try{
-            pstatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+
+        try (PreparedStatement pstatement = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pstatement.setFloat(1, bidPrice);
             pstatement.setInt(2, idBidder);
             pstatement.setInt(3, idAuction);
             int affectedRows = pstatement.executeUpdate();
-            if(affectedRows == 0){
+            if (affectedRows == 0) {
                 return -1;
             }
             result = pstatement.getGeneratedKeys();
-            if(result!= null && result.next())
+            if (result != null && result.next())
                 return result.getInt(1);
-        }catch (SQLException sqle){
+        } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
         return -1;

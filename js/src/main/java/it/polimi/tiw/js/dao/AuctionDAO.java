@@ -14,7 +14,6 @@ import java.util.*;
 
 public class AuctionDAO {
     private Connection con;
-    private ArrayList<Auction> searchedList;
 
     public AuctionDAO(Connection connection) {
         this.con = connection;

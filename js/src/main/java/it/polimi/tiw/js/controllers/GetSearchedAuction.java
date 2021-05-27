@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import it.polimi.tiw.js.beans.Auction;
 import it.polimi.tiw.js.beans.ExtendedAuction;
 import it.polimi.tiw.js.dao.AuctionDAO;
+import it.polimi.tiw.js.utils.ConnectionHandler;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -26,51 +27,41 @@ public class GetSearchedAuction extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
 
-    public GetSearchedAuction(){super();}
+    public GetSearchedAuction() {
+        super();
+    }
 
     public void init() throws ServletException {
-        try {
-            ServletContext context = getServletContext();
-            String driver = context.getInitParameter("dbDriver");
-            String url = context.getInitParameter("dbUrl");
-            String user = context.getInitParameter("dbUser");
-            String password = context.getInitParameter("dbPassword");
-            Class.forName(driver);
-            connection = DriverManager.getConnection(url, user, password);
-        } catch (ClassNotFoundException e) {
-            throw new UnavailableException("Can't load database driver");
-        } catch (SQLException e) {
-            throw new UnavailableException("Couldn't get db connection");
-        }
+        connection = ConnectionHandler.getConnection(getServletContext());
     }
-        protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         HttpSession s = request.getSession();
         String keyWord = request.getParameter("keyword");
         ServletContext servletContext = getServletContext();
         List<ExtendedAuction> searchedList = null;
 
-        if( keyWord != null ){
-            if(keyWord.length()<3){
+        if (keyWord != null) {
+            if (keyWord.length() < 3) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().println("Keyword is too short");
                 return;
-            }
-            else{
-            AuctionDAO aDAO = new AuctionDAO(connection);
+            } else {
+                AuctionDAO aDAO = new AuctionDAO(connection);
 
-            try{
-                searchedList = aDAO.findOpenAuction(keyWord);
-                if(searchedList == null || searchedList.isEmpty()) {
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    response.getWriter().println("Keyword does not match any resource");
+                try {
+                    searchedList = aDAO.findOpenAuction(keyWord);
+                    if (searchedList == null || searchedList.isEmpty()) {
+                        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                        response.getWriter().println("Keyword does not match any resource");
+                        return;
+                    }
+                } catch (SQLException e) {
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    response.getWriter().println("Database access failed");
                     return;
                 }
-            } catch(SQLException e){
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().println("Database access failed");
-                return;
-            }
             }
         }
         Gson gson = new GsonBuilder()
@@ -83,12 +74,14 @@ public class GetSearchedAuction extends HttpServlet {
         response.getWriter().write(json);
 
     }
-    public void destroy(){
-        try{
-            if(connection != null){
+
+    public void destroy() {
+        try {
+            if (connection != null) {
                 connection.close();
             }
-        }catch (SQLException sqle){}
+        } catch (SQLException sqle) {
+        }
     }
 
 }

@@ -3,12 +3,7 @@ package it.polimi.tiw.html.controllers;
 import it.polimi.tiw.html.beans.User;
 import it.polimi.tiw.html.dao.AuctionDAO;
 import it.polimi.tiw.html.utils.ConnectionHandler;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -27,13 +22,11 @@ import java.io.FileNotFoundException;
 @MultipartConfig
 public class SellHelperServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private Connection con;
-    private TemplateEngine templateEngine;
+    private Connection connection;
 
     @Override
     public void init() throws ServletException {
-        ServletContext servletContext = getServletContext();
-        con = ConnectionHandler.getConnection(getServletContext());
+        connection = ConnectionHandler.getConnection(getServletContext());
     }
 
     @Override
@@ -50,8 +43,7 @@ public class SellHelperServlet extends HttpServlet {
         float initialPrice = 0;
         float minRaise = 0;
         Date deadline = null;
-        AuctionDAO am = new AuctionDAO(con);
-        OutputStream out = null;
+        AuctionDAO am = new AuctionDAO(connection);
         InputStream filecontent = null;
         System.out.println(System.getProperty("catalina.home"));
         if (itemName == null || itemName.isEmpty() || itemDescription == null || itemDescription.isEmpty()
@@ -71,9 +63,9 @@ public class SellHelperServlet extends HttpServlet {
         }
 
         if (filePart.getSize() > 0) {
-            try {
-                out = new FileOutputStream(new File(System.getProperty("catalina.home") + File.separator + "img" + File.separator
-                        + fileName));
+            try (OutputStream out = new FileOutputStream(new File(System.getProperty("catalina.home") + File.separator + "img" + File.separator
+                    + fileName))) {
+
                 filecontent = filePart.getInputStream();
 
                 int read = 0;
@@ -82,6 +74,7 @@ public class SellHelperServlet extends HttpServlet {
                 while ((read = filecontent.read(bytes)) != -1) {
                     out.write(bytes, 0, read);
                 }
+
                 System.out.println("File{0}being uploaded to {1}");
             } catch (FileNotFoundException fne) {
             /*writer.println("You either did not specify a file to upload or are "
@@ -92,9 +85,6 @@ public class SellHelperServlet extends HttpServlet {
                 System.out.println("Problems during file upload. Error: {0}");
                 bad_request = 1;
             } finally {
-                if (out != null) {
-                    out.close();
-                }
                 if (filecontent != null) {
                     filecontent.close();
                 }
@@ -110,12 +100,12 @@ public class SellHelperServlet extends HttpServlet {
 
         User user = (User) request.getSession().getAttribute("user");
         int idCreator = user.getIdUser();
-        if(fileName != null && fileName.isEmpty()){
-            fileName=null;
+        if (fileName != null && fileName.isEmpty()) {
+            fileName = null;
         }
-        try{
-            am.insertNewAuction(itemName,fileName, itemDescription, initialPrice, minRaise, deadline, idCreator);
-        }catch (SQLException sqle){
+        try {
+            am.insertNewAuction(itemName, fileName, itemDescription, initialPrice, minRaise, deadline, idCreator);
+        } catch (SQLException sqle) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
         }
 
@@ -141,8 +131,8 @@ public class SellHelperServlet extends HttpServlet {
     @Override
     public void destroy() {
         try {
-            if (con != null) {
-                con.close();
+            if (connection != null) {
+                connection.close();
             }
         } catch (SQLException sqle) {
             sqle.printStackTrace();

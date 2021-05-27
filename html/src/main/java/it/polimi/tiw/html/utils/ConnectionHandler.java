@@ -9,6 +9,10 @@ import javax.servlet.UnavailableException;
 
 public class ConnectionHandler {
 
+    public ConnectionHandler() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static Connection getConnection(ServletContext context) throws UnavailableException {
         Connection connection = null;
         try {

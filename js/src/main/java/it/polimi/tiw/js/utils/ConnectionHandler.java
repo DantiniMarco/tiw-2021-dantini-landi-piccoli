@@ -8,6 +8,10 @@ import java.sql.SQLException;
 
 public class ConnectionHandler {
 
+    public ConnectionHandler() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static Connection getConnection(ServletContext context) throws UnavailableException {
         Connection connection = null;
         try {

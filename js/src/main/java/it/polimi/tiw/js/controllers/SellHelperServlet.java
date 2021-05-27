@@ -4,7 +4,6 @@ import it.polimi.tiw.js.beans.User;
 import it.polimi.tiw.js.dao.AuctionDAO;
 import it.polimi.tiw.js.utils.ConnectionHandler;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -25,7 +24,6 @@ public class SellHelperServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        ServletContext servletContext = getServletContext();
         con = ConnectionHandler.getConnection(getServletContext());
     }
 
@@ -36,37 +34,34 @@ public class SellHelperServlet extends HttpServlet {
         String fileName = getFileName(filePart);
         System.out.println(fileName);
         String itemDescription = request.getParameter("itemDescription");
-        String initialPrice_param = request.getParameter("initialPrice");
-        String minRaise_param = request.getParameter("minRaise");
-        String deadline_param = request.getParameter("deadline");
+        String initialPriceParam = request.getParameter("initialPrice");
+        String minRaiseParam = request.getParameter("minRaise");
+        String deadlineParam = request.getParameter("deadline");
         int bad_request = 0;
         float initialPrice = 0;
         float minRaise = 0;
         Date deadline = null;
         AuctionDAO am = new AuctionDAO(con);
-        OutputStream out = null;
         InputStream filecontent = null;
         System.out.println(System.getProperty("catalina.home"));
         if (itemName == null || itemName.isEmpty() || itemDescription == null || itemDescription.isEmpty()
-                || initialPrice_param == null || initialPrice_param.isEmpty() || minRaise_param == null || minRaise_param.isEmpty() || deadline_param == null
-                || deadline_param.isEmpty()) {
+                || initialPriceParam == null || initialPriceParam.isEmpty() || minRaiseParam == null || minRaiseParam.isEmpty() || deadlineParam == null
+                || deadlineParam.isEmpty()) {
             bad_request = 1;
         }
 
         try {
-            initialPrice = Float.parseFloat(initialPrice_param);
-            minRaise = Float.parseFloat(minRaise_param);
-            deadline = Date.valueOf(deadline_param);
-        } catch (NumberFormatException e) {
-            bad_request = 1;
+            initialPrice = Float.parseFloat(initialPriceParam);
+            minRaise = Float.parseFloat(minRaiseParam);
+            deadline = Date.valueOf(deadlineParam);
         } catch (Exception e) {
             bad_request = 1;
         }
 
         if (filePart.getSize() > 0) {
-            try {
-                out = new FileOutputStream(new File(System.getProperty("catalina.home") + File.separator + "img" + File.separator
-                        + fileName));
+            try (OutputStream out = new FileOutputStream(new File(System.getProperty("catalina.home") + File.separator + "img" + File.separator
+                    + fileName))) {
+
                 filecontent = filePart.getInputStream();
 
                 int read = 0;
@@ -75,6 +70,7 @@ public class SellHelperServlet extends HttpServlet {
                 while ((read = filecontent.read(bytes)) != -1) {
                     out.write(bytes, 0, read);
                 }
+
                 System.out.println("File{0}being uploaded to {1}");
             } catch (FileNotFoundException fne) {
             /*writer.println("You either did not specify a file to upload or are "
@@ -85,9 +81,6 @@ public class SellHelperServlet extends HttpServlet {
                 System.out.println("Problems during file upload. Error: {0}");
                 bad_request = 1;
             } finally {
-                if (out != null) {
-                    out.close();
-                }
                 if (filecontent != null) {
                     filecontent.close();
                 }
@@ -110,9 +103,10 @@ public class SellHelperServlet extends HttpServlet {
             am.insertNewAuction(itemName,fileName, itemDescription, initialPrice, minRaise, deadline, idCreator);
         }catch (SQLException sqle){
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
+            return;
         }
 
-        response.sendRedirect("SellServlet");
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 
     @Override

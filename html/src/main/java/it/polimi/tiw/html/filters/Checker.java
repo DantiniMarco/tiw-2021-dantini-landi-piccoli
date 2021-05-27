@@ -8,22 +8,6 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class Checker implements Filter {
-
-    /**
-     * Default constructor.
-     */
-    public Checker() {
-        // TODO Auto-generated constructor stub
-    }
-
-    /**
-     * @see Filter#destroy()
-     */
-    @Override
-    public void destroy() {
-        // TODO Auto-generated method stub
-    }
-
     /**
      * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
      */
@@ -44,13 +28,4 @@ public class Checker implements Filter {
         // pass the request along the filter chain
         chain.doFilter(request, response);
     }
-
-    /**
-     * @see Filter#init(FilterConfig)
-     */
-    @Override
-    public void init(FilterConfig fConfig) throws ServletException {
-        // TODO Auto-generated method stub
-    }
-
 }
