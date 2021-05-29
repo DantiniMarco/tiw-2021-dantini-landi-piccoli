@@ -1,32 +1,49 @@
 <html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>Auctions Details</title>
-    </head>
-    <body>
-        <h3>Auction data</h3>
+<head>
+    <meta charset="UTF-8">
+    <title>Auctions Details</title>
+    <link href="../css/style.css" th:href="@{/css/style.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="topnav">
+    <h1>TIW 2021 Auction Website</h1>
+    <a th:href="@{/Logout}">Logout</a>
+    <a class="active" th:href="@{/SellServlet}">Sell</a>
+    <a th:href="@{/GetSearchedAuction}">Buy</a>
+    <a th:href="@{/Home}">Home Page</a>
+</div>
+<div class="row">
+
+    <div class="column">
+    <h3>Auction data</h3>
         <div>
             <p th:text="${'Name: ' + auctionData.itemName}"></p>
             <p th:text="${'Description: ' + auctionData.itemDescription}"></p>
             <p th:text="${'Price: ' + auctionData.price}"></p>
             <p th:text="${'Minimum raise: ' + auctionData.minRaise}"></p>
             <p th:text="${'Deadline: ' + auctionData.deadline}"></p>
+            <img style="max-height: 300px; max-width: 300px;" alt="No image found"
+                 th:src="@{/ImageServlet(name=${auctionData.itemImage})}">
         </div>
+        <p><a href="SellServlet"><-- Go back to Sell page</a></p>
+    </div>
+    <div class="column">
         <div th:if="${auctionData.isOpen()}">
             <h3>List of bids</h3>
             <table>
                 <thead>
-                    <tr>
-                        <th>Bidder username</th>
-                        <th>Bid</th>
-                        <th>Date & time</th>
-                    </tr>
+                <tr>
+                    <th>Bidder username</th>
+                    <th>Bid</th>
+                    <th>Date & time</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="bid:${bids}">
-                        <td th:text="${bid.bidderUsername}"></td>
-                        <td th:text="${bid.bidPrice}"></td>
-                        <td th:text="${bid.dateTime}"></td>
-                    </tr>
+                <tr th:each="bid:${bids}">
+                    <td th:text="${bid.bidderUsername}"></td>
+                    <td th:text="${bid.bidPrice}"></td>
+                    <td th:text="${bid.dateTime}"></td>
+                </tr>
                 </tbody>
             </table>
             <form action="AuctionDetailsServletHelper" method="POST">
@@ -45,6 +62,8 @@
                 <p th:text="${'Winner\'s address: ' + winner.address}"></p>
             </div>
         </div>
-        <p><a href="SellServlet">Come back to Sell page</a></p>
-    </body>
+    </div>
+</div>
+
+</body>
 </html>
