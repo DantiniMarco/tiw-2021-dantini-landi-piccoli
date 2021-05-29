@@ -62,7 +62,7 @@ public class SellHelperServlet extends HttpServlet {
             initialPrice = Float.parseFloat(initialPrice_param);
             minRaise = Float.parseFloat(minRaise_param);
             java.util.Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(deadlineDate_param + " " + deadlineTime_param);
-            deadline = new Date(date.getTime());
+            deadline = new Date(date.getTime()*1000);
         } catch (NumberFormatException e) {
             bad_request = true;
         } catch (Exception e) {
@@ -102,6 +102,15 @@ public class SellHelperServlet extends HttpServlet {
             }*/
             }
         }
+
+        if(minRaise<0.1 || minRaise>500000){
+            bad_request = true;
+        }
+
+        if(initialPrice<1 || initialPrice>999999.99){
+            bad_request = true;
+        }
+
         if (bad_request == true) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter/s missing");
             throw new UnavailableException("Parameter/s missing");

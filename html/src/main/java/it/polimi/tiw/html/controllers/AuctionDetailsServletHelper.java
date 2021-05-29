@@ -1,5 +1,6 @@
 package it.polimi.tiw.html.controllers;
 
+import it.polimi.tiw.html.beans.User;
 import it.polimi.tiw.html.dao.AuctionDAO;
 import it.polimi.tiw.html.utils.ConnectionHandler;
 import org.thymeleaf.TemplateEngine;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet("/AuctionDetailsServletHelper")
 public class AuctionDetailsServletHelper extends HttpServlet {
@@ -54,6 +56,19 @@ public class AuctionDetailsServletHelper extends HttpServlet {
             id = Integer.parseInt(id_param);
         }catch (NumberFormatException ex){
             ex.printStackTrace();
+            bad_request = true;
+        }
+
+        User user = (User) request.getSession().getAttribute("user");
+        List<Integer> ids = null;
+        try{
+            ids = am.findAuctionIdsByUsernameId(user.getIdUser());
+        }catch(SQLException sqle){
+            sqle.printStackTrace();
+            throw new UnavailableException("Issue from database");
+        }
+
+        if(!ids.contains(id)){
             bad_request = true;
         }
 
