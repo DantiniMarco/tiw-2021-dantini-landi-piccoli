@@ -4,7 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.tiw.js.beans.Auction;
 import it.polimi.tiw.js.beans.ExtendedAuction;
+import it.polimi.tiw.js.beans.User;
 import it.polimi.tiw.js.dao.AuctionDAO;
+import it.polimi.tiw.js.dao.BidDAO;
 import it.polimi.tiw.js.utils.ConnectionHandler;
 
 import javax.servlet.ServletContext;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +29,7 @@ import java.util.Map;
 public class GetSearchedAuction extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
+
 
     public GetSearchedAuction() {
         super();
@@ -41,6 +45,10 @@ public class GetSearchedAuction extends HttpServlet {
         String keyWord = request.getParameter("keyword");
         ServletContext servletContext = getServletContext();
         List<ExtendedAuction> searchedList = null;
+        User user = (User) request.getSession().getAttribute("user");
+        int idBidder = user.getIdUser();
+        BidDAO bidDAO = new BidDAO(connection);
+
 
         if (keyWord != null) {
             if (keyWord.length() < 3) {
@@ -72,6 +80,7 @@ public class GetSearchedAuction extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(json);
+
 
     }
 

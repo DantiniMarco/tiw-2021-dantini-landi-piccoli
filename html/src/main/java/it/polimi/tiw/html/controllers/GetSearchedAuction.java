@@ -72,7 +72,8 @@ public class GetSearchedAuction extends HttpServlet {
                 AuctionDAO aDAO = new AuctionDAO(connection);
                 List<ExtendedAuction> searchedList;
                 try {
-                    searchedList = aDAO.findOpenAuction(keyWord);
+                    searchedList = aDAO.findOpenAuction(keyWord, idBidder);
+
                     if (searchedList == null || searchedList.isEmpty()) {
                         ctx.setVariable("errorMsg", "This keyword is not matching to any open auction.");
                     } else {

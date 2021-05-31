@@ -48,7 +48,8 @@ public class BidDAO {
      */
     public List<ExtendedAuction> findWonBids(int idBidder) throws SQLException {
         ArrayList<ExtendedAuction> bidsAwarded = new ArrayList<>();
-        String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image FROM (bid NATURAL JOIN auction a2 NATURAL JOIN item) WHERE a2.status = 1 AND" +
+        String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image" +
+                " FROM (bid NATURAL JOIN auction a2 NATURAL JOIN item) WHERE a2.status = 1 AND" +
                 " bid.idbidder = ? AND bidprice = (SELECT MAX(bidprice) FROM bid NATURAL JOIN auction a1" +
                 " WHERE a1.iditem = a2.iditem)";
         /*String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image " +

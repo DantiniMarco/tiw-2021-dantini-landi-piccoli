@@ -224,4 +224,72 @@ function AuctionDetails(options) {
 }
 
 // TODO: Marco da fare
-function WonAndLatestAuction() {}
+function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions_body) {
+        this.alert = _alert;
+        this.alertWonAuction = _alertWonAuction;
+        this.wonAuctions = _wonAuctions;
+        this.wonAuctions_body = _wonAuctions_body;
+
+    this.show = function () {
+        let self = this;
+        makeCall("GET", "GetWonAuctions", null,
+            function (req) {
+                if (req.readyState === 4) {
+                    if (req.status === 200) {
+                        self.alertWonAuction.textContent = ""
+                        self.alert.textContent = ""
+                        console.log(req.responseText);
+                        var auctionsToShow = JSON.parse(req.responseText);
+                        console.log(auctionsToShow);
+                        if (auctionsToShow.length === 0) {
+                            self.wonAuctions.style.visibility = "hidden";
+                            self.wonAuctions.style.display = "none";
+                            self.alertWonAuction.textContent = "You haven't won an auction yet";
+                            return;
+                        }else{
+                            self.update(auctionsToShow); // self visible by closure
+                            self.wonAuctions.style.visibility = "visible";
+                            self.wonAuctions.style.display = null;
+                        }
+                    } else {
+                        self.searchalert.textContent = req.responseText;
+                        self.wonAuctions.style.visibility = "hidden";
+                        self.wonAuctions.style.display = "none";
+                    }
+                } else {
+                    self.alert.textContent = req.responseText;
+                }
+            }
+        );
+    };
+
+
+    this.update = function (arrayAuctions) {
+        let row, priceCell, descriptionCell, dateCell, itemCell, idAuctionCell, linkcell, linkText, anchor;
+        this.wonAuctions_body.innerHTML = ""; // empty the table body
+        // build updated list
+        let self = this;
+        arrayAuctions.forEach(function (auction) { // self visible here, not this
+            row = document.createElement("tr");
+            priceCell = document.createElement("td");
+            priceCell.textContent = new Intl.NumberFormat('it-IT', {
+                style: 'currency',
+                currency: 'EUR'
+            }).format(auction.price);
+            row.appendChild(priceCell);
+
+            itemCell = document.createElement("td");
+            itemCell.textContent = auction.itemName;
+            row.appendChild(itemCell);
+
+            descriptionCell = document.createElement("td");
+            descriptionCell.textContent = auction.itemDescription;
+            row.appendChild(descriptionCell);
+
+            self.wonAuctions_body.appendChild(row);
+        });
+        self.wonAuctions.style.visibility = "visible";
+        self.wonAuctions.style.display = null;
+    }
+
+}

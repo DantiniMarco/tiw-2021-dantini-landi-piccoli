@@ -111,7 +111,7 @@ public class BidDAO {
      * query the minimum raise and the maximum price offered in the list of bids
      */
     public float findPriceForNewBid(int idAuction) throws SQLException {
-        Float actualPrice = null;
+        float actualPrice = -1;
         String query = "SELECT MAX(bidprice), minraise FROM (bid NATURAL JOIN auction) WHERE idauction = ?";
         String query2 = "SELECT initialprice, minraise FROM auction WHERE idauction = ? ";
         try {
@@ -119,13 +119,17 @@ public class BidDAO {
             try (PreparedStatement pstatement = con.prepareStatement(query);
                  PreparedStatement pstatement2 = con.prepareStatement(query2)) {
                 pstatement.setInt(1, idAuction);
+                pstatement2.setInt(1,idAuction);
                 ResultSet result = pstatement.executeQuery();
+
                 if (result != null && result.next()) {
-                    actualPrice = result.getFloat("MAX(bidprice)") + result.getFloat("minraise");
-                } else {
-                    result = pstatement2.executeQuery();
-                    if (result != null && result.next()) {
-                        actualPrice = result.getFloat("initialprice") + result.getFloat("minraise");
+                    if (result.getString("MAX(bidprice)") != null) {
+                        actualPrice = result.getFloat("MAX(bidprice)") + result.getFloat("minraise");
+                    } else {
+                        ResultSet result2 = pstatement2.executeQuery();
+                        if (result2 != null && result2.next()) {
+                            actualPrice = result2.getFloat("initialprice") + result2.getFloat("minraise");
+                        }
                     }
                 }
             }
@@ -135,7 +139,28 @@ public class BidDAO {
         } finally {
             con.setAutoCommit(true);
         }
+
         return actualPrice;
+
+    }
+
+    /**
+     * @return the minraise for this bid
+     * @author Marco D'Antini
+     */
+    public float findMinRaise(int auctionId) throws SQLException {
+        float minR = -1;
+        String query = "SELECT minraise FROM auction WHERE idauction = ?";
+        try (PreparedStatement preparedStatement = con.prepareStatement(query)) {
+            preparedStatement.setInt(1, auctionId);
+            ResultSet result = preparedStatement.executeQuery();
+            if (result != null && result.next())
+                minR = result.getFloat("minraise");
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+            throw new SQLException(sqle);
+        }
+        return minR;
     }
 
     /***
@@ -155,7 +180,7 @@ public class BidDAO {
             pstatement.setInt(1, auctionId);
             pstatement.setInt(2, auctionId);
             result = pstatement.executeQuery();
-            if (result.next() == true) {
+            if (result.next()) {
                 resultId = result.getInt("idbidder");
             }
         } catch (SQLException sqle) {

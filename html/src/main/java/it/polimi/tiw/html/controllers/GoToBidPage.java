@@ -51,6 +51,9 @@ public class GoToBidPage extends HttpServlet {
         float currMaxPrice;
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+        BidDAO bidDAO = new BidDAO(connection);
+        float minRaise=-1;
+
 
         if (request.getParameter("error") != null && request.getParameter("error").equals("lowPrice")) {
             ctx.setVariable("errorMsg", "This price is too low. You may insert an offer higher than the current max.");
@@ -63,8 +66,16 @@ public class GoToBidPage extends HttpServlet {
             return;
         }
         try {
-            BidDAO bidDAO1 = new BidDAO(connection);
-            currMaxPrice = bidDAO1.findPriceForNewBid(idAuction);
+            minRaise = bidDAO.findMinRaise(idAuction);
+            if(minRaise >=0)
+                ctx.setVariable("minimumRaise", minRaise);
+        } catch (SQLException throwables) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
+
+        }
+
+        try {
+            currMaxPrice = bidDAO.findPriceForNewBid(idAuction);
             ctx.setVariable("currMax", currMaxPrice);
         } catch (SQLException sqle) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
@@ -83,7 +94,6 @@ public class GoToBidPage extends HttpServlet {
             response.sendError(500, "Database access failed");
         }
         try {
-            BidDAO bidDAO = new BidDAO(connection);
             bids = bidDAO.findBidsByIdAuction(idAuction);
 
             ctx.setVariable("bids", bids);

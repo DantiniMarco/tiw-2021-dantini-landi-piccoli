@@ -68,6 +68,7 @@
     }
 
     function PageOrchestrator() {
+        let alertWonAuction = document.getElementById("id_alertWonAuctions");
         let alertContainer = document.getElementById("id_alert");
         let alertSearchContainer = document.getElementById("id_alert_search");
         let buyContainer = document.getElementById("id_buy");
@@ -78,7 +79,7 @@
         let sellBar = document.getElementById("id_sellbar");
         this.start = function () {
             new PersonalMessage(alertContainer, document.getElementById("id_username"));
-
+            wonAndLatestAuction = new WonAndLatestAuction(alertWonAuction, alertContainer, document.getElementById("id_wonAuctions"), document.getElementById("id_wonAuctions_body"));
             auctionDetails = new AuctionDetails({ // many parameters, wrap them in an
                 // object
                 alert: alertContainer,
@@ -157,6 +158,7 @@
             if (buyOrSell === "buy") {
                 auctionsList.reset();
                 auctionDetails.reset();
+                wonAndLatestAuction.show();
             } else {
                 auctionsListSell.reset();
                 auctionsListSell.show();

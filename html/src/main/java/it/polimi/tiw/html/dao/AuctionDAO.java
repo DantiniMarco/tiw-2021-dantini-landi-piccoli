@@ -22,21 +22,23 @@ public class AuctionDAO {
 
     /**
      * this query returns the list of sorted by date auctions filtered by keyword
-     * @author Marco
+     * @author Marco D'Antini
      * @param keyword
      * @return
      * @throws SQLException
      */
-    public List<ExtendedAuction> findOpenAuction(String keyword) throws SQLException {
+    public List<ExtendedAuction> findOpenAuction(String keyword, int userid) throws SQLException {
         List<ExtendedAuction> searchedList= new ArrayList<>();
 
         String query = "SELECT idauction, UNIX_TIMESTAMP(deadline) AS deadline, minraise, initialprice, name FROM " +
-                "(item NATURAL JOIN auction) WHERE (item.name LIKE ? OR " +
+                "(item NATURAL JOIN auction) WHERE auction.idcreator != ? AND (item.name LIKE ? OR " +
                 "item.description LIKE ?) AND auction.deadline >= " +
                 "CURDATE() ORDER BY auction.deadline DESC";
         try (PreparedStatement pstatement = con.prepareStatement(query)) {
-            pstatement.setString(1, "%" + keyword + "%");
+            pstatement.setInt(1, userid);
             pstatement.setString(2, "%" + keyword + "%");
+            pstatement.setString(3, "%" + keyword + "%");
+
             try (ResultSet result = pstatement.executeQuery()) {
                 if (!result.isBeforeFirst()) // no results
                     return null;
