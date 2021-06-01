@@ -34,6 +34,8 @@ h3{
 
 h4{
     text-align: center;
+    color: crimson;
+
 }
 /* Style the links inside the navigation bar */
 .topnav a {
@@ -143,4 +145,8 @@ table, th, td{
 
 th, td {
     padding: 7px;
+}
+
+#labelWon{
+    color: #46af11;
 }

@@ -165,6 +165,9 @@ function AuctionDetails(options) {
                     let message = req.responseText;
                     if (req.status === 200) {
                         let formdata = JSON.parse(req.responseText);
+                        let userDataStored = JSON.parse(localStorage.getItem("userData"));
+                        userDataStored[self.username].auctionsVisited[auctionid] = Date.now();
+                        localStorage.setItem("userData", JSON.stringify(userDataStored));
                         self.update(formdata); // self is the object on which the function
                         // is applied
                     }

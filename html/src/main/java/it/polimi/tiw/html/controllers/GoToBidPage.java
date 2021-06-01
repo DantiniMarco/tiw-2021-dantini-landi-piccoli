@@ -95,8 +95,9 @@ public class GoToBidPage extends HttpServlet {
         }
         try {
             bids = bidDAO.findBidsByIdAuction(idAuction);
-
-            ctx.setVariable("bids", bids);
+            if(bids!= null){
+                ctx.setVariable("bids", bids);
+            }
             ctx.setVariable("idauction", idAuction);
         } catch (SQLException e) {
             response.sendError(500, "Database access failed");
