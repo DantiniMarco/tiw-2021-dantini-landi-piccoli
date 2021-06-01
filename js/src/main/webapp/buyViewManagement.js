@@ -113,6 +113,7 @@ function SearchAuction(formId, alert, auctionsListInt, username) {
 
 function AuctionDetails(options) {
     this.alert = options['alert'];
+    this.username = options['username'];
     this.bidlistcontainer = options['bidlistcontainer'];
     this.bidlistcontainerbody = options['bidlistcontainerbody'];
     this.bidform = options['bidform'];
@@ -227,15 +228,25 @@ function AuctionDetails(options) {
 }
 
 // TODO: Marco da fare
-function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions_body) {
-        this.alert = _alert;
-        this.alertWonAuction = _alertWonAuction;
-        this.wonAuctions = _wonAuctions;
-        this.wonAuctions_body = _wonAuctions_body;
 
+function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions_body, _username, _visitedAuctions, _visitedAuctions_body) {
+    this.alert = _alert;
+    this.alertWonAuction = _alertWonAuction;
+    this.wonAuctions = _wonAuctions;
+    this.wonAuctions_body = _wonAuctions_body;
+    this.username = _username;
+    this.visitedAuctions = _visitedAuctions;
+    this.visitedAuctions_body = _visitedAuctions_body;
     this.show = function () {
         let self = this;
-        makeCall("GET", "GetWonAuctions", null,
+        let userDataStored = JSON.parse(localStorage.getItem("userData"));
+        let auctionsVisited = userDataStored[this.username].auctionsVisited;
+        console.log(auctionsVisited);
+        let getParameters = "";
+        for (const auctionId of Object.keys(auctionsVisited)){
+            getParameters += "auction=" + auctionId + "&";
+        }
+        makeCall("GET", "GetWonAuctions?" + getParameters, null,
             function (req) {
                 if (req.readyState === 4) {
                     if (req.status === 200) {
@@ -244,18 +255,29 @@ function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions
                         console.log(req.responseText);
                         var auctionsToShow = JSON.parse(req.responseText);
                         console.log(auctionsToShow);
-                        if (auctionsToShow.length === 0) {
+
+
+                        if (auctionsToShow.wonAuction.length === 0) {
                             self.wonAuctions.style.visibility = "hidden";
                             self.wonAuctions.style.display = "none";
                             self.alertWonAuction.textContent = "You haven't won an auction yet";
-                            return;
-                        }else{
-                            self.update(auctionsToShow); // self visible by closure
+                        } else {
+                            self.updateWon(auctionsToShow.wonAuction); // self visible by closure
                             self.wonAuctions.style.visibility = "visible";
                             self.wonAuctions.style.display = null;
                         }
+                        if (auctionsToShow.wonAuction.length === 0) {
+                            // hide last visited
+                            self.visitedAuctions.style.visibility = "hidden";
+                            self.visitedAuctions.style.display = "none";
+                        }else{
+                            // show last visited
+                            self.updateVisited(auctionsToShow.auctionsVisited);
+                            self.visitedAuctions.style.visibility = "visible";
+                            self.visitedAuctions.style.display = null;
+                        }
                     } else {
-                        self.searchalert.textContent = req.responseText;
+                        self.alert.textContent = req.responseText;
                         self.wonAuctions.style.visibility = "hidden";
                         self.wonAuctions.style.display = "none";
                     }
@@ -266,8 +288,35 @@ function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions
         );
     };
 
+    this.updateVisited = function (arrayAuctions){
+        let row, priceCell, descriptionCell, dateCell, itemCell, idAuctionCell, linkcell, linkText, anchor;
+        this.visitedAuctions_body.innerHTML = ""; // empty the table body
+        // build updated list
+        let self = this;
+        arrayAuctions.forEach(function (auction) { // self visible here, not this
+            row = document.createElement("tr");
+            priceCell = document.createElement("td");
+            priceCell.textContent = new Intl.NumberFormat('it-IT', {
+                style: 'currency',
+                currency: 'EUR'
+            }).format(auction.price);
+            row.appendChild(priceCell);
 
-    this.update = function (arrayAuctions) {
+            itemCell = document.createElement("td");
+            itemCell.textContent = auction.itemName;
+            row.appendChild(itemCell);
+
+            descriptionCell = document.createElement("td");
+            descriptionCell.textContent = auction.itemDescription;
+            row.appendChild(descriptionCell);
+
+            self.visitedAuctions_body.appendChild(row);
+        });
+        self.visitedAuctions.style.visibility = "visible";
+        self.visitedAuctions.style.display = null;
+    }
+
+    this.updateWon = function (arrayAuctions) {
         let row, priceCell, descriptionCell, dateCell, itemCell, idAuctionCell, linkcell, linkText, anchor;
         this.wonAuctions_body.innerHTML = ""; // empty the table body
         // build updated list
@@ -294,5 +343,6 @@ function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions
         self.wonAuctions.style.visibility = "visible";
         self.wonAuctions.style.display = null;
     }
+
 
 }

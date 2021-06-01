@@ -79,10 +79,12 @@
         let sellBar = document.getElementById("id_sellbar");
         this.start = function () {
             new PersonalMessage(alertContainer, document.getElementById("id_username"));
-            wonAndLatestAuction = new WonAndLatestAuction(alertWonAuction, alertContainer, document.getElementById("id_wonAuctions"), document.getElementById("id_wonAuctions_body"));
+            wonAndLatestAuction = new WonAndLatestAuction(alertWonAuction, alertContainer, document.getElementById("id_wonAuctions"),
+                document.getElementById("id_wonAuctions_body"), userData.username, document.getElementById("id_visitedAuctions"), document.getElementById("id_visitedAuctions_body") );
             auctionDetails = new AuctionDetails({ // many parameters, wrap them in an
                 // object
                 alert: alertContainer,
+                username: userData.username,
                 bidlistcontainer: document.getElementById("id_bidlistcontainer"),
                 bidlistcontainerbody: document.getElementById("id_bidlistcontainerbody"),
                 bidform: document.getElementById("id_bidform"),
@@ -139,7 +141,7 @@
                 userDataToStore[userData.username].expirationDate = currentDate;
                 lastAction = "buy"
                 userDataToStore[userData.username].lastAction = lastAction
-                auctionsVisited = null
+                auctionsVisited = {};
                 userDataToStore[userData.username].auctionsVisited = auctionsVisited;
                 localStorage.setItem("userData", JSON.stringify(userDataToStore));
             }else {

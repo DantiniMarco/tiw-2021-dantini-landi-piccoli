@@ -16,7 +16,10 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/GetWonAuctions")
 public class GetWonAuctions extends HttpServlet {
@@ -35,8 +38,30 @@ public class GetWonAuctions extends HttpServlet {
         User user = (User) request.getSession().getAttribute("user");
         int idBidder = user.getIdUser();
         BidDAO bidDAO = new BidDAO(connection);
-        List<ExtendedAuction> wonAuction = null;
+        List<ExtendedAuction> wonAuction;
+        List<ExtendedAuction> latestAuctionsList;
+        String[] auctionsVisited = request.getParameterValues("auction");
+        System.out.println(auctionsVisited);
+        Map<String, Object> wonLatestPageInfo = new HashMap<>();
 
+        //TODO: add function to get OPEN auctions visited from DB.
+        if(auctionsVisited == null){
+            latestAuctionsList = new ArrayList<>();
+        }
+        else {
+            try {
+                latestAuctionsList = bidDAO.findLatestAuctions(auctionsVisited);
+                if (latestAuctionsList == null) {
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    response.getWriter().println("You haven't won any auction");
+                    return;
+                }
+            } catch (SQLException e) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().println("Database access failed");
+                return;
+            }
+        }
         try{
             wonAuction = bidDAO.findWonBids(idBidder);
             if( wonAuction == null) {
@@ -49,8 +74,11 @@ public class GetWonAuctions extends HttpServlet {
             response.getWriter().println("Database access failed");
             return;
         }
-    Gson gson = new GsonBuilder().create();
-        String json = gson.toJson(wonAuction);
+        wonLatestPageInfo.put("wonAuction", wonAuction);
+        wonLatestPageInfo.put("auctionsVisited", latestAuctionsList);
+
+        Gson gson = new GsonBuilder().create();
+        String json = gson.toJson(wonLatestPageInfo);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
