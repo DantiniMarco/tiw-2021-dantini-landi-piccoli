@@ -49,6 +49,7 @@ public class SellHelperServlet extends HttpServlet {
         float initialPrice = 0;
         float minRaise = 0;
         Date deadline = null;
+        java.util.Date date =null;
         AuctionDAO am = new AuctionDAO(connection);
         InputStream filecontent = null;
         System.out.println(System.getProperty("catalina.home"));
@@ -61,8 +62,8 @@ public class SellHelperServlet extends HttpServlet {
         try {
             initialPrice = Float.parseFloat(initialPrice_param);
             minRaise = Float.parseFloat(minRaise_param);
-            java.util.Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(deadlineDate_param + " " + deadlineTime_param);
-            deadline = new Date(date.getTime()*1000);
+            date = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(deadlineDate_param + " " + deadlineTime_param);
+            deadline = new Date(date.getTime());
         } catch (NumberFormatException e) {
             bad_request = true;
         } catch (Exception e) {
@@ -70,7 +71,7 @@ public class SellHelperServlet extends HttpServlet {
             bad_request = true;
         }
         UUID uuid = UUID.randomUUID();
-        String newFileName = uuid.toString() + (fileName != null ? fileName.substring(fileName.indexOf(".")) : "");
+        String newFileName = uuid.toString() + (fileName != "" ? fileName.substring(fileName.indexOf(".")) : "");
         if (filePart.getSize() > 0) {
             try (OutputStream out = new FileOutputStream(new File(System.getProperty("catalina.home") + File.separator + "img" + File.separator
                     + newFileName))) {
