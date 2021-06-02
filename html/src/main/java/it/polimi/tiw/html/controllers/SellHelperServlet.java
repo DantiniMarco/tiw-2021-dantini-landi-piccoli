@@ -10,18 +10,23 @@ import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Date;
+import java.sql.*;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.text.DateFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
 @WebServlet("/SellHelperServlet")
 @MultipartConfig
@@ -43,27 +48,29 @@ public class SellHelperServlet extends HttpServlet {
         String itemDescription = request.getParameter("itemDescription");
         String initialPrice_param = request.getParameter("initialPrice");
         String minRaise_param = request.getParameter("minRaise");
-        String deadlineDate_param = request.getParameter("deadlineDate");
-        String deadlineTime_param = request.getParameter("deadlineTime");
+        String deadlineLocalDateTime_param = request.getParameter("deadlineLocalDateTime");
+        String deadlineTimeZone_param = request.getParameter("deadlineTimeZone");
+        System.out.println(ZoneId.getAvailableZoneIds());
         boolean bad_request = false;
         float initialPrice = 0;
         float minRaise = 0;
-        Date deadline = null;
-        java.util.Date date =null;
+        Timestamp deadline = null;
+        java.util.Date date = null;
         AuctionDAO am = new AuctionDAO(connection);
         InputStream filecontent = null;
         System.out.println(System.getProperty("catalina.home"));
         if (itemName == null || itemName.isEmpty() || itemDescription == null || itemDescription.isEmpty()
                 || initialPrice_param == null || initialPrice_param.isEmpty() || minRaise_param == null || minRaise_param.isEmpty()
-                || deadlineDate_param == null || deadlineDate_param.isEmpty() || deadlineTime_param == null || deadlineTime_param.isEmpty()) {
+                || deadlineLocalDateTime_param == null || deadlineLocalDateTime_param.isEmpty() || deadlineTimeZone_param == null || deadlineTimeZone_param.isEmpty()) {
             bad_request = true;
         }
 
         try {
             initialPrice = Float.parseFloat(initialPrice_param);
             minRaise = Float.parseFloat(minRaise_param);
-            date = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(deadlineDate_param + " " + deadlineTime_param);
-            deadline = new Date(date.getTime());
+            LocalDateTime dateWithTimeZone = LocalDateTime.parse(deadlineLocalDateTime_param, ISO_LOCAL_DATE_TIME)
+                    .atZone(ZoneId.of(deadlineTimeZone_param)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime();
+            deadline = Timestamp.valueOf(dateWithTimeZone);
         } catch (NumberFormatException e) {
             bad_request = true;
         } catch (Exception e) {
@@ -104,11 +111,11 @@ public class SellHelperServlet extends HttpServlet {
             }
         }
 
-        if(minRaise<0.1 || minRaise>500000){
+        if (minRaise < 0.1 || minRaise > 500000) {
             bad_request = true;
         }
 
-        if(initialPrice<1 || initialPrice>999999.99){
+        if (initialPrice < 1 || initialPrice > 999999.99) {
             bad_request = true;
         }
 
@@ -148,10 +155,10 @@ public class SellHelperServlet extends HttpServlet {
     }
 
     @Override
-    public void destroy(){
-        try{
+    public void destroy() {
+        try {
             ConnectionHandler.closeConnection(connection);
-        }catch (SQLException sql){
+        } catch (SQLException sql) {
             sql.printStackTrace();
         }
     }

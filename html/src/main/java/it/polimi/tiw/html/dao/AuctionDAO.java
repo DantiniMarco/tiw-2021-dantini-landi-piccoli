@@ -126,7 +126,7 @@ public class AuctionDAO {
      * @param idCreator of the user
      * @return code of success or unsuccess
      */
-        public int insertNewAuction(String itemName, String itemImage, String itemDescription, float initialPrice, float minRaise, java.sql.Date deadline, int idCreator) throws SQLException{
+        public int insertNewAuction(String itemName, String itemImage, String itemDescription, float initialPrice, float minRaise, java.sql.Timestamp deadline, int idCreator) throws SQLException{
             int itemId;
             Item newItem = new Item(itemName, itemImage, itemDescription);
             ItemDAO im = new ItemDAO(con);
@@ -142,7 +142,7 @@ public class AuctionDAO {
                 pstatement = con.prepareStatement(query);
                 pstatement.setFloat(1,initialPrice);
                 pstatement.setFloat(2, minRaise);
-                pstatement.setDate(3, deadline);
+                pstatement.setTimestamp(3, deadline);
                 pstatement.setInt(4, idCreator);
                 pstatement.setInt(5, itemId);
                 pstatement.setInt(6, AuctionStatus.OPEN.getValue());
