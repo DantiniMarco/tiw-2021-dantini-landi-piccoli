@@ -143,3 +143,7 @@ table, th, td{
 th, td {
     padding: 7px;
 }
+#id_alertWonAuctions{
+    text-align: center;
+    color:red;
+}

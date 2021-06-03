@@ -59,7 +59,7 @@ public class GetSearchedAuction extends HttpServlet {
                 AuctionDAO aDAO = new AuctionDAO(connection);
 
                 try {
-                    searchedList = aDAO.findOpenAuction(keyWord);
+                    searchedList = aDAO.findOpenAuction(keyWord, idBidder);
                     if (searchedList == null || searchedList.isEmpty()) {
                         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                         response.getWriter().println("Keyword does not match any resource");

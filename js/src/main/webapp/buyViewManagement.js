@@ -289,7 +289,7 @@ function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions
     };
 
     this.updateVisited = function (arrayAuctions){
-        let row, priceCell, descriptionCell, dateCell, itemCell, idAuctionCell, linkcell, linkText, anchor;
+        let row, priceCell, descriptionCell,  itemCell, linkcell, linkText, anchor;
         this.visitedAuctions_body.innerHTML = ""; // empty the table body
         // build updated list
         let self = this;
@@ -310,7 +310,7 @@ function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions
             descriptionCell = document.createElement("td");
             descriptionCell.textContent = auction.itemDescription;
             row.appendChild(descriptionCell);
-
+            linkcell = document.createElement("td");
             anchor = document.createElement("a");
             linkcell.appendChild(anchor);
             linkText = document.createTextNode("Details");
@@ -323,8 +323,6 @@ function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions
             }, false);
             anchor.href = "#";
             row.appendChild(linkcell);
-
-
 
             self.visitedAuctions_body.appendChild(row);
         });

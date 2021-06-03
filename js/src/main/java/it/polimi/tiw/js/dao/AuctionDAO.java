@@ -21,20 +21,22 @@ public class AuctionDAO {
 
     /**
      * this query returns the list of sorted by date auctions filtered by keyword
-     * @author Marco
+     * @author Marco D'Antini
      * @param keyword
      * @return
      * @throws SQLException
      */
-    public List<ExtendedAuction> findOpenAuction(String keyword) throws SQLException {
+    public List<ExtendedAuction> findOpenAuction(String keyword, int userid) throws SQLException {
         List<ExtendedAuction> searchedList= new ArrayList<>();
 
         String query = "SELECT idauction, UNIX_TIMESTAMP(deadline) AS deadline, minraise, initialprice, name FROM " +
-                "(item NATURAL JOIN auction) WHERE (item.name LIKE ? OR " +
+                "(item NATURAL JOIN auction) WHERE auction.idcreator != ? AND (item.name LIKE ? OR " +
                 "item.description LIKE ?) AND auction.status = 0 ORDER BY auction.deadline DESC";
         try (PreparedStatement pstatement = con.prepareStatement(query)) {
-            pstatement.setString(1, "%" + keyword + "%");
+            pstatement.setInt(1, userid);
             pstatement.setString(2, "%" + keyword + "%");
+            pstatement.setString(3, "%" + keyword + "%");
+
             try (ResultSet result = pstatement.executeQuery()) {
                 if (!result.isBeforeFirst()) // no results
                     return null;
@@ -65,7 +67,7 @@ public class AuctionDAO {
         public List<ExtendedAuction> findAuctionsByIdAndStatus(int idUser, AuctionStatus status) throws SQLException{
             List<ExtendedAuction> auctions = new ArrayList<>();
             //FIXME: must fix SQL query
-            String query = "SELECT item.name, item.image, item.description, max(bid.bidprice) AS price, auction.minraise, UNIX_TIMESTAMP(auction.deadline) AS deadline FROM auction NATURAL JOIN item LEFT JOIN bid ON auction.idauction=bid.idauction JOIN user ON auction.idcreator=user.iduser WHERE user.iduser=? AND auction.status=? GROUP BY auction.idauction ORDER BY auction.deadline ASC";
+            String query = "SELECT auction.idauction, item.name, item.image, item.description, max(bid.bidprice) AS price, auction.minraise, UNIX_TIMESTAMP(auction.deadline) AS deadline FROM auction NATURAL JOIN item LEFT JOIN bid ON auction.idauction=bid.idauction JOIN user ON auction.idcreator=user.iduser WHERE user.iduser=? AND auction.status=? GROUP BY auction.idauction ORDER BY auction.deadline ASC";
             PreparedStatement pstatement = null;
             ResultSet result = null;
 
@@ -76,6 +78,7 @@ public class AuctionDAO {
                 result = pstatement.executeQuery();
                 while (result.next()) {
                     ExtendedAuction auction = new ExtendedAuction();
+                    auction.setIdAuction(result.getInt("idauction"));
                     auction.setItemName(result.getString("name"));
                     auction.setItemImage(result.getString("image"));
                     auction.setItemDescription(result.getString("description"));

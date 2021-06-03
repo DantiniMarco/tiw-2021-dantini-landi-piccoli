@@ -44,7 +44,9 @@ public class GoToBidPage extends HttpServlet {
         Item item;
         List<ExtendedBid> bids;
         Map<String, Object> bidPageInfo = new HashMap<>();
+        BidDAO bidDAO = new BidDAO(connection);
         float currMaxPrice;
+        float minRaise=-1;
 
         try {
             idAuction = Integer.parseInt(request.getParameter("idauction"));
@@ -53,9 +55,9 @@ public class GoToBidPage extends HttpServlet {
             return;
         }
         try {
-            BidDAO bidDAO1 = new BidDAO(connection);
-            currMaxPrice = bidDAO1.findPriceForNewBid(idAuction);
-            bidPageInfo.put("currMax", currMaxPrice);
+            minRaise = bidDAO.findMinRaise(idAuction);
+            if(minRaise >=0)
+            bidPageInfo.put("minRaise", minRaise);
         } catch (SQLException sqle) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
         }
@@ -75,9 +77,11 @@ public class GoToBidPage extends HttpServlet {
             response.sendError(500, "Database access failed");
         }
         try {
-            BidDAO bidDAO = new BidDAO(connection);
             bids = bidDAO.findBidsByIdAuction(idAuction);
-            bidPageInfo.put("bids", bids);
+            if(bids!=null){
+                bidPageInfo.put("bids", bids);
+            }
+
         } catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("Database access failed");

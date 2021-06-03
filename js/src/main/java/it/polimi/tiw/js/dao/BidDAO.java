@@ -22,7 +22,8 @@ public class BidDAO {
      */
     public List<ExtendedBid> findBidsByIdAuction(int auctionId) throws SQLException {
         List<ExtendedBid> bids = new ArrayList<>();
-        String query = "SELECT username, bidprice, UNIX_TIMESTAMP(datetime) AS datetime FROM bid JOIN user ON idbidder=iduser WHERE idauction = ? ORDER BY datetime DESC";
+        String query = "SELECT username, bidprice, UNIX_TIMESTAMP(datetime) AS datetime " +
+                "FROM bid JOIN user ON idbidder=iduser WHERE idauction = ? ORDER BY datetime DESC";
         try (PreparedStatement pstatement = con.prepareStatement(query)) {
             pstatement.setInt(1, auctionId);
             try (ResultSet result = pstatement.executeQuery()) {
@@ -48,8 +49,8 @@ public class BidDAO {
      */
     public List<ExtendedAuction> findWonBids(int idBidder) throws SQLException {
         ArrayList<ExtendedAuction> bidsAwarded = new ArrayList<>();
-        String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image" +
-                " FROM (bid NATURAL JOIN auction a2 NATURAL JOIN item) WHERE a2.status = 1 AND" +
+        String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image " +
+                "FROM (bid NATURAL JOIN auction a2 NATURAL JOIN item) WHERE a2.status = 1 AND" +
                 " bid.idbidder = ? AND bidprice = (SELECT MAX(bidprice) FROM bid NATURAL JOIN auction a1" +
                 " WHERE a1.iditem = a2.iditem)";
         /*String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image " +
@@ -87,7 +88,7 @@ public class BidDAO {
         String placeHolders =  builder.deleteCharAt( builder.length() -1 ).toString();
         /*String query = "SELECT idauction, name, description, MAX(bidprice) FROM auction NATURAL JOIN " +
                 "bid NATURAL JOIN item WHERE idauction in (" + placeHolders + ") AND status = 0 GROUP BY idauction";*/
-        String query= "SELECT item.name, item.description FROM item, bid, auction WHERE" +
+        String query= "SELECT item.name, item.description, auction.idauction FROM item, bid, auction WHERE" +
                 " item.iditem = auction.iditem AND auction.idauction IN ("+placeHolders+")"+
                 " AND auction.status = 0 GROUP BY auction.idauction;";
         /*String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image " +
@@ -101,6 +102,7 @@ public class BidDAO {
                 while (result.next()) {
                     ExtendedAuction exAuction = new ExtendedAuction();
                     //exAuction.setPrice(result.getFloat("MAX(bidprice)"));
+                    exAuction.setIdAuction(result.getInt("idauction"));
                     exAuction.setItemName(result.getString("name"));
                     exAuction.setItemDescription(result.getString("description"));
                     latestAuctions.add(exAuction);
@@ -153,7 +155,7 @@ public class BidDAO {
      * query the minimum raise and the maximum price offered in the list of bids
      */
     public float findPriceForNewBid(int idAuction) throws SQLException {
-        Float actualPrice = null;
+        float actualPrice = -1;
         String query = "SELECT MAX(bidprice), minraise FROM (bid NATURAL JOIN auction) WHERE idauction = ?";
         String query2 = "SELECT initialprice, minraise FROM auction WHERE idauction = ? ";
         try {
@@ -161,13 +163,17 @@ public class BidDAO {
             try (PreparedStatement pstatement = con.prepareStatement(query);
                  PreparedStatement pstatement2 = con.prepareStatement(query2)) {
                 pstatement.setInt(1, idAuction);
+                pstatement2.setInt(1,idAuction);
                 ResultSet result = pstatement.executeQuery();
+
                 if (result != null && result.next()) {
-                    actualPrice = result.getFloat("MAX(bidprice)") + result.getFloat("minraise");
-                } else {
-                    result = pstatement2.executeQuery();
-                    if (result != null && result.next()) {
-                        actualPrice = result.getFloat("initialprice") + result.getFloat("minraise");
+                    if (result.getString("MAX(bidprice)") != null) {
+                        actualPrice = result.getFloat("MAX(bidprice)") + result.getFloat("minraise");
+                    } else {
+                        ResultSet result2 = pstatement2.executeQuery();
+                        if (result2 != null && result2.next()) {
+                            actualPrice = result2.getFloat("initialprice") + result2.getFloat("minraise");
+                        }
                     }
                 }
             }
@@ -177,6 +183,54 @@ public class BidDAO {
         } finally {
             con.setAutoCommit(true);
         }
+
         return actualPrice;
+
+    }
+
+    /**
+     * @return the minraise for this bid
+     * @author Marco D'Antini
+     */
+    public float findMinRaise(int auctionId) throws SQLException {
+        float minR = -1;
+        String query = "SELECT minraise FROM auction WHERE idauction = ?";
+        try (PreparedStatement preparedStatement = con.prepareStatement(query)) {
+            preparedStatement.setInt(1, auctionId);
+            ResultSet result = preparedStatement.executeQuery();
+            if (result != null && result.next())
+                minR = result.getFloat("minraise");
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+            throw new SQLException(sqle);
+        }
+        return minR;
+    }
+
+    /***
+     * @author Alfredo Landi
+     * @param auctionId
+     * @return id of the winner
+     */
+    public int findWinnerIdByAuctionId(int auctionId) throws SQLException {
+        String query = "SELECT idbidder FROM auction LEFT JOIN bid ON auction.idauction = bid.idauction " +
+                "WHERE auction.idauction = ? AND bidprice = (SELECT max(bidprice) FROM bid WHERE bid.idauction = ?)";
+        PreparedStatement pstatement = null;
+        ResultSet result = null;
+        int resultId = 0;
+
+        try {
+            pstatement = con.prepareStatement(query);
+            pstatement.setInt(1, auctionId);
+            pstatement.setInt(2, auctionId);
+            result = pstatement.executeQuery();
+            if (result.next()) {
+                resultId = result.getInt("idbidder");
+            }
+        } catch (SQLException sqle) {
+            throw new SQLException(sqle);
+        }
+
+        return resultId;
     }
 }
