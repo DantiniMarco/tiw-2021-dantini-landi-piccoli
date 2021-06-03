@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @WebServlet("/AuctionDetailsServletHelper")
@@ -45,8 +47,9 @@ public class AuctionDetailsServletHelper extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         AuctionDAO am = new AuctionDAO(con);
         String id_param = request.getParameter("auctionId");
-        boolean bad_request = false;
+        boolean bad_request = false, ready = true;
         int id = -1;
+        String errorMsg = null;
 
         if(id_param==null || id_param.isEmpty()){
             bad_request = true;
@@ -60,7 +63,7 @@ public class AuctionDetailsServletHelper extends HttpServlet {
         }
 
         User user = (User) request.getSession().getAttribute("user");
-        List<Integer> ids = null;
+        List<Integer> ids;
         try{
             ids = am.findAuctionIdsByUsernameId(user.getIdUser());
         }catch(SQLException sqle){
@@ -78,14 +81,30 @@ public class AuctionDetailsServletHelper extends HttpServlet {
         }
 
         try{
-            am.closeAuction(id);
+            if(am.findAuctionDeadlineById(id).after(Timestamp.valueOf(LocalDateTime.now()))){
+                ready = false;
+                System.out.println("Not ready");
+            }
         }catch (SQLException sqle){
-            sqle.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
             throw new UnavailableException("Issue from database");
         }
 
-        String path = "AuctionDetailsServlet?auctionId=" + id;
-        System.out.println(path);
+        String path = null;
+
+        if(!ready){
+            errorMsg = "You cannot close the auction yet";
+            path = "AuctionDetailsServlet?auctionId=" + id + "&?errorMsg=" +errorMsg;
+            System.out.println("Sono in not ready");
+        }else{
+            path = "AuctionDetailsServlet?auctionId=" + id;
+            try{
+                am.closeAuction(id);
+            }catch (SQLException sqle){
+                sqle.printStackTrace();
+                throw new UnavailableException("Issue from database");
+            }
+        }
         response.sendRedirect(path);
 
     }

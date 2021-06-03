@@ -50,6 +50,9 @@
                 <input id="auctionId" name="auctionId" th:value="${auctionData.idAuction}" type="hidden">
                 <input type="submit" value="Close auction">
             </form>
+            <div th:if="${errorMsg!=null}">
+                <p th:text="${errorMsg}"></p>
+            </div>
         </div>
         <div th:if="${auctionData.isClose()}">
             <h3>Auction winner data</h3>

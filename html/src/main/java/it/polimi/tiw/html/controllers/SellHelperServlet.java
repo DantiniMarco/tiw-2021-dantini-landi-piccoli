@@ -64,6 +64,7 @@ public class SellHelperServlet extends HttpServlet {
             if (itemName == null || itemName.isEmpty() || itemDescription == null || itemDescription.isEmpty()
                     || initialPriceParam == null || initialPriceParam.isEmpty() || minRaiseParam == null || minRaiseParam.isEmpty()
                     || deadlineLocalDateTimeParam == null || deadlineLocalDateTimeParam.isEmpty() || deadlineTimeZoneParam == null || deadlineTimeZoneParam.isEmpty()) {
+                System.out.println("Sono nel primo if");
                 throw new NumberFormatException();
             }
 
@@ -73,7 +74,13 @@ public class SellHelperServlet extends HttpServlet {
                     .atZone(ZoneId.of(deadlineTimeZoneParam)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime();
             deadline = Timestamp.valueOf(dateWithTimeZone);
 
-            if (minRaise < 0.1 || minRaise > 500000 || initialPrice < 1 || initialPrice > 999999.99) {
+            if (minRaise < 0.01f || minRaise > 500000) {
+                System.out.println(minRaise);
+                System.out.println("Sono nel secondo if");
+                throw new NumberFormatException();
+            }
+            if (initialPrice < 1 || initialPrice > 999999.99f) {
+                System.out.println("Sono nel terzo if");
                 throw new NumberFormatException();
             }
 
@@ -94,7 +101,9 @@ public class SellHelperServlet extends HttpServlet {
 
                 } catch (FileNotFoundException fne) {
                     System.out.println("Problems during file upload.");
-                    bad_request = true;
+                    System.out.println("Sono nel terzo catch");
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
+                    return;
                 } finally {
                     if (filecontent != null) {
                         filecontent.close();
@@ -102,17 +111,14 @@ public class SellHelperServlet extends HttpServlet {
                 }
             }
 
-            if (bad_request) {
-                errorString = "?error=wrongFormat";
-            } else {
-                User user = (User) request.getSession().getAttribute("user");
-                int idCreator = user.getIdUser();
-                if (fileName.isEmpty()) {
-                    newFileName = null;
-                }
-                am.insertNewAuction(itemName, newFileName, itemDescription, initialPrice, minRaise, deadline, idCreator);
-
+            User user = (User) request.getSession().getAttribute("user");
+            int idCreator = user.getIdUser();
+            if (fileName.isEmpty()) {
+                newFileName = null;
             }
+            am.insertNewAuction(itemName, newFileName, itemDescription, initialPrice, minRaise, deadline, idCreator);
+
+
         } catch (NumberFormatException e) {
             errorString = "?error=wrongFormat";
         } catch (SQLException sqle) {

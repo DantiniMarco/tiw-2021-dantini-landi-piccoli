@@ -252,12 +252,10 @@ public class AuctionDAO {
      */
     public List<Integer> findAuctionIdsByUsernameId(int usernameId) throws SQLException{
         String query = "SELECT idauction FROM auction WHERE idcreator = ?";
-        PreparedStatement pstatement = null;
-        ResultSet result = null;
+        ResultSet result;
         List<Integer> ids = new ArrayList<>();
         int id = 0;
-        try{
-            pstatement = con.prepareStatement(query);
+        try (PreparedStatement pstatement = con.prepareStatement(query)){
             pstatement.setInt(1, usernameId);
             result = pstatement.executeQuery();
             while(result.next()){
@@ -271,4 +269,32 @@ public class AuctionDAO {
         return ids;
     }
 
+    /***
+     * @author Alfredo Landi
+     * @param id of selected auction
+     * @return the deadline of the selected auction in timestamp format
+     * @throws SQLException in case of an issue from database
+     */
+    public Timestamp findAuctionDeadlineById(int id) throws SQLException{
+        String query = "SELECT deadline FROM auction WHERE idauction = ?";
+        ResultSet result = null;
+        Timestamp deadline = null;
+
+        try (PreparedStatement pstatement = con.prepareStatement(query)){
+            pstatement.setInt(1, id);
+            result = pstatement.executeQuery();
+            while(result.next()){
+                deadline = result.getTimestamp("deadline");
+            }
+        }catch (SQLException sqle){
+            sqle.printStackTrace();
+
+        }finally {
+            if(result!=null){
+                result.close();
+            }
+        }
+
+        return deadline;
+    }
 }
