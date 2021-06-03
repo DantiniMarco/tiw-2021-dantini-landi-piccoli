@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @WebServlet("/SellServlet")
@@ -29,7 +31,7 @@ public class SellServlet extends HttpServlet {
     private TemplateEngine templateEngine;
 
     @Override
-    public void init() throws ServletException{
+    public void init() throws ServletException {
         ServletContext servletContext = getServletContext();
         connection = ConnectionHandler.getConnection(getServletContext());
         ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
@@ -40,35 +42,61 @@ public class SellServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("user");
-        AuctionDAO am= new AuctionDAO(connection);
+        AuctionDAO am = new AuctionDAO(connection);
         List<ExtendedAuction> openAuctions;
         List<ExtendedAuction> closedAuctions;
 
-        try{
+        try {
             openAuctions = am.findAuctionsByIdAndStatus(user.getIdUser(), AuctionStatus.OPEN);
-        }catch(SQLException sql){
+        } catch (SQLException sql) {
             sql.printStackTrace();
             throw new UnavailableException("Error executing query");
         }
 
-        try{
+        try {
             closedAuctions = am.findAuctionsByIdAndStatus(user.getIdUser(), AuctionStatus.CLOSED);
-        }catch(SQLException sql){
+        } catch (SQLException sql) {
             sql.printStackTrace();
             throw new UnavailableException("Error executing query");
         }
-
 
 
         String path = "/WEB-INF/Sell.html";
         ServletContext servletContext = getServletContext();
-        final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
+        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
         ctx.setVariable("openAuctions", openAuctions);
         ctx.setVariable("closedAuctions", closedAuctions);
+
+        List<String> timeLeftOpen = calculateTime(openAuctions);
+        List<String> timeLeftClosed = calculateTime(closedAuctions);
+
+        ctx.setVariable("timeLeftOpen", timeLeftOpen);
+        ctx.setVariable("timeLeftClosed", timeLeftClosed);
+
         templateEngine.process(path, ctx, response.getWriter());
 
+    }
+
+    private List<String> calculateTime(List<ExtendedAuction> auctionList) {
+        List<String> timeLeftlist = new ArrayList<>();
+        for (ExtendedAuction auction : auctionList) {
+            long diff = auction.getDeadline().getTime() - new Date().getTime();
+
+            if (diff <= 3600) {
+                if (diff < 1) {
+                    timeLeftlist.add("Expired");
+                } else {
+                    timeLeftlist.add("Less than an hour");
+                }
+            } else {
+                long diffHours = diff / (60 * 60 * 1000) % 24;
+                long diffDays = diff / (24 * 60 * 60 * 1000);
+                timeLeftlist.add(((diffDays > 0)?diffDays + " days and ":"")+ diffHours + " hours");
+            }
+        }
+        return timeLeftlist;
     }
 
     @Override
@@ -77,10 +105,10 @@ public class SellServlet extends HttpServlet {
     }
 
     @Override
-    public void destroy(){
-        try{
+    public void destroy() {
+        try {
             ConnectionHandler.closeConnection(connection);
-        }catch (SQLException sql){
+        } catch (SQLException sql) {
             sql.printStackTrace();
         }
     }

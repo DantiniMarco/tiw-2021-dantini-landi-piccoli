@@ -28,7 +28,7 @@ public class CreateBid extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)throws IOException {
         Float currMaxPrice = null;
 
         User user = (User) request.getSession().getAttribute("user");
@@ -38,42 +38,37 @@ public class CreateBid extends HttpServlet {
         Float fPrice;
         String errorString = "";
         String price = request.getParameter("price");
-        fPrice = Float.parseFloat(price);
-        try{
+        try {
             idAuction = Integer.parseInt(request.getParameter("idauction"));
-        }catch (NumberFormatException | NullPointerException e){
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter missing");
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad request");
             return;
         }
-        /*try{
-             currMaxPrice = Float.parseFloat(request.getParameter("currMax"));
-        }catch (NumberFormatException | NullPointerException e){
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter missing");
-            return;
-        }*/
         try{
-            BidDAO bidDAO1 = new BidDAO(connection);
-            currMaxPrice = bidDAO1.findPriceForNewBid(idAuction);
-        } catch (SQLException sqle) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
-        }
-        if (price.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter missing");
-            return;
-        }
-        else if(currMaxPrice>= fPrice){
-            //request.setAttribute("errorMsg", "This price is too low. You may insert an offer higher than the current max.");
-            errorString = "&error=lowPrice";
-        }
-        else {
-            try {
-                BidDAO bidDAO = new BidDAO(connection);
-                bidDAO.insertNewBid(fPrice, idBidder, idAuction);
+            fPrice = Float.parseFloat(price);
+            idAuction = Integer.parseInt(request.getParameter("idauction"));
+            try{
+                BidDAO bidDAO1 = new BidDAO(connection);
+                currMaxPrice = bidDAO1.findPriceForNewBid(idAuction);
             } catch (SQLException sqle) {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
-                return;
             }
+            if(currMaxPrice > fPrice){
+                errorString = "&error=lowPrice";
+            }
+            else {
+                try {
+                    BidDAO bidDAO = new BidDAO(connection);
+                    bidDAO.insertNewBid(fPrice, idBidder, idAuction);
+                } catch (SQLException sqle) {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
+                    return;
+                }
+            }
+        }catch (NumberFormatException | NullPointerException e){
+            errorString = "&error=wrongFormat";
         }
+
         response.sendRedirect(getServletContext().getContextPath() + "/GoToBidPage?idauction=" + idAuction + errorString);
     }
 }

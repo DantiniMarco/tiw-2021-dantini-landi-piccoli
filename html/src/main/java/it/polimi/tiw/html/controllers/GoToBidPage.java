@@ -58,6 +58,9 @@ public class GoToBidPage extends HttpServlet {
         if (request.getParameter("error") != null && request.getParameter("error").equals("lowPrice")) {
             ctx.setVariable("errorMsg", "This price is too low. You may insert an offer higher than the current max.");
         }
+        if (request.getParameter("error") != null && request.getParameter("error").equals("wrongFormat")) {
+            ctx.setVariable("errorMsg", "Input is not correctly formatted (prices are written e.g. 20.05)");
+        }
 
         try {
             idAuction = Integer.parseInt(request.getParameter("idauction"));
