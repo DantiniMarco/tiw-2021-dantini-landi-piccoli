@@ -229,7 +229,7 @@ function AuctionDetails(options) {
 
 // TODO: Marco da fare
 
-function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions_body, _username, _visitedAuctions, _visitedAuctions_body) {
+function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions_body, _username, _visitedAuctions, _visitedAuctions_body, _auctionDetailsInt) {
     this.alert = _alert;
     this.alertWonAuction = _alertWonAuction;
     this.wonAuctions = _wonAuctions;
@@ -237,6 +237,8 @@ function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions
     this.username = _username;
     this.visitedAuctions = _visitedAuctions;
     this.visitedAuctions_body = _visitedAuctions_body;
+    this.auctionDetailsInt = _auctionDetailsInt;
+
     this.show = function () {
         let self = this;
         let userDataStored = JSON.parse(localStorage.getItem("userData"));
