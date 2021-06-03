@@ -19,9 +19,9 @@
         <div>
             <p th:text="${'Name: ' + auctionData.itemName}"></p>
             <p th:text="${'Description: ' + auctionData.itemDescription}"></p>
-            <p th:text="${'Price: ' + auctionData.price}"></p>
-            <p th:text="${'Minimum raise: ' + auctionData.minRaise}"></p>
-            <p th:text="${'Deadline: ' + auctionData.deadline}"></p>
+            <p><span th:text="${'Price: ' + #numbers.formatDecimal(auctionData.price, 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></p>
+            <p><span th:text="${'Minimum raise:' +  #numbers.formatDecimal(auctionData.minRaise, 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></p>
+            <p th:text="${'Deadline: ' + #dates.format(auctionData.getDeadline(), 'dd-MM-yyyy HH:mm')}"></p>
             <img style="max-height: 300px; max-width: 300px;" alt="No image found"
                  th:src="@{/ImageServlet(name=${auctionData.itemImage})}">
         </div>
@@ -41,8 +41,8 @@
                 <tbody>
                 <tr th:each="bid:${bids}">
                     <td th:text="${bid.bidderUsername}"></td>
-                    <td th:text="${bid.bidPrice}"></td>
-                    <td th:text="${bid.dateTime}"></td>
+                    <td><span th:text="${#numbers.formatDecimal(bid.bidPrice, 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
+                    <td th:text="${#dates.format(bid.dateTime, 'dd-MM-yyyy HH:mm')}"></td>
                 </tr>
                 </tbody>
             </table>
@@ -50,6 +50,9 @@
                 <input id="auctionId" name="auctionId" th:value="${auctionData.idAuction}" type="hidden">
                 <input type="submit" value="Close auction">
             </form>
+            <div th:if="${errorMsg!=null}">
+                <p th:text="${errorMsg}"></p>
+            </div>
         </div>
         <div th:if="${auctionData.isClose()}">
             <h3>Auction winner data</h3>
@@ -57,8 +60,7 @@
                 <p>This item has recieved no bids</p>
             </div>
             <div th:if="${winner!=null}">
-                <p th:text="${'Winner\'s first name: ' + winner.firstName}"></p>
-                <p th:text="${'Winner\'s last name: ' + winner.lastName}"></p>
+                <p th:text="${'Winner\'s name: ' + winner.firstName + ' ' + winner.lastName}"></p>
                 <p th:text="${'Winner\'s address: ' + winner.address}"></p>
             </div>
         </div>

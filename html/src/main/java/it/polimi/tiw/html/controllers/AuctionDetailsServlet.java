@@ -62,7 +62,7 @@ public class AuctionDetailsServlet extends HttpServlet {
         }
 
         User user = (User) request.getSession().getAttribute("user");
-        List<Integer> ids = null;
+        List<Integer> ids;
         try{
             ids = am.findAuctionIdsByUsernameId(user.getIdUser());
         }catch(SQLException sqle){
@@ -79,7 +79,7 @@ public class AuctionDetailsServlet extends HttpServlet {
             throw new UnavailableException("Id parameter missing");
         }
 
-        ExtendedAuction auction = new ExtendedAuction();
+        ExtendedAuction auction;
         BidDAO bm = new BidDAO(con);
         UserDAO um = new UserDAO(con);
 
@@ -120,6 +120,14 @@ public class AuctionDetailsServlet extends HttpServlet {
         ctx.setVariable("auctionData", auction);
         ctx.setVariable("bids", bids);
         ctx.setVariable("winner", winner);
+
+        String errorMsg = request.getParameter("errorMsg");
+        if(errorMsg!=null){
+            if(errorMsg.equals("You cannot close the auction yet")){
+                ctx.setVariable("errorMsg", errorMsg);
+            }
+        }
+
         String path = "/WEB-INF/AuctionDetails.html";
         templateEngine.process(path, ctx, response.getWriter());
 

@@ -125,7 +125,7 @@ public class AuctionDAO {
      * @param idCreator of the user
      * @return code of success or unsuccess
      */
-        public int insertNewAuction(String itemName, String itemImage, String itemDescription, float initialPrice, float minRaise, java.sql.Date deadline, int idCreator) throws SQLException{
+        public int insertNewAuction(String itemName, String itemImage, String itemDescription, float initialPrice, float minRaise, java.sql.Timestamp deadline, int idCreator) throws SQLException{
             int itemId;
             Item newItem = new Item(itemName, itemImage, itemDescription);
             ItemDAO im = new ItemDAO(con);
@@ -141,7 +141,7 @@ public class AuctionDAO {
                 pstatement = con.prepareStatement(query);
                 pstatement.setFloat(1,initialPrice);
                 pstatement.setFloat(2, minRaise);
-                pstatement.setDate(3, deadline);
+                pstatement.setTimestamp(3, deadline);
                 pstatement.setInt(4, idCreator);
                 pstatement.setInt(5, itemId);
                 pstatement.setInt(6, AuctionStatus.OPEN.getValue());
@@ -251,12 +251,10 @@ public class AuctionDAO {
      */
     public List<Integer> findAuctionIdsByUsernameId(int usernameId) throws SQLException{
         String query = "SELECT idauction FROM auction WHERE idcreator = ?";
-        PreparedStatement pstatement = null;
-        ResultSet result = null;
+        ResultSet result;
         List<Integer> ids = new ArrayList<>();
         int id = 0;
-        try{
-            pstatement = con.prepareStatement(query);
+        try (PreparedStatement pstatement = con.prepareStatement(query)){
             pstatement.setInt(1, usernameId);
             result = pstatement.executeQuery();
             while(result.next()){
@@ -270,4 +268,32 @@ public class AuctionDAO {
         return ids;
     }
 
+    /***
+     * @author Alfredo Landi
+     * @param id of selected auction
+     * @return the deadline of the selected auction in timestamp format
+     * @throws SQLException in case of an issue from database
+     */
+    public Timestamp findAuctionDeadlineById(int id) throws SQLException{
+        String query = "SELECT deadline FROM auction WHERE idauction = ?";
+        ResultSet result = null;
+        Timestamp deadline = null;
+
+        try (PreparedStatement pstatement = con.prepareStatement(query)){
+            pstatement.setInt(1, id);
+            result = pstatement.executeQuery();
+            while(result.next()){
+                deadline = result.getTimestamp("deadline");
+            }
+        }catch (SQLException sqle){
+            sqle.printStackTrace();
+
+        }finally {
+            if(result!=null){
+                result.close();
+            }
+        }
+
+        return deadline;
+    }
 }

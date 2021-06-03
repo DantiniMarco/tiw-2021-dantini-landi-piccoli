@@ -150,3 +150,7 @@ th, td {
 #labelWon{
     color: #46af11;
 }
+
+.clickable:hover {
+    background-color: #ddd;
+}
