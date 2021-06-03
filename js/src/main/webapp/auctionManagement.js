@@ -74,6 +74,7 @@
         let buyContainer = document.getElementById("id_buy");
         let buySearchContainer = document.getElementById("id_buy_search");
         let buyDetailsContainer = document.getElementById("id_buy_details");
+        let latestDetailsContainer = document.getElementById("id_latest_details");
         let sellContainer = document.getElementById("id_sell");
         let buyBar = document.getElementById("id_buybar");
         let sellBar = document.getElementById("id_sellbar");
@@ -94,7 +95,8 @@
                 currentPrice: document.getElementById("id_currentPriceTitle"),
                 backButton: document.getElementById("id_goBackButtonDetails"),
                 buySearchContainer: buySearchContainer,
-                buyDetailsContainer: buyDetailsContainer
+                buyDetailsContainer: buyDetailsContainer,
+                latestDetailsContainer : latestDetailsContainer
             });
             auctionDetails.registerEvents(this);
 

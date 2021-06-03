@@ -31,8 +31,7 @@ public class AuctionDAO {
 
         String query = "SELECT idauction, UNIX_TIMESTAMP(deadline) AS deadline, minraise, initialprice, name FROM " +
                 "(item NATURAL JOIN auction) WHERE (item.name LIKE ? OR " +
-                "item.description LIKE ?) AND auction.deadline >= " +
-                "CURDATE() ORDER BY auction.deadline DESC";
+                "item.description LIKE ?) AND auction.status = 0 ORDER BY auction.deadline DESC";
         try (PreparedStatement pstatement = con.prepareStatement(query)) {
             pstatement.setString(1, "%" + keyword + "%");
             pstatement.setString(2, "%" + keyword + "%");

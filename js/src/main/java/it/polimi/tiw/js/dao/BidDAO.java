@@ -75,7 +75,8 @@ public class BidDAO {
 
     /**
      * @author Marco D'Antini
-     * query used to find the latest visited auctions
+     * query used to find the latest visited auctions.
+     * @param auctionIDs: array of string . collected from the local storage of the browser
      */
     public List<ExtendedAuction> findLatestAuctions(String[] auctionIDs) throws SQLException {
         List<ExtendedAuction> latestAuctions = new ArrayList<>();
@@ -84,7 +85,11 @@ public class BidDAO {
             builder.append("?,");
         }
         String placeHolders =  builder.deleteCharAt( builder.length() -1 ).toString();
-        String query = "SELECT idauction, name, description, MAX(bidprice) FROM auction NATURAL JOIN bid NATURAL JOIN item WHERE idauction in (" + placeHolders + ") AND status = 0 GROUP BY idauction";
+        /*String query = "SELECT idauction, name, description, MAX(bidprice) FROM auction NATURAL JOIN " +
+                "bid NATURAL JOIN item WHERE idauction in (" + placeHolders + ") AND status = 0 GROUP BY idauction";*/
+        String query= "SELECT item.name, item.description FROM item, bid, auction WHERE" +
+                " item.iditem = auction.iditem AND auction.idauction IN ("+placeHolders+")"+
+                " AND auction.status = 0 GROUP BY auction.idauction;";
         /*String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image " +
                 "FROM (bid NATURAL JOIN auction NATURAL JOIN item) WHERE auction.status = 1 AND bid.idbidder = ?";*/
         try (PreparedStatement pstatement = con.prepareStatement(query)) {
@@ -95,8 +100,7 @@ public class BidDAO {
             try (ResultSet result = pstatement.executeQuery()) {
                 while (result.next()) {
                     ExtendedAuction exAuction = new ExtendedAuction();
-                    exAuction.setIdAuction(result.getInt("idauction"));
-                    exAuction.setPrice(result.getFloat("MAX(bidprice)"));
+                    //exAuction.setPrice(result.getFloat("MAX(bidprice)"));
                     exAuction.setItemName(result.getString("name"));
                     exAuction.setItemDescription(result.getString("description"));
                     latestAuctions.add(exAuction);

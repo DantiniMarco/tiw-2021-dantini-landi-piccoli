@@ -51,7 +51,7 @@
             </div>
         </form>
         <br>
-        <table th:if="${bids != null}">
+        <table th:if="${!bids.isEmpty()}">
             <thead>
             <tr>
                 <th>Bid Price</th>
@@ -67,7 +67,7 @@
             </tr>
             </tbody>
         </table>
-        <div th:unless="${bids!= null}">
+        <div th:if="${bids.isEmpty()}">
             <p th:text="${'No bids found for this item.'}"></p>
         </div>
     </div>

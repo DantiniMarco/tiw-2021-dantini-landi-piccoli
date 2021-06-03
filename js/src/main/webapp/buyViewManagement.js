@@ -266,7 +266,7 @@ function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions
                             self.wonAuctions.style.visibility = "visible";
                             self.wonAuctions.style.display = null;
                         }
-                        if (auctionsToShow.wonAuction.length === 0) {
+                        if (auctionsToShow.auctionsVisited.length === 0) {
                             // hide last visited
                             self.visitedAuctions.style.visibility = "hidden";
                             self.visitedAuctions.style.display = "none";
@@ -295,12 +295,13 @@ function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions
         let self = this;
         arrayAuctions.forEach(function (auction) { // self visible here, not this
             row = document.createElement("tr");
-            priceCell = document.createElement("td");
+
+            /*priceCell = document.createElement("td");
             priceCell.textContent = new Intl.NumberFormat('it-IT', {
                 style: 'currency',
                 currency: 'EUR'
             }).format(auction.price);
-            row.appendChild(priceCell);
+            row.appendChild(priceCell);*/
 
             itemCell = document.createElement("td");
             itemCell.textContent = auction.itemName;
@@ -309,6 +310,21 @@ function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions
             descriptionCell = document.createElement("td");
             descriptionCell.textContent = auction.itemDescription;
             row.appendChild(descriptionCell);
+
+            anchor = document.createElement("a");
+            linkcell.appendChild(anchor);
+            linkText = document.createTextNode("Details");
+            anchor.appendChild(linkText);
+            anchor.auctionid = auction.id; // make list item clickable
+            anchor.setAttribute('auctionid', auction.idAuction); // set a custom HTML attribute
+            anchor.addEventListener("click", (e) => {
+                // dependency via module parameter
+                self.auctionDetailsInt.show(e.target.getAttribute("auctionid")); // the list must know the details container
+            }, false);
+            anchor.href = "#";
+            row.appendChild(linkcell);
+
+
 
             self.visitedAuctions_body.appendChild(row);
         });

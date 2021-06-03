@@ -59,7 +59,7 @@ public class SellHelperServlet extends HttpServlet {
             bad_request = 1;
         }
         UUID uuid = UUID.randomUUID();
-        String newFileName = uuid.toString() + (fileName != null ? fileName.substring(fileName.indexOf(".")) : "");
+        String newFileName = uuid.toString() + (fileName != "" ? fileName.substring(fileName.indexOf(".")) : "");
         if (filePart.getSize() > 0) {
             try (OutputStream out = new FileOutputStream(new File(System.getProperty("catalina.home") + File.separator + "img" + File.separator
                     + newFileName))) {
