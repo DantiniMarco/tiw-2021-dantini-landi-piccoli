@@ -171,12 +171,10 @@ public class BidDAO {
     public int findWinnerIdByAuctionId(int auctionId) throws SQLException {
         String query = "SELECT idbidder FROM auction LEFT JOIN bid ON auction.idauction = bid.idauction " +
                 "WHERE auction.idauction = ? AND bidprice = (SELECT max(bidprice) FROM bid WHERE bid.idauction = ?)";
-        PreparedStatement pstatement = null;
         ResultSet result = null;
         int resultId = 0;
 
-        try {
-            pstatement = con.prepareStatement(query);
+        try (PreparedStatement pstatement = con.prepareStatement(query)){
             pstatement.setInt(1, auctionId);
             pstatement.setInt(2, auctionId);
             result = pstatement.executeQuery();
