@@ -20,6 +20,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,7 +35,7 @@ public class SellServlet extends HttpServlet {
     private TemplateEngine templateEngine;
 
     @Override
-    public void init() throws ServletException {
+    public void init() throws ServletException{
         ServletContext servletContext = getServletContext();
         connection = ConnectionHandler.getConnection(getServletContext());
         ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
@@ -42,35 +46,28 @@ public class SellServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        ServletContext servletContext = getServletContext();
-        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         User user = (User) request.getSession().getAttribute("user");
-        AuctionDAO am = new AuctionDAO(connection);
+        AuctionDAO am= new AuctionDAO(connection);
         List<ExtendedAuction> openAuctions;
         List<ExtendedAuction> closedAuctions;
 
-        if (request.getParameter("error") != null && request.getParameter("error").equals("wrongFormat")) {
-            ctx.setVariable("errorMsg", "Input is not correctly formatted");
-        }
-
-        try {
+        try{
             openAuctions = am.findAuctionsByIdAndStatus(user.getIdUser(), AuctionStatus.OPEN);
-        } catch (SQLException sql) {
+        }catch(SQLException sql){
             sql.printStackTrace();
             throw new UnavailableException("Error executing query");
         }
 
-        try {
+        try{
             closedAuctions = am.findAuctionsByIdAndStatus(user.getIdUser(), AuctionStatus.CLOSED);
-        } catch (SQLException sql) {
+        }catch(SQLException sql){
             sql.printStackTrace();
             throw new UnavailableException("Error executing query");
         }
 
-
-
+        ServletContext servletContext = getServletContext();
+        final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
         ctx.setVariable("openAuctions", openAuctions);
         ctx.setVariable("closedAuctions", closedAuctions);
 
@@ -79,6 +76,16 @@ public class SellServlet extends HttpServlet {
 
         ctx.setVariable("timeLeftOpen", timeLeftOpen);
         ctx.setVariable("timeLeftClosed", timeLeftClosed);
+        LocalDateTime dateLowerBound = LocalDateTime.now();
+        dateLowerBound = dateLowerBound.plusDays(1);
+        DateTimeFormatter lowerBoundFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm");
+        String lowerBoundFormatted = dateLowerBound.format(lowerBoundFormatter);
+        LocalDateTime dateUpperBound = LocalDateTime.now();
+        dateUpperBound = dateUpperBound.plusWeeks(2);
+        DateTimeFormatter upperBoundFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm");
+        String upperBoundFormatted = dateUpperBound.format(upperBoundFormatter);
+        ctx.setVariable("dateMin", lowerBoundFormatted);
+        ctx.setVariable("dateMax", upperBoundFormatted);
 
         String path = "/WEB-INF/Sell.html";
         templateEngine.process(path, ctx, response.getWriter());
@@ -111,10 +118,10 @@ public class SellServlet extends HttpServlet {
     }
 
     @Override
-    public void destroy() {
-        try {
+    public void destroy(){
+        try{
             ConnectionHandler.closeConnection(connection);
-        } catch (SQLException sql) {
+        }catch (SQLException sql){
             sql.printStackTrace();
         }
     }

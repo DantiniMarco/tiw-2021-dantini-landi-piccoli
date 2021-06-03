@@ -122,8 +122,10 @@ public class AuctionDetailsServlet extends HttpServlet {
         ctx.setVariable("winner", winner);
 
         String errorMsg = request.getParameter("errorMsg");
+        System.out.println(errorMsg);
         if(errorMsg!=null){
-            if(errorMsg.equals("You cannot close the auction yet")){
+            System.out.println(errorMsg.equals("wrongClosure"));
+            if(errorMsg.equals("wrongClosure")){
                 ctx.setVariable("errorMsg", errorMsg);
             }
         }
