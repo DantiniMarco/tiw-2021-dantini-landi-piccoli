@@ -121,6 +121,7 @@ function AuctionDetails(options) {
     this.itemImage = options['itemImage'];
     this.itemDescription = options['itemDescription'];
     this.currentPrice = options['currentPrice'];
+    this.minRaise = options['minRaise'];
     this.buySearchContainer = options['buySearchContainer'];
     this.buyDetailsContainer = options['buyDetailsContainer'];
     this.backButton = options['backButton'];
@@ -196,6 +197,10 @@ function AuctionDetails(options) {
             style: 'currency',
             currency: 'EUR'
         }).format(formdata.currMax);
+        this.minRaise.textContent = "The minimum raise is: " +new Intl.NumberFormat('it-IT', {
+            style: 'currency',
+            currency: 'EUR'
+        }).format(formdata.minRaise);
         this.bidlistcontainerbody.innerHTML = ""; // empty the table body
         var row, idBid, priceCell, dateCell;
         // build updated list

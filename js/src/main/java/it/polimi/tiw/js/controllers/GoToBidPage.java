@@ -61,7 +61,12 @@ public class GoToBidPage extends HttpServlet {
         } catch (SQLException sqle) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
         }
-
+        try {
+            currMaxPrice = bidDAO.findPriceForNewBid(idAuction);
+            bidPageInfo.put("currMax", currMaxPrice);
+        } catch (SQLException sqle) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
+        }
 
         try {
             ItemDAO itemDAO = new ItemDAO(connection);

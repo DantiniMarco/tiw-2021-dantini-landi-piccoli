@@ -78,6 +78,8 @@
         let sellContainer = document.getElementById("id_sell");
         let buyBar = document.getElementById("id_buybar");
         let sellBar = document.getElementById("id_sellbar");
+        let minRaise = document.getElementById("id_minRaise");
+        let currMaxPrice = document.getElementById("id_currentPriceTitle");
         this.start = function () {
             new PersonalMessage(alertContainer, document.getElementById("id_username"));
 
@@ -95,18 +97,20 @@
                 backButton: document.getElementById("id_goBackButtonDetails"),
                 buySearchContainer: buySearchContainer,
                 buyDetailsContainer: buyDetailsContainer,
-                latestDetailsContainer : latestDetailsContainer
+                latestDetailsContainer : latestDetailsContainer,
+                minRaise,
             });
             auctionDetails.registerEvents(this);
 
             wonAndLatestAuction = new WonAndLatestAuction(alertWonAuction, alertContainer, document.getElementById("id_wonAuctions"),
-                document.getElementById("id_wonAuctions_body"), userData.username, document.getElementById("id_visitedAuctions"), document.getElementById("id_visitedAuctions_body"), auctionDetails );
+                document.getElementById("id_wonAuctions_body"), userData.username, document.getElementById("id_visitedAuctions"),
+                document.getElementById("id_visitedAuctions_body"), auctionDetails );
             auctionsList = new AuctionList(
                 alertSearchContainer,
                 alertContainer,
                 document.getElementById("id_listcontainer"),
                 document.getElementById("id_listcontainerbody"),
-                auctionDetails);
+                auctionDetails, currMaxPrice);
 
             auctionsListSell = new AuctionListSell(
                 alertContainer,
