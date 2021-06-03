@@ -18,7 +18,7 @@ public class BidDAO {
     /***
      * @author Alfredo Landi
      * @param auctionId of the current auction
-     * @return a list o bids for the current auction
+     * @return a list of bids for the current auction
      */
     public List<ExtendedBid> findBidsByIdAuction(int auctionId) throws SQLException {
         List<ExtendedBid> bids = new ArrayList<>();

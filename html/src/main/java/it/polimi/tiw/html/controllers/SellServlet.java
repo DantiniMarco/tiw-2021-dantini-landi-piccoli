@@ -43,10 +43,17 @@ public class SellServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        ServletContext servletContext = getServletContext();
+        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+
         User user = (User) request.getSession().getAttribute("user");
         AuctionDAO am = new AuctionDAO(connection);
         List<ExtendedAuction> openAuctions;
         List<ExtendedAuction> closedAuctions;
+
+        if (request.getParameter("error") != null && request.getParameter("error").equals("wrongFormat")) {
+            ctx.setVariable("errorMsg", "Input is not correctly formatted");
+        }
 
         try {
             openAuctions = am.findAuctionsByIdAndStatus(user.getIdUser(), AuctionStatus.OPEN);
@@ -63,9 +70,7 @@ public class SellServlet extends HttpServlet {
         }
 
 
-        String path = "/WEB-INF/Sell.html";
-        ServletContext servletContext = getServletContext();
-        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+
         ctx.setVariable("openAuctions", openAuctions);
         ctx.setVariable("closedAuctions", closedAuctions);
 
@@ -75,6 +80,7 @@ public class SellServlet extends HttpServlet {
         ctx.setVariable("timeLeftOpen", timeLeftOpen);
         ctx.setVariable("timeLeftClosed", timeLeftClosed);
 
+        String path = "/WEB-INF/Sell.html";
         templateEngine.process(path, ctx, response.getWriter());
 
     }
