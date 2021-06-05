@@ -16,10 +16,7 @@ import java.io.OutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.text.DateFormat;
@@ -51,7 +48,6 @@ public class SellHelperServlet extends HttpServlet {
         String deadlineLocalDateTimeParam = request.getParameter("deadlineLocalDateTime");
         String deadlineTimeZoneParam = request.getParameter("deadlineTimeZone");
         System.out.println(ZoneId.getAvailableZoneIds());
-        boolean bad_request = false;
         float initialPrice;
         float minRaise;
         Timestamp deadline;
@@ -75,13 +71,18 @@ public class SellHelperServlet extends HttpServlet {
             deadline = Timestamp.valueOf(dateWithTimeZone);
 
             if (minRaise < 0.01f || minRaise > 500000) {
-                System.out.println(minRaise);
-                System.out.println("Sono nel secondo if");
                 throw new NumberFormatException();
             }
             if (initialPrice < 1 || initialPrice > 999999.99f) {
-                System.out.println("Sono nel terzo if");
                 throw new NumberFormatException();
+            }
+
+            LocalDateTime dateLowerBound = LocalDateTime.now(ZoneOffset.UTC);
+            dateLowerBound = dateLowerBound.plusDays(1);
+            LocalDateTime dateUpperBound = LocalDateTime.now(ZoneOffset.UTC);
+            dateUpperBound = dateUpperBound.plusWeeks(2);
+            if(deadline.before(Timestamp.valueOf(dateLowerBound)) || deadline.after(Timestamp.valueOf(dateUpperBound))){
+                throw new DateTimeException("Wrong deadline");
             }
 
             UUID uuid = UUID.randomUUID();

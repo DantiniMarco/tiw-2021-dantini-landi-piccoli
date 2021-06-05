@@ -36,7 +36,7 @@
                 <td><span
                         th:text="${openAuction.itemDescription}"></span></td>
                 <td><span
-                        th:text="${openAuction.price}"></span></td>
+                        th:text="${openAuction.price==0.0}?'no bids':${openAuction.price}"></span></td>
                 <td><span
                         th:text="${openAuction.minRaise}"></span></td>
                 <td><span
@@ -66,7 +66,7 @@
                 <td><span
                         th:text="${closedAuction.itemDescription}"></span></td>
                 <td><span
-                        th:text="${closedAuction.price}"></span></td>
+                        th:text="${closedAuction.price==0.0}?'no bids':${closedAuction.price}"></span></td>
                 <td><span
                         th:text="${closedAuction.minRaise}"></span></td>
                 <td><span
@@ -80,10 +80,10 @@
         <form action="SellHelperServlet" method="POST" enctype="multipart/form-data">
             <div class="container">
                 <label for="itemName">Name: </label><input id="itemName" name="itemName" placeholder="Select a name for the article, please"
-                                                           required><br><br>
+                                                           type = "text" required><br><br>
                 <label for="itemImage">Image: </label><input type="file" id="itemImage" name="itemImage"><br><br>
-                <label for="itemDescription">Description: </label><input id="itemDescription" name="itemDescription"
-                                                                         placeholder="Write a short description to help customers, please" required><br><br>
+                <label for="itemDescription">Description: </label><input id="itemDescription" name="itemDescription" type = "text"
+                                                                         placeholder="Write a short description to help users, please" required><br><br>
                 <label for="initialPrice">Initial Price: </label><input id="initialPrice" name="initialPrice" type="number"
                                                                         placeholder="9.99" min="0.01" max="999999.99" step="0.01"
                                                                         required><br><br>
@@ -93,6 +93,8 @@
                 <label for="deadlineLocalDateTime">Auction closing time: </label><input id="deadlineLocalDateTime"
                                                                                         name="deadlineLocalDateTime"
                                                                                         type="datetime-local"
+                                                                                        th:min="${dateMin}"
+                                                                                        th:max="${dateMax}"
                                                                                         required><br><br>
                 <input type="hidden" id="deadlineTimeZone" name="deadlineTimeZone" value="Europe/Rome">
                 <input type="submit" value="Submit">
