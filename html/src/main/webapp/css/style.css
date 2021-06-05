@@ -154,3 +154,7 @@ th, td {
 .clickable:hover {
     background-color: #ddd;
 }
+#error{
+    color:red;
+
+}
