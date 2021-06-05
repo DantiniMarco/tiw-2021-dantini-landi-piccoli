@@ -143,7 +143,11 @@ table, th, td{
 th, td {
     padding: 7px;
 }
-#id_alertWonAuctions{
+#id_alertWonAuctions, #id_currentPriceTitle, #id_noBids{
     text-align: center;
     color:red;
+}
+#id_minRaise{
+    font: message-box;
+    color: #ff9713 ;
 }

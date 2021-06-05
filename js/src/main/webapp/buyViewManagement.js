@@ -121,6 +121,7 @@ function AuctionDetails(options) {
     this.itemImage = options['itemImage'];
     this.itemDescription = options['itemDescription'];
     this.currentPrice = options['currentPrice'];
+    this.noBids = options['noBids'];
     this.minRaise = options['minRaise'];
     this.buySearchContainer = options['buySearchContainer'];
     this.buyDetailsContainer = options['buyDetailsContainer'];
@@ -206,13 +207,16 @@ function AuctionDetails(options) {
         // build updated list
         var self = this;
         if (formdata.bids.length === 0) {
-            console.log("No bids")
-        }
-        formdata.bids.forEach(function (bid) { // self visible here, not this
+            this.bidlistcontainer.style.visibility= "hidden"
+            this.bidlistcontainer.style.display= "none"
+            this.noBids.textContent = " This auction has not received auctions yes"
+        } else {
+            this.noBids.style.visibility="hidden"
+            this.noBids.style.display="none"
+            this.bidlistcontainer.style.visibility = "visible"
+            this.bidlistcontainer.style.display = null
+            formdata.bids.forEach(function (bid) { // self visible here, not this
             row = document.createElement("tr");
-            idBid = document.createElement("td");
-            idBid.textContent = bid.idBid;
-            row.appendChild(idBid);
             priceCell = document.createElement("td");
             priceCell.textContent = new Intl.NumberFormat('it-IT', {
                 style: 'currency',
@@ -223,7 +227,8 @@ function AuctionDetails(options) {
             dateCell.textContent = bid.dateTime;
             row.appendChild(dateCell);
             self.bidlistcontainerbody.appendChild(row);
-        });
+        });}
+
         this.bidform.querySelector("input[type = 'hidden']").value = this.currentAuctionId
         this.buySearchContainer.style.visibility = "hidden"
         this.buySearchContainer.style.display = "none"
@@ -277,6 +282,7 @@ function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions
                             // hide last visited
                             self.visitedAuctions.style.visibility = "hidden";
                             self.visitedAuctions.style.display = "none";
+                            self.alertWonAuction.textContent = "You haven't visited an auction yet";
                         }else{
                             // show last visited
                             self.updateVisited(auctionsToShow.auctionsVisited);
@@ -302,14 +308,6 @@ function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions
         let self = this;
         arrayAuctions.forEach(function (auction) { // self visible here, not this
             row = document.createElement("tr");
-
-            /*priceCell = document.createElement("td");
-            priceCell.textContent = new Intl.NumberFormat('it-IT', {
-                style: 'currency',
-                currency: 'EUR'
-            }).format(auction.price);
-            row.appendChild(priceCell);*/
-
             itemCell = document.createElement("td");
             itemCell.textContent = auction.itemName;
             row.appendChild(itemCell);

@@ -87,6 +87,7 @@
                 // object
                 alert: alertContainer,
                 username: userData.username,
+                noBids : document.getElementById("id_noBids"),
                 bidlistcontainer: document.getElementById("id_bidlistcontainer"),
                 bidlistcontainerbody: document.getElementById("id_bidlistcontainerbody"),
                 bidform: document.getElementById("id_bidform"),
