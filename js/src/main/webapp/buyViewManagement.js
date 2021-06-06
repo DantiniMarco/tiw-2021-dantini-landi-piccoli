@@ -141,6 +141,7 @@ function AuctionDetails(options) {
                             if (req.status === 200) {
                                 //add bid
                                 self.show(self.currentAuctionId);
+                                self.alertPriceBid.textContent ="";
                             } else {
                                 self.alertPriceBid.textContent = message;
                             }
