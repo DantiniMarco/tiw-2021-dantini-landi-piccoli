@@ -19,7 +19,7 @@
 <br>
 <br>
 <h2 id="labelWon">These are your won auctions:</h2>
-<p th:align="center" id="error" th:text=" ${errorMsg}"></p>
+<p th:align="center" id="error" class="error-message" th:text=" ${errorMsg}"></p>
 
 <table th:if="${wonList != null}">
     <thead>
@@ -47,6 +47,7 @@
         <label for="keyword"><strong>Search for Open Auctions</strong></label>
         <input type="text" placeholder="Write a key word..." id="keyword" name="keyword" required> <br>
         <button type="submit">Search</button>
+        <p th:align="center" class="error-message" th:text=" ${errorMsgForm}"></p>
     </div>
 </form>
 </body>

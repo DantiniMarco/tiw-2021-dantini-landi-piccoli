@@ -67,7 +67,7 @@ public class GetSearchedAuction extends HttpServlet {
         }
         if (keyWord != null) {
             if (keyWord.length() < 3) {
-                ctx.setVariable("errorMsg", "Try again, this keyword is too short.");
+                ctx.setVariable("errorMsgForm", "Try again, this keyword is too short.");
             } else {
                 AuctionDAO aDAO = new AuctionDAO(connection);
                 List<ExtendedAuction> searchedList;
@@ -75,7 +75,7 @@ public class GetSearchedAuction extends HttpServlet {
                     searchedList = aDAO.findOpenAuction(keyWord, idBidder);
 
                     if (searchedList == null || searchedList.isEmpty()) {
-                        ctx.setVariable("errorMsg", "This keyword doesn't match any open auction.");
+                        ctx.setVariable("errorMsgForm", "This keyword doesn't match any open auction.");
                     } else {
                         ctx.setVariable("auctions", searchedList);
                     }
