@@ -22,11 +22,12 @@ function AuctionList(_searchalert, _alert, _listcontainer, _listcontainerbody, _
                         var auctionsToShow = JSON.parse(req.responseText);
                         console.log(auctionsToShow);
                         if (auctionsToShow.length === 0) {
-                            self.alert.textContent = "No auctions found!";
+                            self.searchalert.textContent = "No auctions found!";
                             return;
                         }
                         self.update(auctionsToShow); // self visible by closure
                     } else {
+                        self.alert.textContent= "";
                         self.searchalert.textContent = req.responseText;
                         self.listcontainer.style.visibility = "hidden";
                         self.listcontainer.style.display = "none";
@@ -141,7 +142,7 @@ function AuctionDetails(options) {
                             if (req.status === 200) {
                                 //add bid
                                 self.show(self.currentAuctionId);
-                                self.alertPriceBid.textContent ="";
+                                self.alertPriceBid.textContent =""
                             } else {
                                 self.alertPriceBid.textContent = message;
                             }
