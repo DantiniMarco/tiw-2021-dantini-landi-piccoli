@@ -68,6 +68,7 @@
     }
 
     function PageOrchestrator() {
+        let alertPriceBid = document.getElementById("id_alertPriceBid");
         let alertWonAuction = document.getElementById("id_alertWonAuctions");
         let alertContainer = document.getElementById("id_alert");
         let alertSearchContainer = document.getElementById("id_alert_search");
@@ -86,6 +87,7 @@
             auctionDetails = new AuctionDetails({ // many parameters, wrap them in an
                 // object
                 alert: alertContainer,
+                alertPriceBid : alertPriceBid,
                 username: userData.username,
                 noBids : document.getElementById("id_noBids"),
                 bidlistcontainer: document.getElementById("id_bidlistcontainer"),
@@ -99,7 +101,7 @@
                 buySearchContainer: buySearchContainer,
                 buyDetailsContainer: buyDetailsContainer,
                 latestDetailsContainer : latestDetailsContainer,
-                minRaise,
+                minRaise: minRaise
             });
             auctionDetails.registerEvents(this);
 

@@ -3,7 +3,7 @@ function AuctionList(_searchalert, _alert, _listcontainer, _listcontainerbody, _
     this.alert = _alert;
     this.listcontainer = _listcontainer;
     this.listcontainerbody = _listcontainerbody;
-    this.auctionDetailsInt = _auctionDetailsInt
+    this.auctionDetailsInt = _auctionDetailsInt;
 
     this.reset = function () {
         this.listcontainer.style.visibility = "hidden";
@@ -85,7 +85,6 @@ function AuctionList(_searchalert, _alert, _listcontainer, _listcontainerbody, _
         self.listcontainer.style.visibility = "visible";
         self.listcontainer.style.display = null;
     }
-
 }
 
 function SearchAuction(formId, alert, auctionsListInt, username) {
@@ -112,6 +111,7 @@ function SearchAuction(formId, alert, auctionsListInt, username) {
 }
 
 function AuctionDetails(options) {
+    this.alertPriceBid = options['alertPriceBid'];
     this.alert = options['alert'];
     this.username = options['username'];
     this.bidlistcontainer = options['bidlistcontainer'];
@@ -142,12 +142,11 @@ function AuctionDetails(options) {
                                 //add bid
                                 self.show(self.currentAuctionId);
                             } else {
-                                self.alert.textContent = message;
+                                self.alertPriceBid.textContent = message;
                             }
                         }
                     }
-                );
-            } else {
+                );} else {
                 form.reportValidity();
             }
         });

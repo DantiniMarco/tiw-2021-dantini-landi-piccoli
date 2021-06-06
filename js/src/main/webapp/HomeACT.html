@@ -19,13 +19,13 @@
 </div>
 <h1>Welcome to the TIW 2021 Auction Home Page</h1>
 <p align="center">Nice to see you again <span id="id_username"></span></p>
-<div id="id_alert" class="alertmessage"></div>
+<div id="id_alert" class="error-message"></div>
 <br>
 
 <div id="id_buy" style="visibility: hidden">
 
     <h2>These are your won auctions: </h2>
-    <p id="id_alertWonAuctions"></p>
+    <p id="id_alertWonAuctions" class="error-message" ></p>
     <table id="id_wonAuctions">
         <thead>
         <tr>
@@ -62,7 +62,7 @@
                 <label for="keyword"><strong>Search for Open Auctions</strong></label>
                 <input type="text" placeholder="Write a key word..." id="keyword" name="keyword" required> <br>
                 <button type="submit">Search</button>
-                <div id="id_alert_search" class="alertmessage"></div>
+                <div id="id_alert_search" class="error-message"></div>
                 <p id="id_searchalert"></p>
             </div>
         </form>
@@ -112,10 +112,12 @@
                         <label for="price"><b>Make a new bid</b></label>
                         <input type="text" placeholder="Type here..." id="price" name="price" required> <br>
                         <button type="submit">Submit</button>
-                        <p th:text="${errorMsg}"></p>
+                        <p id="id_alertPriceBid" class="error-message"></p>
                         <input type="hidden" name="idauction">
+
                     </div>
                 </form>
+
                 <br>
                 <br>
                 <br>
