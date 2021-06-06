@@ -19,13 +19,13 @@
                 window.location.href = "HomeACT.html";
                 break;
               case 400: // bad request
-                document.getElementById("errormessage").textContent = message;
+                document.getElementById("id_loginAlert").textContent = message;
                 break;
               case 401: // unauthorized
-                  document.getElementById("errormessage").textContent = message;
+                  document.getElementById("id_loginAlert").textContent = message;
                   break;
               case 500: // server error
-            	document.getElementById("errormessage").textContent = message;
+            	document.getElementById("id_loginAlert").textContent = message;
                 break;
             }
           }
