@@ -296,4 +296,32 @@ public class AuctionDAO {
 
         return deadline;
     }
+
+    /**
+     * @author Marco D'Antini
+     * used to prevent not legit usage of database by the user
+     * @param userId
+     * @return
+     * @throws SQLException
+     */
+    public List<Integer> findLegitIdsBid(int userId) throws SQLException{
+        String query = "SELECT idauction from auction WHERE idcreator != ? AND status = 0";
+        List<Integer> idList = new ArrayList<>();
+        ResultSet result = null;
+
+        try(PreparedStatement pstatement = con.prepareStatement(query)){
+            pstatement.setInt(1, userId);
+            result = pstatement.executeQuery();
+            while(result.next()){
+                idList.add(result.getInt("idauction"));
+            }
+        }catch (SQLException sqle){
+            sqle.printStackTrace();
+        } finally {
+            if(result!=null){
+                result.close();
+            }
+        }
+        return idList;
+    }
 }

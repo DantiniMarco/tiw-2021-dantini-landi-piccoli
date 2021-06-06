@@ -3,6 +3,7 @@ package it.polimi.tiw.html.controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import it.polimi.tiw.html.beans.*;
+import it.polimi.tiw.html.dao.AuctionDAO;
 import it.polimi.tiw.html.dao.BidDAO;
 import it.polimi.tiw.html.dao.ItemDAO;
 import it.polimi.tiw.html.utils.ConnectionHandler;
@@ -53,6 +55,9 @@ public class GoToBidPage extends HttpServlet {
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
         BidDAO bidDAO = new BidDAO(connection);
         float minRaise=-1;
+        List<Integer> idList = new ArrayList<>();
+        AuctionDAO auctionDAO = new AuctionDAO(connection);
+        User user = (User) request.getSession().getAttribute("user");
 
 
         if (request.getParameter("error") != null && request.getParameter("error").equals("lowPrice")) {
@@ -68,13 +73,23 @@ public class GoToBidPage extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "incorrect param values");
             return;
         }
+        try{
+            idList = auctionDAO.findLegitIdsBid(user.getIdUser());
+        } catch (SQLException throwables) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
+            return;
+        }
+        if(!idList.contains(idAuction)){
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "incorrect request");
+            return;
+        }
         try {
             minRaise = bidDAO.findMinRaise(idAuction);
             if(minRaise >=0)
                 ctx.setVariable("minimumRaise", minRaise);
         } catch (SQLException throwables) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
-
+            return;
         }
 
         try {
@@ -82,6 +97,7 @@ public class GoToBidPage extends HttpServlet {
             ctx.setVariable("currMax", currMaxPrice);
         } catch (SQLException sqle) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
+            return;
         }
 
 
@@ -95,6 +111,7 @@ public class GoToBidPage extends HttpServlet {
             }
         } catch (SQLException e) {
             response.sendError(500, "Database access failed");
+            return;
         }
         try {
             bids = bidDAO.findBidsByIdAuction(idAuction);
@@ -104,6 +121,7 @@ public class GoToBidPage extends HttpServlet {
             ctx.setVariable("idauction", idAuction);
         } catch (SQLException e) {
             response.sendError(500, "Database access failed");
+            return;
         }
 
         String path = "/WEB-INF/GoToBidPage.html";

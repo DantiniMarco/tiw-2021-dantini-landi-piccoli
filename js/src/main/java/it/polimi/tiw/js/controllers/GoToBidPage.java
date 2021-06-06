@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import it.polimi.tiw.js.beans.Bid;
 import it.polimi.tiw.js.beans.ExtendedBid;
 import it.polimi.tiw.js.beans.Item;
+import it.polimi.tiw.js.beans.User;
+import it.polimi.tiw.js.dao.AuctionDAO;
 import it.polimi.tiw.js.dao.BidDAO;
 import it.polimi.tiw.js.dao.ItemDAO;
 import it.polimi.tiw.js.utils.ConnectionHandler;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,11 +50,24 @@ public class GoToBidPage extends HttpServlet {
         BidDAO bidDAO = new BidDAO(connection);
         float currMaxPrice;
         float minRaise=-1;
+        List<Integer> idList = new ArrayList<>();
+        AuctionDAO auctionDAO = new AuctionDAO(connection);
+        User user = (User) request.getSession().getAttribute("user");
 
         try {
             idAuction = Integer.parseInt(request.getParameter("idauction"));
         } catch (NumberFormatException | NullPointerException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "incorrect param values");
+            return;
+        }
+        try{
+            idList = auctionDAO.findLegitIdsBid(user.getIdUser());
+        } catch (SQLException throwables) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
+            return;
+        }
+        if(!idList.contains(idAuction)){
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "incorrect request");
             return;
         }
         try {
