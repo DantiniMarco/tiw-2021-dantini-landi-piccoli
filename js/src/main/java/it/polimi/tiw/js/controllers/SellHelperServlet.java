@@ -57,7 +57,6 @@ public class SellHelperServlet extends HttpServlet {
             if (itemName == null || itemName.isEmpty() || itemDescription == null || itemDescription.isEmpty()
                     || initialPriceParam == null || initialPriceParam.isEmpty() || minRaiseParam == null || minRaiseParam.isEmpty()
                     || deadlineLocalDateTimeParam == null || deadlineLocalDateTimeParam.isEmpty() || deadlineTimeZoneParam == null || deadlineTimeZoneParam.isEmpty()) {
-                System.out.println("Sono nel primo if");
                 throw new NumberFormatException();
             }
 
@@ -98,8 +97,6 @@ public class SellHelperServlet extends HttpServlet {
                     }
 
                 } catch (FileNotFoundException fne) {
-                    System.out.println("Problems during file upload.");
-                    System.out.println("Sono nel terzo catch");
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
                     return;
                 } finally {

@@ -95,7 +95,6 @@ public class AuctionDetailsServletHelper extends HttpServlet {
         if(!ready){
             errorMsg = "wrongClosure";
             path = "AuctionDetailsServlet?auctionId=" + id + "&errorMsg=" +errorMsg;
-            System.out.println("Sono in not ready");
         }else{
             path = "AuctionDetailsServlet?auctionId=" + id;
             try{

@@ -1,5 +1,7 @@
 package it.polimi.tiw.js.controllers;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import it.polimi.tiw.js.beans.AuctionStatus;
 import it.polimi.tiw.js.beans.ExtendedAuction;
 import it.polimi.tiw.js.beans.User;
@@ -16,9 +18,11 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @WebServlet("/SellServlet")
@@ -37,9 +41,11 @@ public class SellServlet extends HttpServlet {
         AuctionDAO am= new AuctionDAO(connection);
         List<ExtendedAuction> openAuctions;
         List<ExtendedAuction> closedAuctions;
+        HashMap<String, Object> sellMap = new HashMap<>();
 
         try{
             openAuctions = am.findAuctionsByIdAndStatus(user.getIdUser(), AuctionStatus.OPEN);
+            sellMap.put("openAuctions", openAuctions);
         }catch(SQLException sql){
             sql.printStackTrace();
             throw new UnavailableException("Error executing query");
@@ -47,23 +53,24 @@ public class SellServlet extends HttpServlet {
 
         try{
             closedAuctions = am.findAuctionsByIdAndStatus(user.getIdUser(), AuctionStatus.CLOSED);
+            sellMap.put("closedAuctions", closedAuctions);
         }catch(SQLException sql){
             sql.printStackTrace();
             throw new UnavailableException("Error executing query");
         }
 
-        ServletContext servletContext = getServletContext();
-
-        List<String> timeLeftOpen = calculateTime(openAuctions);
-        List<String> timeLeftClosed = calculateTime(closedAuctions);
-        LocalDateTime dateLowerBound = LocalDateTime.now();
+        LocalDateTime dateLowerBound = LocalDateTime.now(ZoneOffset.UTC);
         dateLowerBound = dateLowerBound.plusDays(1);
-        DateTimeFormatter lowerBoundFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm");
-        String lowerBoundFormatted = dateLowerBound.format(lowerBoundFormatter);
-        LocalDateTime dateUpperBound = LocalDateTime.now();
+        sellMap.put("dateLowerBound", dateLowerBound.toString());
+        LocalDateTime dateUpperBound = LocalDateTime.now(ZoneOffset.UTC);
         dateUpperBound = dateUpperBound.plusWeeks(2);
-        DateTimeFormatter upperBoundFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm");
-        String upperBoundFormatted = dateUpperBound.format(upperBoundFormatter);
+        sellMap.put("dateUpperBound", dateUpperBound.toString());
+
+        Gson gson = new GsonBuilder().create();
+        String json = gson.toJson(sellMap);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(json);
 
     }
 
