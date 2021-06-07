@@ -1,7 +1,7 @@
 (function () { // avoid variables ending up in the global scope
 
     // page components
-    let auctionsList, auctionsListSell, searchForm, auctionDetails, buttonManager, userData,
+    let auctionsList, auctionsListSell, searchForm, auctionDetails, buttonManager, userData, wonAndLatestAuction, auctionDetailsSell
         pageOrchestrator = new PageOrchestrator(); // main controller
     window.addEventListener("load", () => {
         makeCall("GET", "GetUserData", null,
@@ -103,17 +103,30 @@
                 latestDetailsContainer : latestDetailsContainer,
                 minRaise: minRaise
             });
-            auctionDetails.registerEvents(this);
 
             wonAndLatestAuction = new WonAndLatestAuction(alertWonAuction, alertContainer, document.getElementById("id_wonAuctions"),
                 document.getElementById("id_wonAuctions_body"), userData.username, document.getElementById("id_visitedAuctions"),
                 document.getElementById("id_visitedAuctions_body"), auctionDetails );
+
             auctionsList = new AuctionList(
                 alertSearchContainer,
                 alertContainer,
                 document.getElementById("id_listcontainer"),
                 document.getElementById("id_listcontainerbody"),
                 auctionDetails, currMaxPrice);
+
+            auctionDetailsSell = new AuctionDetailsSell(
+                alertContainer,
+                document.getElementById("id_sell_main"),
+                document.getElementById("id_itemimage2"),
+                document.getElementById("id_auctiondetails"),
+                document.getElementById("id_auctiondata"),
+                document.getElementById("id_openauctiondetails"),
+                document.getElementById("id_closeauctiondetails"),
+                document.getElementById("id_formcloseauction"),
+                document.getElementById("id_sellBackButton"),
+
+            );
 
             auctionsListSell = new AuctionListSell(
                 alertContainer,
@@ -123,23 +136,14 @@
                 document.getElementById("id_sellclosedcontainerbody"),
                 document.getElementById("id_addAuctionForm"),
                 userData.username,
-                document.getElementById("id_actiondetails"));
-
-            auctionDetailsSell = new AuctionDetailsSell(
-                alertContainer,
-                document.getElementById("id_sell"),
-                document.getElementById("id_itemimage2"),
                 document.getElementById("id_auctiondetails"),
-                document.getElementById("id_auctiondata"),
-                document.getElementById("id_openauctiondetails"),
-                document.getElementById("id_closeauctiondetails"),
-                document.getElementById("id_formcloseauction")
-            );
-
+                auctionDetailsSell);
 
             searchForm = new SearchAuction(document.getElementById("id_searchauctionform"), alertSearchContainer, auctionsList, userData.username);
-            searchForm.registerEvents(this);
 
+            searchForm.registerEvents(this);
+            auctionDetailsSell.registerEvents(auctionsListSell);
+            auctionDetails.registerEvents(wonAndLatestAuction);
 
             document.querySelector("a[href='Logout']").addEventListener('click', () => {
                 window.sessionStorage.removeItem('username');

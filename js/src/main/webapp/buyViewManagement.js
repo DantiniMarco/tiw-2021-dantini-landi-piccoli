@@ -129,7 +129,7 @@ function AuctionDetails(options) {
     this.backButton = options['backButton'];
     this.currentAuctionId = '1';
 
-    this.registerEvents = function (orchestrator) {
+    this.registerEvents = function (wonAndLatest) {
         this.bidform.querySelector('button[type="submit"]').addEventListener('click', (e) => {
             e.preventDefault();
             let form = e.target.closest("form");
@@ -153,6 +153,7 @@ function AuctionDetails(options) {
             }
         });
         this.backButton.addEventListener('click', (e) => {
+            wonAndLatest.show();
             this.buySearchContainer.style.visibility = "visible"
             this.buySearchContainer.style.display = null
             this.buyDetailsContainer.style.visibility = "hidden"
