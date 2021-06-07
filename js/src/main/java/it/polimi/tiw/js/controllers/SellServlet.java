@@ -1,13 +1,11 @@
 package it.polimi.tiw.js.controllers;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import it.polimi.tiw.js.beans.AuctionStatus;
 import it.polimi.tiw.js.beans.ExtendedAuction;
 import it.polimi.tiw.js.beans.User;
 import it.polimi.tiw.js.dao.AuctionDAO;
 import it.polimi.tiw.js.utils.ConnectionHandler;
-
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
@@ -17,9 +15,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @WebServlet("/SellServlet")
 public class SellServlet extends HttpServlet {
@@ -37,7 +37,6 @@ public class SellServlet extends HttpServlet {
         AuctionDAO am= new AuctionDAO(connection);
         List<ExtendedAuction> openAuctions;
         List<ExtendedAuction> closedAuctions;
-        Map<String, Object> sellPageInfo = new HashMap<>();
 
         try{
             openAuctions = am.findAuctionsByIdAndStatus(user.getIdUser(), AuctionStatus.OPEN);
@@ -53,17 +52,39 @@ public class SellServlet extends HttpServlet {
             throw new UnavailableException("Error executing query");
         }
 
-        sellPageInfo.put("openAuctions", openAuctions);
-        sellPageInfo.put("closedAuctions", closedAuctions);
+        ServletContext servletContext = getServletContext();
 
-        Gson gson = new GsonBuilder()
-                .setDateFormat("dd MMM yyyy HH:mm:ss").create();
-        String json = gson.toJson(sellPageInfo);
+        List<String> timeLeftOpen = calculateTime(openAuctions);
+        List<String> timeLeftClosed = calculateTime(closedAuctions);
+        LocalDateTime dateLowerBound = LocalDateTime.now();
+        dateLowerBound = dateLowerBound.plusDays(1);
+        DateTimeFormatter lowerBoundFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm");
+        String lowerBoundFormatted = dateLowerBound.format(lowerBoundFormatter);
+        LocalDateTime dateUpperBound = LocalDateTime.now();
+        dateUpperBound = dateUpperBound.plusWeeks(2);
+        DateTimeFormatter upperBoundFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm");
+        String upperBoundFormatted = dateUpperBound.format(upperBoundFormatter);
 
+    }
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(json);
+    private List<String> calculateTime(List<ExtendedAuction> auctionList) {
+        List<String> timeLeftlist = new ArrayList<>();
+        for (ExtendedAuction auction : auctionList) {
+            long diff = auction.getDeadline().getTime() - new Date().getTime();
+
+            if (diff <= 3600) {
+                if (diff < 1) {
+                    timeLeftlist.add("Expired");
+                } else {
+                    timeLeftlist.add("Less than an hour");
+                }
+            } else {
+                long diffHours = diff / (60 * 60 * 1000) % 24;
+                long diffDays = diff / (24 * 60 * 60 * 1000);
+                timeLeftlist.add(((diffDays > 0)?diffDays + " days and ":"")+ diffHours + " hours");
+            }
+        }
+        return timeLeftlist;
     }
 
     @Override
@@ -74,9 +95,7 @@ public class SellServlet extends HttpServlet {
     @Override
     public void destroy(){
         try{
-            if(connection !=null){
-                connection.close();
-            }
+            ConnectionHandler.closeConnection(connection);
         }catch (SQLException sql){
             sql.printStackTrace();
         }

@@ -1,9 +1,8 @@
 package it.polimi.tiw.js.beans;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class Auction implements Serializable{
+public class Auction {
     private int idAuction;
     private float initialPrice;
     private float minRaise;

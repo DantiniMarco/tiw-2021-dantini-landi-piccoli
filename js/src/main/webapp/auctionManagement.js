@@ -124,6 +124,13 @@
                 document.getElementById("id_addAuctionForm"),
                 userData.username);
 
+            AuctionDetailsSell = new AuctionDetailsSell(
+                alertContainer,
+                document.getElementById("id_auctiondata"),
+                document.getElementById("id_openauctiondetails"),
+                document.getElementById("id_closeauctiondetails")
+            )
+
 
             searchForm = new SearchAuction(document.getElementById("id_searchauctionform"), alertSearchContainer, auctionsList, userData.username);
             searchForm.registerEvents(this);

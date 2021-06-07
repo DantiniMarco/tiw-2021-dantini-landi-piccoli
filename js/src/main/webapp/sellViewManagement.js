@@ -72,10 +72,14 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
         itemDescCell.textContent = auction.itemDescription;
         row.appendChild(itemDescCell);
         priceCell = document.createElement("td");
-        priceCell.textContent = new Intl.NumberFormat('it-IT', {
-            style: 'currency',
-            currency: 'EUR'
-        }).format(auction.price);
+        if(auction.price==0){
+            priceCell.textContent = "No bids";
+        }else{
+            priceCell.textContent = new Intl.NumberFormat('it-IT', {
+                style: 'currency',
+                currency: 'EUR'
+            }).format(auction.price);
+        }
         row.appendChild(priceCell);
         raiseCell = document.createElement("td");
         raiseCell.textContent = new Intl.NumberFormat('it-IT', {
@@ -86,9 +90,7 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
         dateCell = document.createElement("td");
         dateCell.textContent = auction.deadline;
         row.appendChild(dateCell);
-
-        // TODO: Alfredo da fare
-        /*linkcell = document.createElement("td");
+        linkcell = document.createElement("td");
         anchor = document.createElement("a");
         linkcell.appendChild(anchor);
         linkText = document.createTextNode("Details");
@@ -99,8 +101,8 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
             // dependency via module parameter
             auctionDetails.show(e.target.getAttribute("auctionid")); // the list must know the details container
         }, false);
-        anchor.href = "#";
-        row.appendChild(linkcell);*/
+        anchor.href = "SellServletHelper";
+        row.appendChild(linkcell);
         return row;
     }
 
@@ -124,5 +126,77 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
 
 }
 
-// TODO: Alfredo da fare
-function AuctionDetailsSell() {}
+
+function AuctionDetailsSell(_alert, _auctionData, _openAuctionDetails, _closedAuctionDetails, _closeAuctionForm) {
+    this.alert=_alert;
+    this.auctionData=_auctionData;
+    this.openAuctionDetails = _openAuctionDetails;
+    this.closeAuctionDetails=_closedAuctionDetails;
+    this.closeAuctionForm = _closeAuctionForm;
+    this.closeAuctionForm.querySelector('button[type="submit"]').addEventListener('click', (e) => {
+        e.preventDefault();
+        let form = e.target.closest("form");
+        if (form.checkValidity()) {
+            let self = this
+            makeCall("POST", 'AuctionDetailsServletHelper', form,
+                function (req) {
+                    if (req.readyState === 4) {
+                        let message = req.responseText;
+                        if (req.status === 200) {
+                            self.show();
+                        } else {
+                            self.alert.textContent = message;
+                        }
+                    }
+                }
+            );
+        } else {
+            form.reportValidity();
+        }
+    });
+
+
+    this.show = function () {
+        var self = this;
+        makeCall("GET", "AuctionDetailsServlet", null,
+            function (req) {
+                if (req.readyState === 4) {
+                    if (req.status === 200) {
+                        self.alert.textContent = ""
+                        console.log(req.responseText);
+                        var auctionData = JSON.parse(req.responseText);
+                        console.log(auctionData);
+                        if (auctionData.length === 0) {
+                            self.alert.textContent = "No auctions found!";
+                            return;
+                        }
+                        self.update(auctionData);
+                    } else {
+                        self.searchalert.textContent = req.responseText;
+                        self.listcontainer.style.visibility = "hidden";
+                        self.listcontainer.style.display = "none";
+                    }
+                }
+            }
+        );
+    };
+
+    this.update = function (auctionData) {
+        if(auctionData.)
+        this.listopenbody.innerHTML = ""; // empty the table body
+        this.listclosedbody.innerHTML = ""; // empty the table body
+        // build updated list
+        let self = this;
+        arrayAuctions.openAuctions.forEach(function (auction) { // self visible here, not this
+            self.listopenbody.appendChild(self.setRowAuction(auction));
+        });
+        arrayAuctions.closedAuctions.forEach(function (auction) { // self visible here, not this
+            self.listclosedbody.appendChild(self.setRowAuction(auction));
+        });
+        //FIXME: can delete, check
+        self.listopenbody.style.visibility = "visible";
+        self.listopenbody.style.display = null;
+        self.listclosedbody.style.visibility = "visible";
+        self.listclosedbody.style.display = null;
+    }
+}

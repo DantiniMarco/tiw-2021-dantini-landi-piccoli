@@ -34,4 +34,33 @@ public class UserDAO {
             }
         }
     }
+
+    /***
+     * @author Alfredo Landi
+     * @param id of user
+     * @return firstname, lastname and home address of a user
+     */
+    public User getUserById(int id) throws SQLException{
+        String query = "SELECT firstname, lastname, address FROM user WHERE iduser =?";
+        PreparedStatement pstatement = null;
+        ResultSet result = null;
+        User user = null;
+
+        try{
+            pstatement = con.prepareStatement(query);
+            pstatement.setInt(1, id);
+            result = pstatement.executeQuery();
+            user = new User();
+            while(result.next()){
+                user.setFirstName(result.getString("firstname"));
+                user.setLastName(result.getString("lastname"));
+                user.setAddress(result.getString("address"));
+            }
+        }catch(SQLException sqle){
+            sqle.printStackTrace();
+            throw new SQLException(sqle);
+        }
+
+        return user;
+    }
 }

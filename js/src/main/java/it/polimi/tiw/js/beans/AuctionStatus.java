@@ -1,8 +1,6 @@
 package it.polimi.tiw.js.beans;
 
-import java.io.Serializable;
-
-public enum AuctionStatus implements Serializable {
+public enum AuctionStatus {
     OPEN(0), CLOSED(1);
 
     private final int value;

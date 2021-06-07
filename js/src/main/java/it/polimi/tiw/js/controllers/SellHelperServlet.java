@@ -13,9 +13,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.*;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.UUID;
+
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
 @WebServlet("/SellHelperServlet")
 @MultipartConfig
@@ -37,77 +43,92 @@ public class SellHelperServlet extends HttpServlet {
         String itemDescription = request.getParameter("itemDescription");
         String initialPriceParam = request.getParameter("initialPrice");
         String minRaiseParam = request.getParameter("minRaise");
-        String deadlineParam = request.getParameter("deadline");
-        int bad_request = 0;
-        float initialPrice = 0;
-        float minRaise = 0;
-        Date deadline = null;
+        String deadlineLocalDateTimeParam = request.getParameter("deadlineLocalDateTime");
+        String deadlineTimeZoneParam = request.getParameter("deadlineTimeZone");
+        System.out.println(ZoneId.getAvailableZoneIds());
+        float initialPrice;
+        float minRaise;
+        Timestamp deadline;
         AuctionDAO am = new AuctionDAO(connection);
         InputStream filecontent = null;
-        if (itemName == null || itemName.isEmpty() || itemDescription == null || itemDescription.isEmpty()
-                || initialPriceParam == null || initialPriceParam.isEmpty() || minRaiseParam == null || minRaiseParam.isEmpty() || deadlineParam == null
-                || deadlineParam.isEmpty()) {
-            bad_request = 1;
-        }
+        String errorString = "";
 
         try {
+            if (itemName == null || itemName.isEmpty() || itemDescription == null || itemDescription.isEmpty()
+                    || initialPriceParam == null || initialPriceParam.isEmpty() || minRaiseParam == null || minRaiseParam.isEmpty()
+                    || deadlineLocalDateTimeParam == null || deadlineLocalDateTimeParam.isEmpty() || deadlineTimeZoneParam == null || deadlineTimeZoneParam.isEmpty()) {
+                System.out.println("Sono nel primo if");
+                throw new NumberFormatException();
+            }
+
             initialPrice = Float.parseFloat(initialPriceParam);
             minRaise = Float.parseFloat(minRaiseParam);
-            deadline = Date.valueOf(deadlineParam);
-        } catch (Exception e) {
-            bad_request = 1;
-        }
-        UUID uuid = UUID.randomUUID();
-        String newFileName = uuid.toString() + (fileName != "" ? fileName.substring(fileName.indexOf(".")) : "");
-        if (filePart.getSize() > 0) {
-            try (OutputStream out = new FileOutputStream(new File(System.getProperty("upload.location") + File.separator + "img" + File.separator
-                    + newFileName))) {
+            LocalDateTime dateWithTimeZone = LocalDateTime.parse(deadlineLocalDateTimeParam, ISO_LOCAL_DATE_TIME)
+                    .atZone(ZoneId.of(deadlineTimeZoneParam)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime();
+            deadline = Timestamp.valueOf(dateWithTimeZone);
 
-                filecontent = filePart.getInputStream();
-
-                int read = 0;
-                final byte[] bytes = new byte[1024];
-
-                while ((read = filecontent.read(bytes)) != -1) {
-                    out.write(bytes, 0, read);
-                }
-
-                System.out.println("File{0}being uploaded to {1}");
-            } catch (FileNotFoundException fne) {
-            /*writer.println("You either did not specify a file to upload or are "
-                    + "trying to upload a file to a protected or nonexistent "
-                    + "location.");*/
-                //writer.println("<br/> ERROR: " + fne.getMessage());
-
-                System.out.println("Problems during file upload. Error: {0}");
-                bad_request = 1;
-            } finally {
-                if (filecontent != null) {
-                    filecontent.close();
-                }
-            /*if (writer != null) {
-                writer.close();
-            }*/
+            if (minRaise < 0.01f || minRaise > 500000) {
+                throw new NumberFormatException();
             }
-        }
-        if (bad_request == 1) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter/s missing");
-            return;
-        }
+            if (initialPrice < 1 || initialPrice > 999999.99f) {
+                throw new NumberFormatException();
+            }
 
-        User user = (User) request.getSession().getAttribute("user");
-        int idCreator = user.getIdUser();
-        if (fileName != null && fileName.isEmpty()) {
-            newFileName = null;
-        }
-        try {
+            LocalDateTime dateLowerBound = LocalDateTime.now(ZoneOffset.UTC);
+            dateLowerBound = dateLowerBound.plusDays(1);
+            LocalDateTime dateUpperBound = LocalDateTime.now(ZoneOffset.UTC);
+            dateUpperBound = dateUpperBound.plusWeeks(2);
+            if(deadline.before(Timestamp.valueOf(dateLowerBound)) || deadline.after(Timestamp.valueOf(dateUpperBound))){
+                throw new DateTimeException("Wrong deadline");
+            }
+
+            UUID uuid = UUID.randomUUID();
+            String newFileName = uuid + (fileName != "" ? fileName.substring(fileName.indexOf(".")) : "");
+            if (filePart.getSize() > 0) {
+                try (OutputStream out = new FileOutputStream(System.getProperty("upload.location") + File.separator + "img" + File.separator
+                        + newFileName)) {
+
+                    filecontent = filePart.getInputStream();
+
+                    int read = 0;
+                    final byte[] bytes = new byte[1024];
+
+                    while ((read = filecontent.read(bytes)) != -1) {
+                        out.write(bytes, 0, read);
+                    }
+
+                } catch (FileNotFoundException fne) {
+                    System.out.println("Problems during file upload.");
+                    System.out.println("Sono nel terzo catch");
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
+                    return;
+                } finally {
+                    if (filecontent != null) {
+                        filecontent.close();
+                    }
+                }
+            }
+
+            User user = (User) request.getSession().getAttribute("user");
+            int idCreator = user.getIdUser();
+            if (fileName.isEmpty()) {
+                newFileName = null;
+            }
             am.insertNewAuction(itemName, newFileName, itemDescription, initialPrice, minRaise, deadline, idCreator);
+
+
+        } catch (NumberFormatException e) {
+            errorString = "?error=wrongFormat";
         } catch (SQLException sqle) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
             return;
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unknown error");
+            return;
         }
+        response.sendRedirect(getServletContext().getContextPath() + "/SellServlet" + errorString);
 
-        response.setStatus(HttpServletResponse.SC_OK);
     }
 
     @Override
@@ -127,10 +148,10 @@ public class SellHelperServlet extends HttpServlet {
     }
 
     @Override
-    public void destroy(){
-        try{
+    public void destroy() {
+        try {
             ConnectionHandler.closeConnection(connection);
-        }catch (SQLException sql){
+        } catch (SQLException sql) {
             sql.printStackTrace();
         }
     }
