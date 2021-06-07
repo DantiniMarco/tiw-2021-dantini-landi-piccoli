@@ -1,4 +1,4 @@
-function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclosedbody, _addauctionform, _username) {
+function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclosedbody, _addauctionform, _username, _auctionDetails) {
     this.alert = _alert;
     this.listopen = _listopen;
     this.listopenbody = _listopenbody;
@@ -6,6 +6,7 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
     this.listclosedbody = _listclosedbody;
     this.addauctionform = _addauctionform;
     this.username = _username;
+    this.auctionDetails = _auctionDetails;
 
     this.addauctionform.querySelector('button[type="submit"]').addEventListener('click', (e) => {
         e.preventDefault();
@@ -22,6 +23,8 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
                             userDataStored[self.username].lastAction = "sell";
                             localStorage.setItem("userData", JSON.stringify(userDataStored));
                             self.show();
+                            self.auctionDetails.style.visibility="hidden";
+                            self.auctionDetails.style.display="none";
                         } else {
                             self.alert.textContent = message;
                         }
@@ -53,6 +56,7 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
                             return;
                         }
                         self.update(sellData); // self visible by closure
+
                     } else {
                         self.searchalert.textContent = req.responseText;
                         self.listcontainer.style.visibility = "hidden";
@@ -142,8 +146,10 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
 }
 
 
-function AuctionDetailsSell(_alert, _auctionDetails, _auctionData, _openAuctionDetails, _closedAuctionDetails, _closeAuctionForm) {
+function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _auctionData, _openAuctionDetails, _closedAuctionDetails, _closeAuctionForm) {
     this.alert=_alert;
+    this.sellContainer=_sellContainer;
+    this.itemImage =_itemImage;
     this.auctionDetails = _auctionDetails;
     this.auctionData = _auctionData;
     this.openAuctionDetails = _openAuctionDetails;
@@ -178,6 +184,8 @@ function AuctionDetailsSell(_alert, _auctionDetails, _auctionData, _openAuctionD
             function (req) {
                 if (req.readyState === 4) {
                     if (req.status === 200) {
+                        self.sellContainer.visibility="hidden";
+                        self.sellContainer.style.display = "none";
                         self.alert.textContent = ""
                         console.log(req.responseText);
                         var auctionDataBox = JSON.parse(req.responseText);
@@ -202,11 +210,9 @@ function AuctionDetailsSell(_alert, _auctionDetails, _auctionData, _openAuctionD
         this.auctionData.innerHTML = ""; // empty the table body
         let itemName, itemImage, itemDescription, price, minraise, deadline, status;
         itemName = document.createElement("p");
-        itemName.textContent = auctionDataBox.auction.itemName;
+        itemName.textContent = "Name: " + auctionDataBox.auction.itemName;
         this.auctionData.appendChild(itemName);
-        itemImage = document.createElement("p");
-        itemImage.textContent = auctionDataBox.auction.itemImage;
-        this.auctionData.appendChild(itemImage);
+        location.pathname.substring(0, location.pathname.lastIndexOf("/") + 1) + "ImageServlet?name=" + auctionDataBox.auction.itemImage;
         itemDescription = document.createElement("p");
         itemDescription.textContent = auctionDataBox.auction.itemDescription;
         this.auctionData.appendChild(itemDescription);
@@ -222,8 +228,11 @@ function AuctionDetailsSell(_alert, _auctionDetails, _auctionData, _openAuctionD
         status = document.createElement("p");
         status.textContent = auctionDataBox.auction.status;
         this.auctionData.appendChild(status);
+        this.itemImage.src=location.pathname.substring(0, location.pathname.lastIndexOf("/") + 1) + "ImageServlet?name=" + auctionDataBox.auction.itemImage;
         this.auctionDetails.style.visibility = "visible";
         this.auctionData.style.visibility = "visible";
+        this.auctionDetails.style.display = null;
+        this.auctionData.style.display = null;
         let self = this;
         if(auctionDataBox.auction.status===0){
 
