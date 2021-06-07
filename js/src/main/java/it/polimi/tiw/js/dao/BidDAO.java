@@ -73,6 +73,50 @@ public class BidDAO {
         return bidsAwarded;
     }
 
+
+    /**
+     * @author Marco D'Antini
+     * query used to find the latest visited auctions.
+     * @param auctionIDs: array of string . collected from the local storage of the browser
+     */
+    public List<ExtendedAuction> findLatestAuctions(String[] auctionIDs) throws SQLException {
+        List<ExtendedAuction> latestAuctions = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
+        for( int i = 0 ; i < auctionIDs.length; i++ ) {
+            builder.append("?,");
+        }
+        String placeHolders =  builder.deleteCharAt( builder.length() -1 ).toString();
+        /*String query = "SELECT idauction, name, description, MAX(bidprice) FROM auction NATURAL JOIN " +
+                "bid NATURAL JOIN item WHERE idauction in (" + placeHolders + ") AND status = 0 GROUP BY idauction";*/
+        String query= "SELECT item.name, item.description, auction.idauction FROM item, bid, auction WHERE" +
+                " item.iditem = auction.iditem AND auction.idauction IN ("+placeHolders+")"+
+                " AND auction.status = 0 GROUP BY auction.idauction;";
+        /*String query = "SELECT bidprice, UNIX_TIMESTAMP(datetime) AS datetime, name, description, image " +
+                "FROM (bid NATURAL JOIN auction NATURAL JOIN item) WHERE auction.status = 1 AND bid.idbidder = ?";*/
+        try (PreparedStatement pstatement = con.prepareStatement(query)) {
+            int index = 1;;
+            for( String s : auctionIDs ) {
+                pstatement.setString(  index++, s ); // or whatever it applies
+            }
+            try (ResultSet result = pstatement.executeQuery()) {
+                while (result.next()) {
+                    ExtendedAuction exAuction = new ExtendedAuction();
+                    //exAuction.setPrice(result.getFloat("MAX(bidprice)"));
+                    exAuction.setIdAuction(result.getInt("idauction"));
+                    exAuction.setItemName(result.getString("name"));
+                    exAuction.setItemDescription(result.getString("description"));
+                    latestAuctions.add(exAuction);
+                }
+            }
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return latestAuctions;
+    }
+
+
+
+
     /**
      * @param bidPrice
      * @param idBidder
