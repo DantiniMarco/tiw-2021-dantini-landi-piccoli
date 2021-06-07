@@ -88,7 +88,7 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
         }).format(auction.minRaise);
         row.appendChild(raiseCell);
         dateCell = document.createElement("td");
-        dateCell.textContent = auction.deadline;
+        dateCell.textContent = new Date(auction.deadline).toLocaleString();
         row.appendChild(dateCell);
         linkcell = document.createElement("td");
         anchor = document.createElement("a");

@@ -1,12 +1,13 @@
 package it.polimi.tiw.js.beans;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class Auction {
     private int idAuction;
     private float initialPrice;
     private float minRaise;
-    private Date deadline;
+    private ZonedDateTime deadline;
     private int idCreator;
     private int idItem;
     private AuctionStatus status;
@@ -35,11 +36,11 @@ public class Auction {
         this.minRaise = minRaise;
     }
 
-    public Date getDeadline() {
+    public ZonedDateTime getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(Date deadline) {
+    public void setDeadline(ZonedDateTime deadline) {
         this.deadline = deadline;
     }
 

@@ -11,7 +11,11 @@
 	    if (formElement == null) {
 	      req.send();
 	    } else {
-	      req.send(new FormData(formElement));
+	    	let formdata = new FormData(formElement);
+	    	if(formdata.get("deadline") != null){
+	    		formdata.set("deadline", new Date(formdata.get("deadline")).toISOString());
+			}
+	    	req.send(formdata);
 	    }
 	    if (formElement !== null && reset === true) {
 	      formElement.reset();

@@ -225,7 +225,7 @@ function AuctionDetails(options) {
             }).format(bid.bidPrice);
             row.appendChild(priceCell);
             dateCell = document.createElement("td");
-            dateCell.textContent = bid.dateTime;
+            dateCell.textContent = new Date(bid.dateTime).toLocaleString();
             row.appendChild(dateCell);
             self.bidlistcontainerbody.appendChild(row);
         });}

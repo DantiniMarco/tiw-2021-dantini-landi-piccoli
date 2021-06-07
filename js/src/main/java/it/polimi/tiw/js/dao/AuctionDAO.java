@@ -6,6 +6,10 @@ import it.polimi.tiw.js.beans.ExtendedAuction;
 import it.polimi.tiw.js.beans.Item;
 
 import java.sql.*;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,7 +49,7 @@ public class AuctionDAO {
                         ExtendedAuction auction = new ExtendedAuction();
                         auction.setInitialPrice(result.getInt("initialprice"));
                         auction.setMinRaise(result.getInt("minraise"));
-                        auction.setDeadline(new Date(result.getLong("deadline") * 1000));
+                        auction.setDeadline(ZonedDateTime.ofInstant(Instant.ofEpochSecond(result.getLong("deadline")), ZoneOffset.UTC));
                         auction.setIdAuction(result.getInt("idauction"));
                         auction.setItemName(result.getString("name"));
                         searchedList.add(auction);
@@ -68,7 +72,7 @@ public class AuctionDAO {
         public List<ExtendedAuction> findAuctionsByIdAndStatus(int idUser, AuctionStatus status) throws SQLException{
             List<ExtendedAuction> auctions = new ArrayList<>();
             //FIXME: must fix SQL query
-            String query = "SELECT auction.idauction, item.name, item.image, item.description, max(bid.bidprice) AS price, auction.minraise, UNIX_TIMESTAMP(auction.deadline) AS deadline FROM auction NATURAL JOIN item LEFT JOIN bid ON auction.idauction=bid.idauction JOIN user ON auction.idcreator=user.iduser WHERE user.iduser=? AND auction.status=? GROUP BY auction.idauction ORDER BY auction.deadline ASC";
+            String query = "SELECT auction.idauction, item.name, item.image, item.description, max(bid.bidprice) AS price, auction.minraise, UNIX_TIMESTAMP(auction.deadline) AS deadline FROM auction NATURAL JOIN item LEFT JOIN bid ON auction.idauction=bid.idauction JOIN user ON auction.idcreator=user.iduser WHERE user.iduser=? AND auction.status=? GROUP BY auction.idauction ORDER BY deadline ASC";
             PreparedStatement pstatement = null;
             ResultSet result = null;
 
@@ -85,7 +89,7 @@ public class AuctionDAO {
                     auction.setItemDescription(result.getString("description"));
                     auction.setPrice(result.getFloat("price"));
                     auction.setMinRaise(result.getFloat("minraise"));
-                    auction.setDeadline(new Date(result.getLong("deadline") * 1000));
+                    auction.setDeadline(ZonedDateTime.ofInstant(Instant.ofEpochSecond(result.getLong("deadline")), ZoneOffset.UTC));
                     auctions.add(auction);
                 }
             } catch (SQLException e) {
@@ -218,7 +222,7 @@ public class AuctionDAO {
                 auction.setItemDescription(result.getString("description"));
                 auction.setPrice(result.getFloat("price"));
                 auction.setMinRaise(result.getFloat("minraise"));
-                auction.setDeadline(new Date(result.getLong("deadline") * 1000));
+                auction.setDeadline(ZonedDateTime.ofInstant(Instant.ofEpochSecond(result.getLong("deadline")), ZoneOffset.UTC));
                 auction.setStatus(AuctionStatus.getAuctionStatusFromInt(result.getInt("status")));
             }
         }catch (SQLException sqle){

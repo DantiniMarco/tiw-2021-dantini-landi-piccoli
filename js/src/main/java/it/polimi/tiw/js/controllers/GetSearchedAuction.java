@@ -2,6 +2,9 @@ package it.polimi.tiw.js.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import it.polimi.tiw.js.beans.Auction;
 import it.polimi.tiw.js.beans.ExtendedAuction;
 import it.polimi.tiw.js.beans.User;
@@ -21,6 +24,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,8 +77,22 @@ public class GetSearchedAuction extends HttpServlet {
                 }
             }
         }
-        Gson gson = new GsonBuilder()
-                .setDateFormat("dd MMM yyyy HH:mm:ss").create();
+        Gson gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class, new TypeAdapter<ZonedDateTime>() {
+            @Override
+            public void write(JsonWriter out, ZonedDateTime value) throws IOException {
+                if(value != null) {
+                    out.value(value.format(DateTimeFormatter.ISO_INSTANT));
+                }else {
+                    out.value("");
+                }
+            }
+
+            @Override
+            public ZonedDateTime read(JsonReader in) throws IOException {
+                return ZonedDateTime.parse(in.nextString());
+            }
+        })
+        .create();
         String json = gson.toJson(searchedList);
 
 

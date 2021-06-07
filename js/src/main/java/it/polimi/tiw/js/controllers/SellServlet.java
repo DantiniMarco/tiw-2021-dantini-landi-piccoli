@@ -2,6 +2,9 @@ package it.polimi.tiw.js.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import it.polimi.tiw.js.beans.AuctionStatus;
 import it.polimi.tiw.js.beans.ExtendedAuction;
 import it.polimi.tiw.js.beans.User;
@@ -17,8 +20,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,39 +64,35 @@ public class SellServlet extends HttpServlet {
             throw new UnavailableException("Error executing query");
         }
 
-        LocalDateTime dateLowerBound = LocalDateTime.now(ZoneOffset.UTC);
+        ZonedDateTime dateLowerBound = ZonedDateTime.now(ZoneOffset.UTC);
         dateLowerBound = dateLowerBound.plusDays(1);
-        sellMap.put("dateLowerBound", dateLowerBound.toString());
-        LocalDateTime dateUpperBound = LocalDateTime.now(ZoneOffset.UTC);
+        sellMap.put("dateLowerBound", dateLowerBound.format(DateTimeFormatter.ISO_INSTANT));
+        ZonedDateTime dateUpperBound = ZonedDateTime.now(ZoneOffset.UTC);
         dateUpperBound = dateUpperBound.plusWeeks(2);
-        sellMap.put("dateUpperBound", dateUpperBound.toString());
+        sellMap.put("dateUpperBound", dateUpperBound.format(DateTimeFormatter.ISO_INSTANT));
 
-        Gson gson = new GsonBuilder().create();
+        Gson gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class, new TypeAdapter<ZonedDateTime>() {
+            @Override
+            public void write(JsonWriter out, ZonedDateTime value) throws IOException {
+                if(value != null) {
+                    out.value(value.format(DateTimeFormatter.ISO_INSTANT));
+                }else {
+                    out.value("");
+                }
+            }
+
+            @Override
+            public ZonedDateTime read(JsonReader in) throws IOException {
+                return ZonedDateTime.parse(in.nextString());
+            }
+        })
+        .create();
+
         String json = gson.toJson(sellMap);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(json);
 
-    }
-
-    private List<String> calculateTime(List<ExtendedAuction> auctionList) {
-        List<String> timeLeftlist = new ArrayList<>();
-        for (ExtendedAuction auction : auctionList) {
-            long diff = auction.getDeadline().getTime() - new Date().getTime();
-
-            if (diff <= 3600) {
-                if (diff < 1) {
-                    timeLeftlist.add("Expired");
-                } else {
-                    timeLeftlist.add("Less than an hour");
-                }
-            } else {
-                long diffHours = diff / (60 * 60 * 1000) % 24;
-                long diffDays = diff / (24 * 60 * 60 * 1000);
-                timeLeftlist.add(((diffDays > 0)?diffDays + " days and ":"")+ diffHours + " hours");
-            }
-        }
-        return timeLeftlist;
     }
 
     @Override
