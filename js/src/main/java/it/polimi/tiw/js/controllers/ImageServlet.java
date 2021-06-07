@@ -18,28 +18,29 @@ public class ImageServlet extends HttpServlet {
     @Override
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException {
         response.setContentType("image/jpeg");
         System.out.println(request.getParameter("name"));
-        ServletOutputStream out;
-        out = response.getOutputStream();
-        FileInputStream flinp;
+        InputStream flinp;
         try {
-            flinp = new FileInputStream(System.getProperty("catalina.home") + File.separator + "img" + File.separator
+            flinp = new FileInputStream(System.getProperty("upload.location") + File.separator + "img" + File.separator
                     + request.getParameter("name"));
         }catch(IOException e){
-            System.out.println(getServletContext().getRealPath("/img"));
-            flinp = new FileInputStream(getServletContext().getRealPath("/img") + File.separator
-                    + "noimage.png");
+            flinp = getServletContext().getResourceAsStream("/img/noimage.png");
         }
-        try (BufferedOutputStream buffoup = new BufferedOutputStream(out);BufferedInputStream buffinp = new BufferedInputStream(flinp)) {
-            int ch = 0;
+
+        try (ServletOutputStream out = response.getOutputStream(); BufferedOutputStream buffoup = new BufferedOutputStream(out);BufferedInputStream buffinp = new BufferedInputStream(flinp)) {
+            int ch;
             while ((ch = buffinp.read()) != -1) {
                 buffoup.write(ch);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        flinp.close();
-        out.close();
-
+        try {
+            flinp.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -44,7 +44,6 @@ public class SellHelperServlet extends HttpServlet {
         Date deadline = null;
         AuctionDAO am = new AuctionDAO(connection);
         InputStream filecontent = null;
-        System.out.println(System.getProperty("catalina.home"));
         if (itemName == null || itemName.isEmpty() || itemDescription == null || itemDescription.isEmpty()
                 || initialPriceParam == null || initialPriceParam.isEmpty() || minRaiseParam == null || minRaiseParam.isEmpty() || deadlineParam == null
                 || deadlineParam.isEmpty()) {
@@ -61,7 +60,7 @@ public class SellHelperServlet extends HttpServlet {
         UUID uuid = UUID.randomUUID();
         String newFileName = uuid.toString() + (fileName != "" ? fileName.substring(fileName.indexOf(".")) : "");
         if (filePart.getSize() > 0) {
-            try (OutputStream out = new FileOutputStream(new File(System.getProperty("catalina.home") + File.separator + "img" + File.separator
+            try (OutputStream out = new FileOutputStream(new File(System.getProperty("upload.location") + File.separator + "img" + File.separator
                     + newFileName))) {
 
                 filecontent = filePart.getInputStream();

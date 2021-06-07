@@ -1,19 +1,13 @@
 package it.polimi.tiw.html.controllers;
 
 import java.io.*;
-import java.sql.Connection;
-import java.sql.SQLException;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import it.polimi.tiw.html.utils.ConnectionHandler;
-import org.thymeleaf.TemplateEngine;
 
 @WebServlet("/ImageServlet")
 public class ImageServlet extends HttpServlet {
@@ -22,32 +16,35 @@ public class ImageServlet extends HttpServlet {
     public ImageServlet() {
         super();
     }
-    @Override
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException {
         response.setContentType("image/jpeg");
         System.out.println(request.getParameter("name"));
-        ServletOutputStream out;
-        out = response.getOutputStream();
-        FileInputStream flinp;
+        System.out.println(System.getProperty("upload.location") + File.separator + "img" + File.separator
+                + request.getParameter("name"));
+        InputStream flinp;
         try {
-            flinp = new FileInputStream(System.getProperty("catalina.home") + File.separator + "img" + File.separator
+            flinp = new FileInputStream(System.getProperty("upload.location") + File.separator + "img" + File.separator
                     + request.getParameter("name"));
         }catch(IOException e){
-            System.out.println(getServletContext().getRealPath("/img"));
-            flinp = new FileInputStream(getServletContext().getRealPath("/img") + File.separator
-                    + "noimage.png");
+            flinp = getServletContext().getResourceAsStream("/img/noimage.png");
         }
 
-        try (BufferedOutputStream buffoup = new BufferedOutputStream(out);BufferedInputStream buffinp = new BufferedInputStream(flinp)) {
-            int ch = 0;
+        try (ServletOutputStream out = response.getOutputStream(); BufferedOutputStream buffoup = new BufferedOutputStream(out);BufferedInputStream buffinp = new BufferedInputStream(flinp)) {
+            int ch;
             while ((ch = buffinp.read()) != -1) {
                 buffoup.write(ch);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        flinp.close();
-        out.close();
+        try {
+            flinp.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 }

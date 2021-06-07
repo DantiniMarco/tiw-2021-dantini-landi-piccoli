@@ -55,7 +55,6 @@ public class SellHelperServlet extends HttpServlet {
         InputStream filecontent = null;
         String errorString = "";
 
-        System.out.println(System.getProperty("catalina.home"));
         try {
             if (itemName == null || itemName.isEmpty() || itemDescription == null || itemDescription.isEmpty()
                     || initialPriceParam == null || initialPriceParam.isEmpty() || minRaiseParam == null || minRaiseParam.isEmpty()
@@ -88,7 +87,7 @@ public class SellHelperServlet extends HttpServlet {
             UUID uuid = UUID.randomUUID();
             String newFileName = uuid + (fileName != "" ? fileName.substring(fileName.indexOf(".")) : "");
             if (filePart.getSize() > 0) {
-                try (OutputStream out = new FileOutputStream(System.getProperty("catalina.home") + File.separator + "img" + File.separator
+                try (OutputStream out = new FileOutputStream(System.getProperty("upload.location") + File.separator + "img" + File.separator
                         + newFileName)) {
 
                     filecontent = filePart.getInputStream();
