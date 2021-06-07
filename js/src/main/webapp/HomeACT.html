@@ -186,30 +186,30 @@
             </tbody>
         </table>
     </div>
-</div>
-<div class="column">
-    <h3>Add new auction</h3>
-    <form action="#" enctype="multipart/form-data" id="id_addAuctionForm">
-        <div class="container">
-            <label for="itemName">Name: </label><input id="itemName" name="itemName" placeholder="Select a name for the article, please"
+    <div class="column">
+        <h3><center>Add new auction</center></h3>
+        <form action="#" enctype="multipart/form-data" id="id_addAuctionForm">
+            <div class="container">
+                <label for="itemName">Name: </label><input id="itemName" name="itemName" placeholder="Select a name for the article, please"
                                                        type = "text" required><br><br>
-            <label for="itemImage">Image: </label><input type="file" id="itemImage" name="itemImage"><br><br>
-            <label for="itemDescription">Description: </label><input id="itemDescription" name="itemDescription" type = "text"
+                <label for="itemImage">Image: </label><input type="file" id="itemImage" name="itemImage"><br><br>
+                <label for="itemDescription">Description: </label><input id="itemDescription" name="itemDescription" type = "text"
                                                                      placeholder="Write a short description to help users, please" required><br><br>
-            <label for="initialPrice">Initial Price: </label><input id="initialPrice" name="initialPrice" type="number"
+                <label for="initialPrice">Initial Price: </label><input id="initialPrice" name="initialPrice" type="number"
                                                                     placeholder="9.99" min="0.01" max="999999.99" step="0.01"
                                                                     required><br><br>
-            <label for="minRaise">Minimum Raise: </label><input id="minRaise" name="minRaise" placeholder="0.99" step="0.01"
+                <label for="minRaise">Minimum Raise: </label><input id="minRaise" name="minRaise" placeholder="0.99" step="0.01"
                                                                 min="0.01" max="500000.00"
                                                                 required><br><br>
-            <label for="deadlineLocalDateTime">Auction closing time: </label><input id="deadlineLocalDateTime"
+                <label for="deadlineLocalDateTime">Auction closing time: </label><input id="deadlineLocalDateTime"
                                                                                     name="deadlineLocalDateTime"
                                                                                     type="datetime-local"
                                                                                     required><br><br>
-            <input type="hidden" id="deadlineTimeZone" name="deadlineTimeZone" value="Europe/Rome">
-            <button type="submit" value="Submit">Submit</button>
-        </div>
-    </form>
+                <input type="hidden" id="deadlineTimeZone" name="deadlineTimeZone" value="Europe/Rome">
+                <button type="submit" value="Submit">Submit</button>
+            </div>
+        </form>
+    </div>
 </div>
 <div id="id_auctiondetails" class="row" style="visibility: hidden">
     <div class="column">
@@ -235,7 +235,7 @@
                 <input type="submit" value="Close auction">
             </form>
     </div>
-    <div id="id_closeauctiondtails" style="visibility: hidden">
+    <div id="id_closeauctiondetails" style="visibility: hidden">
 
     </div>
 </div>

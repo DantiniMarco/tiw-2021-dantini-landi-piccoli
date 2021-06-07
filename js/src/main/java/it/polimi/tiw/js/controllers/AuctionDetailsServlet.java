@@ -1,5 +1,7 @@
 package it.polimi.tiw.js.controllers;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import it.polimi.tiw.js.beans.AuctionStatus;
 import it.polimi.tiw.js.dao.AuctionDAO;
 import it.polimi.tiw.js.dao.BidDAO;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 
 @WebServlet("/AuctionDetailsServlet")
@@ -40,6 +43,7 @@ public class AuctionDetailsServlet extends HttpServlet {
         int winnerId = -1;
         User winner = null;
         List<ExtendedBid> bids = null;
+        HashMap<String, Object> auctionDetailsMap = new HashMap<>();
 
         if(id_param==null || id_param.isEmpty()){
             bad_request=true;
@@ -76,6 +80,7 @@ public class AuctionDetailsServlet extends HttpServlet {
 
         try{
            auction = am.findAuctionById(id);
+           auctionDetailsMap.put("auctionData", auction);
         }catch(SQLException sqle1){
             sqle1.printStackTrace();
             throw new UnavailableException("Issue from database");
@@ -83,6 +88,7 @@ public class AuctionDetailsServlet extends HttpServlet {
         if(auction.getStatus().getValue() == AuctionStatus.OPEN.getValue()){
             try{
                 bids = bm.findBidsByIdAuction(id);
+                auctionDetailsMap.put("bids", bids);
             }catch (SQLException sqle2){
                 throw new UnavailableException("Issue from database");
             }
@@ -94,6 +100,7 @@ public class AuctionDetailsServlet extends HttpServlet {
                     if(winnerId>0){
                         winner = um.getUserById(winnerId);
                     }
+                    auctionDetailsMap.put("winner", winner);
                 }catch (SQLException sqle1){
                     con.rollback();
                     throw new UnavailableException("Issue from database");
@@ -106,8 +113,6 @@ public class AuctionDetailsServlet extends HttpServlet {
             }
         }
 
-        ServletContext servletContext = getServletContext();
-
         String errorMsg = request.getParameter("errorMsg");
         System.out.println(errorMsg);
         if(errorMsg!=null){
@@ -116,7 +121,11 @@ public class AuctionDetailsServlet extends HttpServlet {
             }
         }
 
-        String path = "/WEB-INF/AuctionDetails.html";
+        Gson gson = new GsonBuilder().create();
+        String json = gson.toJson(gson);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(json);
 
     }
 
