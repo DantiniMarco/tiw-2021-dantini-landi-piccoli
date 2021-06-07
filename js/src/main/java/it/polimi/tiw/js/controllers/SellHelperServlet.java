@@ -115,7 +115,8 @@ public class SellHelperServlet extends HttpServlet {
 
 
         } catch (NumberFormatException e) {
-            errorString = "?error=wrongFormat";
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Illegal parameter");
+            return;
         } catch (SQLException sqle) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
             return;
@@ -124,7 +125,10 @@ public class SellHelperServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unknown error");
             return;
         }
-        response.sendRedirect(getServletContext().getContextPath() + "/SellServlet" + errorString);
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
 
     }
 

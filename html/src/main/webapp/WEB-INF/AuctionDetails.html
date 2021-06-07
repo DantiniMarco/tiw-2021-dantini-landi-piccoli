@@ -66,8 +66,8 @@
                 <p><center>This item has recieved no bids</center></p>
             </div>
             <form align="center" action="AuctionDetailsServletHelper" method="POST">
-                <input id="auctionId" name="auctionId" th:value="${auctionData.idAuction}" type="hidden">
-                <input type="submit" value="Close auction">
+                <input id="auctionId" name="auctionId" th:value="${auctionData.idAuction}" type="hidden" required>
+                <button type="submit">Close button</button>
             </form>
             <div th:if="${errorMsg!=null}">
                 <p><center>You cannot close the auction yet</center></p>

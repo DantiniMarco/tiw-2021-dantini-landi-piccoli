@@ -6,6 +6,7 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
     this.listclosedbody = _listclosedbody;
     this.addauctionform = _addauctionform;
     this.username = _username;
+
     this.addauctionform.querySelector('button[type="submit"]').addEventListener('click', (e) => {
         e.preventDefault();
         let form = e.target.closest("form");
@@ -95,13 +96,12 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
         linkcell.appendChild(anchor);
         linkText = document.createTextNode("Details");
         anchor.appendChild(linkText);
-        //anchor.auctionid = auction.id; // make list item clickable
-        anchor.setAttribute('auctionid', auction.idAuction); // set a custom HTML attribute
+        anchor.setAttribute("auctionId", auction.idAuction);
         anchor.addEventListener("click", (e) => {
             // dependency via module parameter
-            auctionDetails.show(e.target.getAttribute("auctionid")); // the list must know the details container
+            auctionDetailsSell.show(e.target.getAttribute("auctionId")); // the list must know the details container
         }, false);
-        anchor.href = "SellServletHelper";
+        anchor.href = "#";
         row.appendChild(linkcell);
         return row;
     }
@@ -142,11 +142,12 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
 }
 
 
-/*function AuctionDetailsSell(_alert, _auctionData, _openAuctionDetails, _closedAuctionDetails, _closeAuctionForm) {
+function AuctionDetailsSell(_alert, _auctionDetails, _auctionData, _openAuctionDetails, _closedAuctionDetails, _closeAuctionForm) {
     this.alert=_alert;
-    this.auctionData=_auctionData;
+    this.auctionDetails = _auctionDetails;
+    this.auctionData = _auctionData;
     this.openAuctionDetails = _openAuctionDetails;
-    this.closeAuctionDetails=_closedAuctionDetails;
+    this.closeAuctionDetails = _closedAuctionDetails;
     this.closeAuctionForm = _closeAuctionForm;
     this.closeAuctionForm.querySelector('button[type="submit"]').addEventListener('click', (e) => {
         e.preventDefault();
@@ -171,21 +172,21 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
     });
 
 
-    this.show = function () {
+    this.show = function (auctionId) {
         var self = this;
-        makeCall("GET", "AuctionDetailsServlet", null,
+        makeCall("GET", "AuctionDetailsServlet?auctionId=" + auctionId, null,
             function (req) {
                 if (req.readyState === 4) {
                     if (req.status === 200) {
                         self.alert.textContent = ""
                         console.log(req.responseText);
-                        var auctionData = JSON.parse(req.responseText);
-                        console.log(auctionData);
-                        if (auctionData.length === 0) {
+                        var auctionDataBox = JSON.parse(req.responseText);
+                        console.log(auctionDataBox);
+                        if (auctionDataBox.length === 0) {
                             self.alert.textContent = "No auctions found!";
                             return;
                         }
-                        self.update(auctionData);
+                        self.update(auctionDataBox);
                     } else {
                         self.searchalert.textContent = req.responseText;
                         self.listcontainer.style.visibility = "hidden";
@@ -197,27 +198,42 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
     };
 
     //to update
-    this.update = function (auctionData) {
-        //if(auctionData.)
-        this.listopenbody.innerHTML = ""; // empty the table body
-        this.listclosedbody.innerHTML = ""; // empty the table body
-        // build updated list
+    this.update = function (auctionDataBox) {
+        this.auctionData.innerHTML = ""; // empty the table body
+        let itemName, itemImage, itemDescription, price, minraise, deadline, status;
+        itemName = document.createElement("p");
+        itemName.textContent = auctionDataBox.auction.itemName;
+        this.auctionData.appendChild(itemName);
+        itemImage = document.createElement("p");
+        itemImage.textContent = auctionDataBox.auction.itemImage;
+        this.auctionData.appendChild(itemImage);
+        itemDescription = document.createElement("p");
+        itemDescription.textContent = auctionDataBox.auction.itemDescription;
+        this.auctionData.appendChild(itemDescription);
+        price = document.createElement("p");
+        price.textContent = auctionDataBox.auction.price;
+        this.auctionData.appendChild(price);
+        minraise = document.createElement("p");
+        minraise.textContent = auctionDataBox.auction.minRaise;
+        this.auctionData.appendChild(minraise);
+        deadline = document.createElement("p");
+        deadline.textContent = new Date(auctionDataBox.auction.deadline).toLocaleString();
+        this.auctionData.appendChild(deadline);
+        status = document.createElement("p");
+        status.textContent = auctionDataBox.auction.status;
+        this.auctionData.appendChild(status);
+        this.auctionDetails.style.visibility = "visible";
+        this.auctionData.style.visibility = "visible";
         let self = this;
-        arrayAuctions.openAuctions.forEach(function (auction) { // self visible here, not this
-            self.listopenbody.appendChild(self.setRowAuction(auction));
-        });
-        arrayAuctions.closedAuctions.forEach(function (auction) { // self visible here, not this
-            self.listclosedbody.appendChild(self.setRowAuction(auction));
-        });
-        //FIXME: can delete, check
-        self.listopenbody.style.visibility = "visible";
-        self.listopenbody.style.display = null;
-        self.listclosedbody.style.visibility = "visible";
-        self.listclosedbody.style.display = null;
+        if(auctionDataBox.auction.status===0){
+
+        }else{
+            //if(auctionDataBox.winner)
+        }
     }
 
     //to update
-    this.setRowBids = function(auction){
+    this.setRowBids = function(bid){
         let row, priceCell, raiseCell, dateCell, itemCell, itemDescCell, linkcell, linkText, anchor;
         row = document.createElement("tr");
         itemCell = document.createElement("td");
@@ -227,14 +243,7 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
         itemDescCell.textContent = auction.itemDescription;
         row.appendChild(itemDescCell);
         priceCell = document.createElement("td");
-        if(auction.price==0){
-            priceCell.textContent = "No bids";
-        }else{
-            priceCell.textContent = new Intl.NumberFormat('it-IT', {
-                style: 'currency',
-                currency: 'EUR'
-            }).format(auction.price);
-        }
+
         row.appendChild(priceCell);
         raiseCell = document.createElement("td");
         raiseCell.textContent = new Intl.NumberFormat('it-IT', {
@@ -245,19 +254,6 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
         dateCell = document.createElement("td");
         dateCell.textContent = auction.deadline;
         row.appendChild(dateCell);
-        linkcell = document.createElement("td");
-        anchor = document.createElement("a");
-        linkcell.appendChild(anchor);
-        linkText = document.createTextNode("Details");
-        anchor.appendChild(linkText);
-        //anchor.auctionid = auction.id; // make list item clickable
-        anchor.setAttribute('auctionid', auction.idAuction); // set a custom HTML attribute
-        anchor.addEventListener("click", (e) => {
-            // dependency via module parameter
-            auctionDetails.show(e.target.getAttribute("auctionid")); // the list must know the details container
-        }, false);
-        anchor.href = "SellServletHelper";
-        row.appendChild(linkcell);
-        return row;
+
     }
-}*/
+}

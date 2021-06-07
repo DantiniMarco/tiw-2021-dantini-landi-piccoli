@@ -2,6 +2,9 @@ package it.polimi.tiw.js.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import it.polimi.tiw.js.beans.AuctionStatus;
 import it.polimi.tiw.js.dao.AuctionDAO;
 import it.polimi.tiw.js.dao.BidDAO;
@@ -20,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 
@@ -80,7 +85,7 @@ public class AuctionDetailsServlet extends HttpServlet {
 
         try{
            auction = am.findAuctionById(id);
-           auctionDetailsMap.put("auctionData", auction);
+           auctionDetailsMap.put("auction", auction);
         }catch(SQLException sqle1){
             sqle1.printStackTrace();
             throw new UnavailableException("Issue from database");
@@ -113,16 +118,23 @@ public class AuctionDetailsServlet extends HttpServlet {
             }
         }
 
-        String errorMsg = request.getParameter("errorMsg");
-        System.out.println(errorMsg);
-        if(errorMsg!=null){
-            System.out.println(errorMsg.equals("wrongClosure"));
-            if(errorMsg.equals("wrongClosure")){
+        Gson gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class, new TypeAdapter<ZonedDateTime>() {
+            @Override
+            public void write(JsonWriter out, ZonedDateTime value) throws IOException {
+                if(value != null) {
+                    out.value(value.format(DateTimeFormatter.ISO_INSTANT));
+                }else {
+                    out.value("");
+                }
             }
-        }
 
-        Gson gson = new GsonBuilder().create();
-        String json = gson.toJson(gson);
+            @Override
+            public ZonedDateTime read(JsonReader in) throws IOException {
+                return ZonedDateTime.parse(in.nextString());
+            }
+        }).create();
+        String json = gson.toJson(auctionDetailsMap);
+        System.out.println(json);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(json);

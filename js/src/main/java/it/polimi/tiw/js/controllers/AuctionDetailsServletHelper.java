@@ -74,28 +74,20 @@ public class AuctionDetailsServletHelper extends HttpServlet {
         try{
             if(am.findAuctionDeadlineById(id).after(Timestamp.valueOf(LocalDateTime.now()))){
                 ready = false;
-                System.out.println("Not ready");
             }
         }catch (SQLException sqle){
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
             throw new UnavailableException("Issue from database");
         }
 
-        String path = null;
 
         if(!ready){
-            errorMsg = "wrongClosure";
-            path = "AuctionDetailsServlet?auctionId=" + id + "&errorMsg=" +errorMsg;
-        }else{
-            path = "AuctionDetailsServlet?auctionId=" + id;
-            try{
-                am.closeAuction(id);
-            }catch (SQLException sqle){
-                sqle.printStackTrace();
-                throw new UnavailableException("Issue from database");
-            }
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad requst");
         }
-        response.sendRedirect(path);
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
 
     }
 
