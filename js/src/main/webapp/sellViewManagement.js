@@ -149,16 +149,17 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
 }
 
 
-function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _auctionData, _openAuctionDetails, _closeAuctionForm, _sellBackButton,
+function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _auctionData, _additionalAuctionDetails, _closeAuctionForm, _sellBackButton, _bidsTable,
                             _bidsTableBody, _auctionDetailsAlert) {
     this.alert=_alert;
     this.sellContainer=_sellContainer;
     this.itemImage =_itemImage;
     this.auctionDetails = _auctionDetails;
     this.auctionData = _auctionData;
-    this.openAuctionDetails = _openAuctionDetails;
+    this.additionalAuctionDetails = _additionalAuctionDetails;
     this.closeAuctionForm = _closeAuctionForm;
     this.sellBackButton = _sellBackButton;
+    this.bidsTable = _bidsTable;
     this.bidsTableBody = _bidsTableBody;
     this.auctionDetailsAlert = _auctionDetailsAlert;
 
@@ -191,14 +192,14 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
             this.sellContainer.style.display = null;
             this.auctionDetails.style.visibility = "hidden";
             this.auctionDetails.style.display = "none";
-            this.openAuctionDetails.style.visibility="hidden";
-            this.openAuctionDetails.style.display="none";
-            this.bidsTableBody.style.visibility="hidden";
-            this.bidsTableBody.style.display="none";
+            this.additionalAuctionDetails.style.visibility="hidden";
+            this.additionalAuctionDetails.style.display="none";
             this.auctionDetailsAlert.style.visibility="hidden";
             this.auctionDetailsAlert.style.display="none";
             this.closeAuctionForm.style.visibility = "hidden";
             this.closeAuctionForm.style.display = "none";
+            this.bidsTable.style.visibility = "hidden";
+            this.bidsTable.style.display = "none";
         });
     }
     this.show = function (auctionId) {
@@ -257,17 +258,22 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
         this.auctionData.style.display = null;
         this.auctionDetailsAlert.style.visibility="visible";
         this.auctionDetailsAlert.style.display=null;
+        this.additionalAuctionDetails.style.visibility = "visible";
+        this.additionalAuctionDetails.style.display = null;
+        this.bidsTable.style.visibility = "hidden";
+        this.bidsTable.style.display = "none";
         if (auctionDataBox.auction.status == "OPEN") {
-            this.openAuctionDetails.style.visibility = "visible";
-            this.openAuctionDetails.style.display = null;
             if (auctionDataBox.bids.length === 0) {
                 this.auctionDetailsAlert.textContent = "This has item has recieved no bids";
             } else {
                 let self = this;
+                this.bidsTableBody.innerHTML = "";
                 this.auctionDetailsAlert.textContent = "List of bids";
                 auctionDataBox.bids.forEach(function (bid) { // self visible here, not this
                     self.bidsTableBody.appendChild(self.setRowBids(bid));
                 });
+                this.bidsTable.style.visibility = "visible";
+                this.bidsTable.style.display = null;
             }
             let currDate = new Date();
             if(auctionDataBox.auction.deadline<new Date(currDate.getFullYear(), currDate.getMonth(), currDate.getDay(), currDate.getHours(), currDate.getMinutes(), currDate.getSeconds())){
@@ -279,8 +285,8 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
             if(auctionDataBox.winner==null){
                 this.auctionDetailsAlert.textContent = "Auction closed without a winner";
             }else{
-                this.auctionDetailsAlert.textContent = "The winner is " + auctionDataBox.winner.firstname + " " + auctionDataBox.winnerlastname + "<br>" +
-                "Send item here: " + winner.address;
+                this.auctionDetailsAlert.innerHTML = "The winner is " + auctionDataBox.winner.firstName + " " + auctionDataBox.winner.lastName + "<br>" +
+                "Send item here: " + auctionDataBox.winner.address;
             }
         }
     }
@@ -295,7 +301,7 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
         personalBid.textContent = new Intl.NumberFormat('it-IT', {
             style: 'currency',
             currency: 'EUR'
-        }).format(bid.bidprice);
+        }).format(bid.bidPrice);
         row.appendChild(personalBid);
         dateAndTime = document.createElement("td");
         dateAndTime.textContent = new Date(bid.dateTime).toLocaleString()
