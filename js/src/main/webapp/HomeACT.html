@@ -229,8 +229,8 @@
             </div>
             <img style="max-height: 300px; max-width: 300px;" alt="No image found" id="id_itemimage2">
         </div>
+        <p id="id_auctiondetailsalert" align="center" style="visibility: hidden;display: none"></p>
         <div class="column" id="id_openauctiondetails" style="visibility: hidden; display:none;">
-            <h3>List of bids</h3>
             <table align="center" id="id_bidstable" style="visibility: hidden; display:none;">
                 <thead id="id_bidstablehead">
                 <tr>
@@ -241,13 +241,10 @@
                 <tbody id="id_bidstablebody">
                 </tbody>
             </table>
-            <form align="center" action="#" id="id_formcloseauction">
-                <input id="auctionId" name="auctionId" type="hidden" required>
+            <form align="center" action="#" id="id_formcloseauction" style="visibility: hidden;display: none">
+                <input id="auctionId" name="auctionId" value="#" type="hidden" required>
                 <button type="submit">Close auction</button>
             </form>
-        </div>
-        <div id="id_closeauctiondetails" style="visibility: hidden; display:none;">
-
         </div>
     </div>
 

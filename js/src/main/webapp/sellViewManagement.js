@@ -149,16 +149,18 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
 }
 
 
-function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _auctionData, _openAuctionDetails, _closedAuctionDetails, _closeAuctionForm, _sellBackButton) {
+function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _auctionData, _openAuctionDetails, _closeAuctionForm, _sellBackButton,
+                            _bidsTableBody, _auctionDetailsAlert) {
     this.alert=_alert;
     this.sellContainer=_sellContainer;
     this.itemImage =_itemImage;
     this.auctionDetails = _auctionDetails;
     this.auctionData = _auctionData;
     this.openAuctionDetails = _openAuctionDetails;
-    this.closeAuctionDetails = _closedAuctionDetails;
     this.closeAuctionForm = _closeAuctionForm;
     this.sellBackButton = _sellBackButton;
+    this.bidsTableBody = _bidsTableBody;
+    this.auctionDetailsAlert = _auctionDetailsAlert;
 
     this.registerEvents = function (auctionListSell) {
         this.closeAuctionForm.querySelector('button[type="submit"]').addEventListener('click', (e) => {
@@ -185,10 +187,18 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
 
         this.sellBackButton.addEventListener('click', (e) => {
             auctionListSell.show();
-            this.sellContainer.style.visibility = "visible"
-            this.sellContainer.style.display = null
-            this.auctionDetails.style.visibility = "hidden"
-            this.auctionDetails.style.display = "none"
+            this.sellContainer.style.visibility = "visible";
+            this.sellContainer.style.display = null;
+            this.auctionDetails.style.visibility = "hidden";
+            this.auctionDetails.style.display = "none";
+            this.openAuctionDetails.style.visibility="hidden";
+            this.openAuctionDetails.style.display="none";
+            this.bidsTableBody.style.visibility="hidden";
+            this.bidsTableBody.style.display="none";
+            this.auctionDetailsAlert.style.visibility="hidden";
+            this.auctionDetailsAlert.style.display="none";
+            this.closeAuctionForm.style.visibility = "hidden";
+            this.closeAuctionForm.style.display = "none";
         });
     }
     this.show = function (auctionId) {
@@ -210,72 +220,87 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
                         self.update(auctionDataBox);
                     } else {
                         self.searchalert.textContent = req.responseText;
-                        self.listcontainer.style.visibility = "hidden";
-                        self.listcontainer.style.display = "none";
+                        self.sellContainer.visibility="visible";
+                        self.sellContainer.style.display = null;
                     }
                 }
             }
         );
     };
 
-    //to update
     this.update = function (auctionDataBox) {
         this.auctionData.innerHTML = ""; // empty the table body
-        let itemName, itemImage, itemDescription, price, minraise, deadline, status;
+        let itemName, itemDescription, price, minraise, deadline, status;
         itemName = document.createElement("p");
         itemName.textContent = "Name: " + auctionDataBox.auction.itemName;
         this.auctionData.appendChild(itemName);
         location.pathname.substring(0, location.pathname.lastIndexOf("/") + 1) + "ImageServlet?name=" + auctionDataBox.auction.itemImage;
         itemDescription = document.createElement("p");
-        itemDescription.textContent = auctionDataBox.auction.itemDescription;
+        itemDescription.textContent = "Description: " + auctionDataBox.auction.itemDescription;
         this.auctionData.appendChild(itemDescription);
         price = document.createElement("p");
-        price.textContent = auctionDataBox.auction.price;
+        price.textContent = "Last bid: " + auctionDataBox.auction.price;
         this.auctionData.appendChild(price);
         minraise = document.createElement("p");
-        minraise.textContent = auctionDataBox.auction.minRaise;
+        minraise.textContent = "Minimum raise: " + auctionDataBox.auction.minRaise;
         this.auctionData.appendChild(minraise);
         deadline = document.createElement("p");
-        deadline.textContent = new Date(auctionDataBox.auction.deadline).toLocaleString();
+        deadline.textContent = "Deadline: " + new Date(auctionDataBox.auction.deadline).toLocaleString();
         this.auctionData.appendChild(deadline);
         status = document.createElement("p");
-        status.textContent = auctionDataBox.auction.status;
+        status.textContent = "Status: " + auctionDataBox.auction.status;
         this.auctionData.appendChild(status);
-        this.itemImage.src=location.pathname.substring(0, location.pathname.lastIndexOf("/") + 1) + "ImageServlet?name=" + auctionDataBox.auction.itemImage;
+        this.itemImage.src = location.pathname.substring(0, location.pathname.lastIndexOf("/") + 1) + "ImageServlet?name=" + auctionDataBox.auction.itemImage;
         this.auctionDetails.style.visibility = "visible";
         this.auctionData.style.visibility = "visible";
         this.auctionDetails.style.display = null;
         this.auctionData.style.display = null;
-        let self = this;
-        if(auctionDataBox.auction.status===0){
-
-        }else{
-            //if(auctionDataBox.winner)
+        this.auctionDetailsAlert.style.visibility="visible";
+        this.auctionDetailsAlert.style.display=null;
+        if (auctionDataBox.auction.status == "OPEN") {
+            this.openAuctionDetails.style.visibility = "visible";
+            this.openAuctionDetails.style.display = null;
+            if (auctionDataBox.bids.length === 0) {
+                this.auctionDetailsAlert.textContent = "This has item has recieved no bids";
+            } else {
+                let self = this;
+                this.auctionDetailsAlert.textContent = "List of bids";
+                auctionDataBox.bids.forEach(function (bid) { // self visible here, not this
+                    self.bidsTableBody.appendChild(self.setRowBids(bid));
+                });
+            }
+            let currDate = new Date();
+            if(auctionDataBox.auction.deadline<new Date(currDate.getFullYear(), currDate.getMonth(), currDate.getDay(), currDate.getHours(), currDate.getMinutes(), currDate.getSeconds())){
+                this.closeAuctionForm.style.visibility="visible";
+                this.closeAuctionForm.style.display=null;
+                this.closeAuctionForm.querySelector('input[type="hidden"]').value = auctionDataBox.auction.idAuction;
+            }
+        } else {
+            if(auctionDataBox.winner==null){
+                this.auctionDetailsAlert.textContent = "Auction closed without a winner";
+            }else{
+                this.auctionDetailsAlert.textContent = "The winner is " + auctionDataBox.winner.firstname + " " + auctionDataBox.winnerlastname + "<br>" +
+                "Send item here: " + winner.address;
+            }
         }
     }
 
-    //to update
     this.setRowBids = function(bid){
-        let row, priceCell, raiseCell, dateCell, itemCell, itemDescCell, linkcell, linkText, anchor;
+        let row, bidderUsername, personalBid, raiseCell, dateAndTime;
         row = document.createElement("tr");
-        itemCell = document.createElement("td");
-        itemCell.textContent = auction.itemName;
-        row.appendChild(itemCell);
-        itemDescCell = document.createElement("td");
-        itemDescCell.textContent = auction.itemDescription;
-        row.appendChild(itemDescCell);
-        priceCell = document.createElement("td");
-
-        row.appendChild(priceCell);
-        raiseCell = document.createElement("td");
-        raiseCell.textContent = new Intl.NumberFormat('it-IT', {
+        bidderUsername = document.createElement("td");
+        bidderUsername.textContent = bid.bidderUsername;
+        row.appendChild(bidderUsername);
+        personalBid = document.createElement("td");
+        personalBid.textContent = new Intl.NumberFormat('it-IT', {
             style: 'currency',
             currency: 'EUR'
-        }).format(auction.minRaise);
-        row.appendChild(raiseCell);
-        dateCell = document.createElement("td");
-        dateCell.textContent = auction.deadline;
-        row.appendChild(dateCell);
+        }).format(bid.bidprice);
+        row.appendChild(personalBid);
+        dateAndTime = document.createElement("td");
+        dateAndTime.textContent = new Date(bid.dateTime).toLocaleString()
+        row.appendChild(dateAndTime);
 
+        return row;
     }
 }

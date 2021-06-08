@@ -67,7 +67,7 @@
             </div>
             <form align="center" action="AuctionDetailsServletHelper" method="POST">
                 <input id="auctionId" name="auctionId" th:value="${auctionData.idAuction}" type="hidden" required>
-                <button type="submit">Close button</button>
+                <button type="submit">Close auction</button>
             </form>
             <div th:if="${errorMsg!=null}">
                 <p><center>You cannot close the auction yet</center></p>

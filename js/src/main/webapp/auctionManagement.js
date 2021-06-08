@@ -122,9 +122,10 @@
                 document.getElementById("id_auctiondetails"),
                 document.getElementById("id_auctiondata"),
                 document.getElementById("id_openauctiondetails"),
-                document.getElementById("id_closeauctiondetails"),
                 document.getElementById("id_formcloseauction"),
                 document.getElementById("id_sellBackButton"),
+                document.getElementById("id_bidstablebody"),
+                document.getElementById("id_auctiondetailsalert")
 
             );
 
