@@ -51,7 +51,7 @@ public class CreateBid extends HttpServlet {
             } catch (SQLException sqle) {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "database error");
             }
-            if(currMaxPrice > fPrice){
+            if(fPrice < currMaxPrice){
                 errorString = "&error=lowPrice";
             }
             else {

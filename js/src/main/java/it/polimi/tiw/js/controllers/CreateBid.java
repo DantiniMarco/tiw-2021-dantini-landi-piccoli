@@ -43,8 +43,7 @@ public class CreateBid extends HttpServlet {
         BidDAO bidDAO = new BidDAO(connection);
 
 
-        // FIXME: add fixed currmax
-        currMaxPrice = Float.parseFloat("0");
+        currMaxPrice = 0.0f;
         try {
             idAuction = Integer.parseInt(request.getParameter("idauction"));
         } catch (NumberFormatException e) {
@@ -63,7 +62,7 @@ public class CreateBid extends HttpServlet {
             if (price.isEmpty()) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter missing");
                 return;
-            } else if (fPrice <= currMaxPrice) {
+            } else if (fPrice < currMaxPrice) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().println("This price is too low.");
                 return;

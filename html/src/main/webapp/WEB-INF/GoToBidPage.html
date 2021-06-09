@@ -60,14 +60,14 @@
                 </tr>
                 <tr>
                     <div class="container">
-                        <h5 ><span th:text="${'So your minimum bid should be greater than: '+ #numbers.formatDecimal(currMax, 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></h5>
+                        <h5 ><span th:text="${'The minimum bet is: '+ #numbers.formatDecimal(currMax, 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></h5>
                     </div>
                 </tr>
                 <tr>
                     <form action="#" th:action="@{/CreateBid}" method="POST">
                         <div class="container">
                             <label for="price"><b>Make a new bid</b></label>
-                            <input type="number" th:min="${#numbers.formatDecimal(currMax+0.01, 0, 2)}" step="0.01" placeholder="Type here..." id="price" name="price" required> <br>
+                            <input type="number" th:min="${#numbers.formatDecimal(currMax, 0, 2)}" step="0.01" placeholder="Type here..." id="price" name="price" required> <br>
                             <button type="submit">Submit</button>
                             <p th:text="${errorMsg}"></p>
                             <input type="hidden" name="idauction" th:value="${idauction}">
