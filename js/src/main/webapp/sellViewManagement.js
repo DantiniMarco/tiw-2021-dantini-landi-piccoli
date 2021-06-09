@@ -21,6 +21,9 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
                         if (req.status === 200) {
                             //has added auction
                             let userDataStored = JSON.parse(localStorage.getItem("userData"));
+                            let currentDate = new Date();
+                            currentDate.setMonth(currentDate.getMonth() + 1)
+                            userDataStored[self.username].expirationDate = currentDate;
                             userDataStored[self.username].lastAction = "sell";
                             localStorage.setItem("userData", JSON.stringify(userDataStored));
                             self.show();
@@ -318,7 +321,7 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
     }
 
     this.dateToIsoString = function (date) {
-        pad = function(num) {
+        let pad = function(num) {
             var norm = Math.floor(num);
             return (norm < 10 ? '0' : '') + norm;
         };

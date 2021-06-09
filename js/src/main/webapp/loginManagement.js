@@ -15,7 +15,6 @@
             e.target.closest("form").reset();
             switch (req.status) {
               case 200:
-            	sessionStorage.setItem('username', message);
                 window.location.href = "HomeACT.html";
                 break;
               case 400: // bad request

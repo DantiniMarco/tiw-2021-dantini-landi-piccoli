@@ -100,6 +100,9 @@ function SearchAuction(formId, alert, auctionsListInt, username) {
             e.preventDefault();
             console.log(new FormData(e.target.form));
             let userDataStored = JSON.parse(localStorage.getItem("userData"));
+            let currentDate = new Date();
+            currentDate.setMonth(currentDate.getMonth() + 1)
+            userDataStored[this.username].expirationDate = currentDate.getTime();
             userDataStored[this.username].lastAction = "buy";
             localStorage.setItem("userData", JSON.stringify(userDataStored));
             this.auctionsListInt.show(new FormData(e.target.form).get("keyword"));
@@ -171,7 +174,9 @@ function AuctionDetails(options) {
                     if (req.status === 200) {
                         let formdata = JSON.parse(req.responseText);
                         let userDataStored = JSON.parse(localStorage.getItem("userData"));
-                        userDataStored[self.username].auctionsVisited[auctionid] = Date.now();
+                        let currentDate = new Date();
+                        currentDate.setMonth(currentDate.getMonth() + 1)
+                        userDataStored[self.username].auctionsVisited[auctionid] = currentDate.getTime();
                         localStorage.setItem("userData", JSON.stringify(userDataStored));
                         self.update(formdata); // self is the object on which the function
                         // is applied
@@ -241,7 +246,8 @@ function AuctionDetails(options) {
 
 // TODO: Marco da fare
 
-function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions_body, _username, _visitedAuctions, _visitedAuctions_body, _auctionDetailsInt) {
+function WonAndLatestAuction(_alertRecentAuctions, _alertWonAuction,_alert, _wonAuctions, _wonAuctions_body, _username, _visitedAuctions, _visitedAuctions_body, _auctionDetailsInt) {
+    this.alertRecentAuctions = _alertRecentAuctions;
     this.alert = _alert;
     this.alertWonAuction = _alertWonAuction;
     this.wonAuctions = _wonAuctions;
@@ -269,8 +275,6 @@ function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions
                         console.log(req.responseText);
                         var auctionsToShow = JSON.parse(req.responseText);
                         console.log(auctionsToShow);
-
-
                         if (auctionsToShow.wonAuction.length === 0) {
                             self.wonAuctions.style.visibility = "hidden";
                             self.wonAuctions.style.display = "none";
@@ -284,7 +288,7 @@ function WonAndLatestAuction(_alertWonAuction,_alert, _wonAuctions, _wonAuctions
                             // hide last visited
                             self.visitedAuctions.style.visibility = "hidden";
                             self.visitedAuctions.style.display = "none";
-                            self.alertWonAuction.textContent = "You haven't visited an auction yet";
+                            self.alertRecentAuctions.textContent = "You haven't visited an auction yet";
                         }else{
                             // show last visited
                             self.updateVisited(auctionsToShow.auctionsVisited);

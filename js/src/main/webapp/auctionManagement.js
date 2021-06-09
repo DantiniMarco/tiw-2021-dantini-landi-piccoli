@@ -1,8 +1,8 @@
 (function () { // avoid variables ending up in the global scope
 
     // page components
-    let auctionsList, auctionsListSell, searchForm, auctionDetails, buttonManager, userData, wonAndLatestAuction, auctionDetailsSell
-        pageOrchestrator = new PageOrchestrator(); // main controller
+    let auctionsList, auctionsListSell, searchForm, auctionDetails, buttonManager, userData, wonAndLatestAuction, auctionDetailsSell;
+    let pageOrchestrator = new PageOrchestrator(); // main controller
     window.addEventListener("load", () => {
         makeCall("GET", "GetUserData", null,
             function (req) {
@@ -12,7 +12,7 @@
                         console.log(req.responseText)
                         userData = JSON.parse(req.responseText);
                         pageOrchestrator.start(); // initialize the components
-                        pageOrchestrator.refresh();
+                        //pageOrchestrator.refresh();
                     } else {
                         self.alert.textContent = message;
                     }
@@ -70,6 +70,7 @@
     function PageOrchestrator() {
         let alertPriceBid = document.getElementById("id_alertPriceBid");
         let alertWonAuction = document.getElementById("id_alertWonAuctions");
+        let alertRecentAuctions = document.getElementById("id_alertRecentAuctions");
         let alertContainer = document.getElementById("id_alert");
         let alertSearchContainer = document.getElementById("id_alert_search");
         let buyContainer = document.getElementById("id_buy");
@@ -81,6 +82,7 @@
         let sellBar = document.getElementById("id_sellbar");
         let minRaise = document.getElementById("id_minRaise");
         let currMaxPrice = document.getElementById("id_currentPriceTitle");
+
         this.start = function () {
             new PersonalMessage(alertContainer, document.getElementById("id_username"));
 
@@ -104,7 +106,7 @@
                 minRaise: minRaise
             });
 
-            wonAndLatestAuction = new WonAndLatestAuction(alertWonAuction, alertContainer, document.getElementById("id_wonAuctions"),
+            wonAndLatestAuction = new WonAndLatestAuction(alertRecentAuctions, alertWonAuction, alertContainer, document.getElementById("id_wonAuctions"),
                 document.getElementById("id_wonAuctions_body"), userData.username, document.getElementById("id_visitedAuctions"),
                 document.getElementById("id_visitedAuctions_body"), auctionDetails );
 
@@ -162,23 +164,35 @@
             let currentDate = new Date();
             let userDataToStore = userDataStored;
             let lastAction;
-            let auctionsVisited;
 
-            if (expirationDate == null || expirationDate < currentDate.getDate()) {
+            // Management of old auctions visited (> 1 month)
+            let newAuctionsVisited = userDataStored[userData.username].auctionsVisited;
+            if(newAuctionsVisited != null) {
+                for (const [key, value] of Object.entries(newAuctionsVisited)) {
+                    if(value < currentDate.getTime()){
+                        delete newAuctionsVisited[key];
+                    }
+                }
+            }else{
+                newAuctionsVisited = {};
+            }
+            userDataToStore[userData.username].auctionsVisited = newAuctionsVisited;
+
+            // Management of last action expired (> 1 month)
+            if (expirationDate == null || expirationDate < currentDate.getTime()) {
                 currentDate.setMonth(currentDate.getMonth() + 1)
-                userDataToStore[userData.username].expirationDate = currentDate;
+                userDataToStore[userData.username].expirationDate = currentDate.getTime();
                 lastAction = "buy"
                 userDataToStore[userData.username].lastAction = lastAction
-                auctionsVisited = {};
-                userDataToStore[userData.username].auctionsVisited = auctionsVisited;
-                localStorage.setItem("userData", JSON.stringify(userDataToStore));
             }else {
                 lastAction = userDataStored[userData.username].lastAction
-                auctionsVisited = userDataStored[userData.username].auctionsVisited
             }
+
+            localStorage.setItem("userData", JSON.stringify(userDataToStore));
+
             buttonManager = new ButtonManager(alertContainer, buyContainer, sellContainer, buyBar, sellBar);
 
-            buttonManager.show(lastAction, auctionsVisited);
+            buttonManager.show(lastAction);
 
         };
 
