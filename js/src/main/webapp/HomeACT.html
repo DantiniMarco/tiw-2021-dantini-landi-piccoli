@@ -86,7 +86,6 @@
             <table id="id_listcontainer">
                 <thead>
                 <tr>
-                    <th>ID Auction</th>
                     <th>Item Name</th>
                     <th>Initial Price</th>
                     <th>Minimum Raise</th>
@@ -126,7 +125,7 @@
                 <form action="#" id="id_bidform">
                     <div class="container">
                         <label for="price"><b>Make a new bid</b></label>
-                        <input type="text" placeholder="Type here..." id="price" name="price" required> <br>
+                        <input type="number" step="0.01" placeholder="Type here..." id="price" name="price" required> <br>
                         <button type="submit">Submit</button>
                         <p id="id_alertPriceBid" class="error-message"></p>
                         <input type="hidden" name="idauction">

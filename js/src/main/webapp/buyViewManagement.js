@@ -47,9 +47,6 @@ function AuctionList(_searchalert, _alert, _listcontainer, _listcontainerbody, _
         let self = this;
         arrayAuctions.forEach(function (auction) { // self visible here, not this
             row = document.createElement("tr");
-            idAuctionCell = document.createElement("td");
-            idAuctionCell.textContent = auction.idAuction;
-            row.appendChild(idAuctionCell);
             itemCell = document.createElement("td");
             itemCell.textContent = auction.itemName;
             row.appendChild(itemCell);
@@ -198,7 +195,8 @@ function AuctionDetails(options) {
     }
 
     this.update = function (formdata) {
-        this.itemName.textContent = formdata.item.name;
+        this.bidform.querySelector('input[type="number"]').min= formdata.currMax;
+            this.itemName.textContent = formdata.item.name;
         this.itemImage.src = location.pathname.substring(0, location.pathname.lastIndexOf("/") + 1) + "ImageServlet?name=" + formdata.item.image;
         this.itemDescription.textContent = formdata.item.description;
         this.currentPrice.textContent = "The minimum bet is: " + new Intl.NumberFormat('it-IT', {
