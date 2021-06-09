@@ -18,9 +18,7 @@ function AuctionList(_searchalert, _alert, _listcontainer, _listcontainerbody, _
                     if (req.status === 200) {
                         self.searchalert.textContent = ""
                         self.alert.textContent = ""
-                        console.log(req.responseText);
                         var auctionsToShow = JSON.parse(req.responseText);
-                        console.log(auctionsToShow);
                         if (auctionsToShow.length === 0) {
                             self.searchalert.textContent = "No auctions found!";
                             return;
@@ -97,7 +95,6 @@ function SearchAuction(formId, alert, auctionsListInt, username) {
             e.preventDefault();
             let form = e.target.closest("form");
             if (form.checkValidity()) {
-                console.log(new FormData(e.target.form));
                 let userDataStored = JSON.parse(localStorage.getItem("userData"));
                 let currentDate = new Date();
                 currentDate.setMonth(currentDate.getMonth() + 1)
@@ -264,7 +261,6 @@ function WonAndLatestAuction(_alertRecentAuctions, _alertWonAuction,_alert, _won
         let self = this;
         let userDataStored = JSON.parse(localStorage.getItem("userData"));
         let auctionsVisited = userDataStored[this.username].auctionsVisited;
-        console.log(auctionsVisited);
         let getParameters = "";
         for (const auctionId of Object.keys(auctionsVisited)){
             getParameters += "auction=" + auctionId + "&";
@@ -276,9 +272,7 @@ function WonAndLatestAuction(_alertRecentAuctions, _alertWonAuction,_alert, _won
                         self.alertWonAuction.textContent = ""
                         self.alertRecentAuctions.textContent = ""
                         self.alert.textContent = ""
-                        console.log(req.responseText);
                         var auctionsToShow = JSON.parse(req.responseText);
-                        console.log(auctionsToShow);
                         if (auctionsToShow.wonAuction.length === 0) {
                             self.wonAuctions.style.visibility = "hidden";
                             self.wonAuctions.style.display = "none";

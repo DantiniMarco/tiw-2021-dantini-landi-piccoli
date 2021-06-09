@@ -222,7 +222,9 @@ public class AuctionDAO {
                 auction.setItemDescription(result.getString("description"));
                 auction.setPrice(result.getFloat("price"));
                 auction.setMinRaise(result.getFloat("minraise"));
-                auction.setDeadline(ZonedDateTime.ofInstant(Instant.ofEpochSecond(result.getLong("deadline")), ZoneOffset.UTC).withZoneSameInstant(ZoneId.of("Europe/Rome")));
+                auction.setDeadline(ZonedDateTime
+                        .ofInstant(Instant.ofEpochSecond(result.getLong("deadline")), ZoneOffset.UTC)
+                        .withZoneSameInstant(ZoneId.of("Europe/Rome")));
                 auction.setStatus(AuctionStatus.getAuctionStatusFromInt(result.getInt("status")));
             }
         }catch (SQLException sqle){

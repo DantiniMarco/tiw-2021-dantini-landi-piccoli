@@ -9,7 +9,6 @@
                 let message = req.responseText;
                 if (req.readyState === 4) {
                     if (req.status === 200) {
-                        console.log(req.responseText)
                         userData = JSON.parse(req.responseText);
                         pageOrchestrator.start(); // initialize the components
                         //pageOrchestrator.refresh();

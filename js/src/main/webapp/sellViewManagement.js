@@ -45,9 +45,7 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
                 if (req.readyState === 4) {
                     if (req.status === 200) {
                         self.alert.textContent = "";
-                        console.log(req.responseText);
                         var sellData = JSON.parse(req.responseText);
-                        console.log(sellData);
                         if (sellData.length === 0) {
                             self.alert.textContent = "No auctions found!";
                             return;
@@ -199,9 +197,7 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
                         self.sellContainer.style.display = "none";
                         self.alert.textContent = "";
                         let message = req.responseText;
-                        console.log(message);
                         var auctionDataBox = JSON.parse(req.responseText);
-                        console.log(auctionDataBox);
                         if (auctionDataBox.length === 0) {
                             self.alert.textContent = "No auctions found!";
                             return;
@@ -257,7 +253,7 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
         this.bidsTable.style.display = "none";
         this.closeAuctionForm.style.visibility = "hidden";
         this.closeAuctionForm.style.display = "none";
-        if (auctionDataBox.auction.status == "OPEN") {
+        if (auctionDataBox.auction.status === "OPEN") {
             if (auctionDataBox.bids.length === 0) {
                 this.auctionDetailsAlert.textContent = "This has item has recieved no bids";
             } else {
@@ -270,9 +266,8 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
                 this.bidsTable.style.visibility = "visible";
                 this.bidsTable.style.display = null;
             }
-            let currDate = new Date();
-            let parsedCurrDate = dateToIsoString(new Date(currDate.getFullYear(), currDate.getMonth(), currDate.getDate(), currDate.getHours(), currDate.getMinutes(), currDate.getSeconds()));
-            if(auctionDataBox.auction.deadline<parsedCurrDate){
+            let currDate = new Date().toISOString();
+            if(auctionDataBox.auction.deadline<currDate){
                 var auctionId = auctionDataBox.auction.idAuction;
                 this.closeAuctionForm.style.visibility="visible";
                 this.closeAuctionForm.style.display=null;
