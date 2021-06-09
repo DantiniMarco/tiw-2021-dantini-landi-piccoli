@@ -95,14 +95,19 @@ function SearchAuction(formId, alert, auctionsListInt, username) {
         // Manage submit button
         this.form.querySelector('button[type="submit"]').addEventListener('click', (e) => {
             e.preventDefault();
-            console.log(new FormData(e.target.form));
-            let userDataStored = JSON.parse(localStorage.getItem("userData"));
-            let currentDate = new Date();
-            currentDate.setMonth(currentDate.getMonth() + 1)
-            userDataStored[this.username].expirationDate = currentDate.getTime();
-            userDataStored[this.username].lastAction = "buy";
-            localStorage.setItem("userData", JSON.stringify(userDataStored));
-            this.auctionsListInt.show(new FormData(e.target.form).get("keyword"));
+            let form = e.target.closest("form");
+            if (form.checkValidity()) {
+                console.log(new FormData(e.target.form));
+                let userDataStored = JSON.parse(localStorage.getItem("userData"));
+                let currentDate = new Date();
+                currentDate.setMonth(currentDate.getMonth() + 1)
+                userDataStored[this.username].expirationDate = currentDate.getTime();
+                userDataStored[this.username].lastAction = "buy";
+                localStorage.setItem("userData", JSON.stringify(userDataStored));
+                this.auctionsListInt.show(new FormData(e.target.form).get("keyword"));
+                } else {
+                form.reportValidity();
+            }
         });
     };
 

@@ -75,7 +75,7 @@
             <form id="id_searchauctionform" action="#">
                 <div class="container">
                     <label for="keyword"><strong>Search for Open Auctions</strong></label>
-                    <input type="text" placeholder="Write a key word..." id="keyword" name="keyword" required> <br>
+                    <input type="text" placeholder="Write a key word..." id="keyword" name="keyword" minlength="3" required> <br>
                     <button type="submit">Search</button>
                     <div id="id_alert_search" class="error-message"></div>
                     <p id="id_searchalert"></p>
@@ -197,8 +197,8 @@
                 <div class="container">
                     <label for="itemName">Name: </label><input id="itemName" name="itemName"
                                                                placeholder="Select a name for the article, please"
-                                                               type="text" required><br><br>
-                    <label for="itemImage">Image: </label><input type="file" id="itemImage" name="itemImage"><br><br>
+                                                               type="text" maxlength="45" required><br><br>
+                    <label for="itemImage">Image: </label><input type="file" accept=".jpg, .jpeg, .png" id="itemImage" name="itemImage"><br><br>
                     <label for="itemDescription">Description: </label><input id="itemDescription" name="itemDescription"
                                                                              type="text"
                                                                              placeholder="Write a short description to help users, please"
