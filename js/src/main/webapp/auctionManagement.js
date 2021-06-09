@@ -204,7 +204,6 @@
                 auctionDetails.reset();
                 wonAndLatestAuction.show();
             } else {
-                auctionsListSell.reset();
                 auctionsListSell.show();
             }
             //searchForm.reset();

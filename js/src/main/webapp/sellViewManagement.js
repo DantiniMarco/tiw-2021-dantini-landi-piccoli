@@ -1,8 +1,6 @@
 function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclosedbody, _addauctionform, _username, _auctionDetails, _auctionDetailsSell) {
     this.alert = _alert;
-    this.listopen = _listopen;
     this.listopenbody = _listopenbody;
-    this.listclosed = _listclosed;
     this.listclosedbody = _listclosedbody;
     this.addauctionform = _addauctionform;
     this.username = _username;
@@ -40,20 +38,13 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
         }
     });
 
-
-
-    this.reset = function () {
-        /*this.listcontainer.style.visibility = "hidden";
-        this.listcontainer.style.display = "none";*/
-    }
-
     this.show = function () {
         var self = this;
         makeCall("GET", "SellServlet", null,
             function (req) {
                 if (req.readyState === 4) {
                     if (req.status === 200) {
-                        self.alert.textContent = ""
+                        self.alert.textContent = "";
                         console.log(req.responseText);
                         var sellData = JSON.parse(req.responseText);
                         console.log(sellData);
@@ -73,8 +64,8 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
         );
     };
 
-    this.setRowAuction = function(auction){
-        let row, priceCell, raiseCell, dateCell, itemCell, itemDescCell, linkcell, linkText, anchor;
+    this.setRowAuction = function(auction, status){
+        let row, priceCell, raiseCell, dateCell, timeLeftCell,itemCell, itemDescCell, linkcell, linkText, anchor;
         row = document.createElement("tr");
         itemCell = document.createElement("td");
         itemCell.textContent = auction.itemName;
@@ -98,6 +89,11 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
             currency: 'EUR'
         }).format(auction.minRaise);
         row.appendChild(raiseCell);
+        if(status==0){
+            timeLeftCell = document.createElement("td");
+            timeLeftCell.textContent = "" + this.calculateTimeLeft(auction.deadline);
+            row.appendChild(timeLeftCell);
+        }
         dateCell = document.createElement("td");
         dateCell.textContent = new Date(auction.deadline).toLocaleString();
         row.appendChild(dateCell);
@@ -124,10 +120,10 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
         this.addauctionform.querySelector('#deadlineLocalDateTime').min = dateToIsoString(new Date(sellData.dateLowerBound));
         this.addauctionform.querySelector('#deadlineLocalDateTime').max = dateToIsoString(new Date(sellData.dateUpperBound));
         sellData.openAuctions.forEach(function (auction) { // self visible here, not this
-            self.listopenbody.appendChild(self.setRowAuction(auction));
+            self.listopenbody.appendChild(self.setRowAuction(auction, 0));
         });
         sellData.closedAuctions.forEach(function (auction) { // self visible here, not this
-            self.listclosedbody.appendChild(self.setRowAuction(auction));
+            self.listclosedbody.appendChild(self.setRowAuction(auction, 1));
         });
         //FIXME: can delete, check
         self.listopenbody.style.visibility = "visible";
@@ -136,25 +132,24 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
         self.listclosedbody.style.display = null;
     }
 
-    //to update
-    /*this.calculateTime(auctionList) {
-        for (let auction : auctionList) {
-            diff = auction.getDeadline().getTime() - new Date().getTime();
 
-            if (diff <= 3600) {
-                if (diff < 1) {
-                    timeLeftlist.add("Expired");
-                } else {
-                    timeLeftlist.add("Less than an hour");
-                }
+    this.calculateTimeLeft = function (deadline) {
+        let dateDeadline = new Date(deadline);
+        let diff = dateDeadline - new Date().valueOf();
+        if (diff <= 3600) {
+            if (diff < 1) {
+                timeLeft = "Expired";
             } else {
-                diffHours = diff / (60 * 60 * 1000) % 24;
-                diffDays = diff / (24 * 60 * 60 * 1000);
-                timeLeftlist.add(((diffDays > 0)?diffDays + " days and ":"")+ diffHours + " hours");
+                timeLeft = "Less than an hour";
             }
+        } else {
+            diffHours = diff / (60 * 60 * 1000) % 24;
+            diffDays = diff / (24 * 60 * 60 * 1000);
+            timeLeft = ((Math.floor(diffDays) > 0)?Math.floor(diffDays) + " days and ":"")+ Math.floor(diffHours) + " hours";
         }
-        return timeLeftlist;
-    }*/
+
+        return timeLeft;
+    }
 
 
 }
