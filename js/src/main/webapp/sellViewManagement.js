@@ -173,27 +173,7 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
     this.bidsTable = _bidsTable;
     this.bidsTableBody = _bidsTableBody;
     this.auctionDetailsAlert = _auctionDetailsAlert;
-    this.closeAuctionForm.querySelector('button[type="submit"]').addEventListener('click', (e) => {
-        e.preventDefault();
-        let form = e.target.closest("form");
-        if (form.checkValidity()) {
-            let self = this;
-            makeCall("POST", 'AuctionDetailsServletHelper', form,
-                function (req) {
-                    if (req.readyState === 4) {
-                        let message = req.responseText;
-                        if (req.status === 200) {
-                            self.show();
-                        } else {
-                            self.alert.textContent = message;
-                        }
-                    }
-                }
-            );
-        } else {
-            form.reportValidity();
-        }
-    });
+
 
     this.registerEvents = function (auctionListSell) {
         this.sellBackButton.addEventListener('click', (e) => {
@@ -290,6 +270,33 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
                 this.closeAuctionForm.style.visibility="visible";
                 this.closeAuctionForm.style.display=null;
                 this.closeAuctionForm.querySelector('input[type="hidden"]').value = auctionDataBox.auction.idAuction;
+                var auctionId = auctionDataBox.auction.idAuction;
+                this.closeAuctionForm.querySelector('button[type="submit"]').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    let form = e.target.closest("form");
+                    if (form.checkValidity()) {
+                        let self = this;
+                        makeCall("POST", 'AuctionDetailsServletHelper', form,
+                            function (req) {
+                                if (req.readyState === 4) {
+                                    let message = req.responseText;
+                                    if (req.status === 200) {
+                                        let userDataStored = JSON.parse(localStorage.getItem("userData"));
+                                        userDataStored[self.username].lastAction = "sell";
+                                        localStorage.setItem("userData", JSON.stringify(userDataStored));
+                                        self.show(auctionId);
+                                        self.sellContainer.style.visibility="hidden";
+                                        self.sellContainer.style.display="none";
+                                    } else {
+                                        self.alert.textContent = message;
+                                    }
+                                }
+                            }
+                        );
+                    } else {
+                        form.reportValidity();
+                    }
+                });
             }
         } else {
             if(auctionDataBox.winner==null){
