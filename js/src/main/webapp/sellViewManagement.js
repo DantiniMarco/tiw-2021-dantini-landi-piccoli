@@ -121,8 +121,8 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
         this.listclosedbody.innerHTML = ""; // empty the table body
         // build updated list
         let self = this;
-        this.addauctionform.querySelector('#deadlineLocalDateTime').min = this.auctionDetailsSell.dateToIsoString(new Date(sellData.dateLowerBound));
-        this.addauctionform.querySelector('#deadlineLocalDateTime').max = this.auctionDetailsSell.dateToIsoString(new Date(sellData.dateUpperBound));
+        this.addauctionform.querySelector('#deadlineLocalDateTime').min = dateToIsoString(new Date(sellData.dateLowerBound));
+        this.addauctionform.querySelector('#deadlineLocalDateTime').max = dateToIsoString(new Date(sellData.dateUpperBound));
         sellData.openAuctions.forEach(function (auction) { // self visible here, not this
             self.listopenbody.appendChild(self.setRowAuction(auction));
         });
@@ -191,6 +191,7 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
             this.bidsTable.style.visibility = "hidden";
             this.bidsTable.style.display = "none";
         });
+
     }
     this.show = function (auctionId) {
         var self = this;
@@ -219,7 +220,14 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
     };
 
     this.update = function (auctionDataBox) {
-        this.auctionData.innerHTML = ""; // empty the table body
+        //Empty the table body
+        this.auctionData.innerHTML = "";
+        //Remove the possible pre-activated button
+        let closeAuctionButton = this.closeAuctionForm.querySelector('button[type="submit"]');
+        if(closeAuctionButton!=null){
+            closeAuctionButton.remove();
+        }
+        //Auction data collection
         let itemName, itemDescription, price, minraise, deadline, status;
         itemName = document.createElement("p");
         itemName.textContent = "Name: " + auctionDataBox.auction.itemName;
@@ -251,6 +259,8 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
         this.additionalAuctionDetails.style.display = null;
         this.bidsTable.style.visibility = "hidden";
         this.bidsTable.style.display = "none";
+        this.closeAuctionForm.style.visibility = "hidden";
+        this.closeAuctionForm.style.display = "none";
         if (auctionDataBox.auction.status == "OPEN") {
             if (auctionDataBox.bids.length === 0) {
                 this.auctionDetailsAlert.textContent = "This has item has recieved no bids";
@@ -265,13 +275,17 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
                 this.bidsTable.style.display = null;
             }
             let currDate = new Date();
-            let test = this.dateToIsoString(new Date(currDate.getFullYear(), currDate.getMonth(), currDate.getDate(), currDate.getHours(), currDate.getMinutes(), currDate.getSeconds()));
-            if(auctionDataBox.auction.deadline<test){
+            let parsedCurrDate = dateToIsoString(new Date(currDate.getFullYear(), currDate.getMonth(), currDate.getDate(), currDate.getHours(), currDate.getMinutes(), currDate.getSeconds()));
+            if(auctionDataBox.auction.deadline<parsedCurrDate){
+                var auctionId = auctionDataBox.auction.idAuction;
                 this.closeAuctionForm.style.visibility="visible";
                 this.closeAuctionForm.style.display=null;
                 this.closeAuctionForm.querySelector('input[type="hidden"]').value = auctionDataBox.auction.idAuction;
-                var auctionId = auctionDataBox.auction.idAuction;
-                this.closeAuctionForm.querySelector('button[type="submit"]').addEventListener('click', (e) => {
+                let closeAuctionButton = document.createElement("button");
+                closeAuctionButton.type = "submit";
+                closeAuctionButton.textContent = "Close auction";
+                this.closeAuctionForm.appendChild(closeAuctionButton);
+                this.closeAuctionForm.querySelector('button[type="submit"]').addEventListener('click', (e)=>{
                     e.preventDefault();
                     let form = e.target.closest("form");
                     if (form.checkValidity()) {
@@ -281,12 +295,9 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
                                 if (req.readyState === 4) {
                                     let message = req.responseText;
                                     if (req.status === 200) {
-                                        let userDataStored = JSON.parse(localStorage.getItem("userData"));
-                                        userDataStored[self.username].lastAction = "sell";
-                                        localStorage.setItem("userData", JSON.stringify(userDataStored));
-                                        self.show(auctionId);
                                         self.sellContainer.style.visibility="hidden";
                                         self.sellContainer.style.display="none";
+                                        self.show(auctionId);
                                     } else {
                                         self.alert.textContent = message;
                                     }
@@ -327,16 +338,4 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
         return row;
     }
 
-    this.dateToIsoString = function (date) {
-        let pad = function(num) {
-            var norm = Math.floor(num);
-            return (norm < 10 ? '0' : '') + norm;
-        };
-
-        return date.getFullYear() +
-            '-' + pad(date.getMonth() + 1) +
-            '-' + pad(date.getDate()) +
-            'T' + pad(date.getHours()) +
-            ':' + pad(date.getMinutes());
-    }
 }

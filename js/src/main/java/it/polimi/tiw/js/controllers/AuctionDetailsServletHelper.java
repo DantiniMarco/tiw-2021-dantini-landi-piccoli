@@ -7,6 +7,7 @@ import it.polimi.tiw.js.utils.ConnectionHandler;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @WebServlet("/AuctionDetailsServletHelper")
+@MultipartConfig
 public class AuctionDetailsServletHelper extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Connection con;
@@ -44,7 +46,7 @@ public class AuctionDetailsServletHelper extends HttpServlet {
         if(id_param==null || id_param.isEmpty()){
             bad_request = true;
         }
-        System.out.println(id_param);
+
         try{
             id = Integer.parseInt(id_param);
         }catch (NumberFormatException ex){
@@ -82,6 +84,13 @@ public class AuctionDetailsServletHelper extends HttpServlet {
 
         if(!ready){
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad request");
+        }
+
+        try{
+            am.closeAuction(id);
+        }catch (SQLException sqle){
+            sqle.printStackTrace();
+            throw new UnavailableException("Issue from database");
         }
 
         response.setStatus(HttpServletResponse.SC_OK);
