@@ -84,7 +84,7 @@
         <td th:text="${a.getItemName()}"></td>
         <td><span th:text="${#numbers.formatDecimal(a.getInitialPrice(), 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
         <td><span th:text="${#numbers.formatDecimal(a.getMinRaise(), 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
-        <td th:text="${#dates.format(a.getDeadline(), 'dd-MM-yyyy HH:mm')}"></td>
+        <td th:text="${#temporals.format(a.getDeadline(), 'dd-MM-yyyy HH:mm:ss')}"></td>
         <td><a th:href ="@{/GoToBidPage(idauction=${a.getIdAuction()})}">Details</a></td>
     </tr>
     </tbody>

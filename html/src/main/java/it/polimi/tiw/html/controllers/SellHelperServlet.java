@@ -77,9 +77,7 @@ public class SellHelperServlet extends HttpServlet {
             if (initialPrice < 1 || initialPrice > 999999.99f) {
                 throw new NumberFormatException();
             }
-            if (!(getServletContext().getMimeType(fileName).startsWith("image/"))) {
-                throw new IOException();
-            }
+
             LocalDateTime dateLowerBound = LocalDateTime.now(ZoneOffset.UTC);
             dateLowerBound = dateLowerBound.plusDays(1);
             LocalDateTime dateUpperBound = LocalDateTime.now(ZoneOffset.UTC);
@@ -91,6 +89,10 @@ public class SellHelperServlet extends HttpServlet {
             UUID uuid = UUID.randomUUID();
             String newFileName = uuid + (fileName != "" ? fileName.substring(fileName.indexOf(".")) : "");
             if (filePart.getSize() > 0) {
+                String mimeType = getServletContext().getMimeType(fileName);
+                if (mimeType != null && !(mimeType.startsWith("image/"))) {
+                    throw new IOException();
+                }
                 try (OutputStream out = new FileOutputStream(System.getProperty("upload.location") + File.separator + "img" + File.separator
                         + newFileName)) {
 

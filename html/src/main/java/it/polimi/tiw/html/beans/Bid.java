@@ -1,11 +1,12 @@
 package it.polimi.tiw.html.beans;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class Bid {
     private int idBid;
     private float bidPrice;
-    private Date dateTime;
+    private ZonedDateTime dateTime;
     private int idBidder;
     private int idAuction;
 
@@ -25,11 +26,11 @@ public class Bid {
         this.bidPrice = bidPrice;
     }
 
-    public Date getDateTime() {
+    public ZonedDateTime getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(Date dateTime) {
+    public void setDateTime(ZonedDateTime dateTime) {
         this.dateTime = dateTime;
     }
 

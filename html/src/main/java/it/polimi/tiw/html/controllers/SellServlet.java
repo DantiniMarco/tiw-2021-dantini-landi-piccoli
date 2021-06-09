@@ -7,6 +7,7 @@ import it.polimi.tiw.html.dao.AuctionDAO;
 import it.polimi.tiw.html.utils.ConnectionHandler;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
+import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
@@ -21,8 +22,10 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,6 +44,7 @@ public class SellServlet extends HttpServlet {
         ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
         templateResolver.setTemplateMode(TemplateMode.HTML);
         this.templateEngine = new TemplateEngine();
+        this.templateEngine.addDialect(new Java8TimeDialect());
         this.templateEngine.setTemplateResolver(templateResolver);
         templateResolver.setSuffix(".html");
     }
@@ -103,8 +107,7 @@ public class SellServlet extends HttpServlet {
     private List<String> calculateTime(List<ExtendedAuction> auctionList) {
         List<String> timeLeftlist = new ArrayList<>();
         for (ExtendedAuction auction : auctionList) {
-            long diff = auction.getDeadline().getTime() - new Date().getTime();
-
+            long diff = Duration.between(ZonedDateTime.now(), auction.getDeadline()).getSeconds();
             if (diff <= 3600) {
                 if (diff < 1) {
                     timeLeftlist.add("Expired");
@@ -112,9 +115,9 @@ public class SellServlet extends HttpServlet {
                     timeLeftlist.add("Less than an hour");
                 }
             } else {
-                long diffHours = diff / (60 * 60 * 1000) % 24;
-                long diffDays = diff / (24 * 60 * 60 * 1000);
-                timeLeftlist.add(((diffDays > 0)?diffDays + " days and ":"")+ diffHours + " hours");
+                long diffHours = diff / (60 * 60) % 24;
+                long diffDays = diff / (24 * 60 * 60);
+                timeLeftlist.add(((diffDays > 0)?diffDays + " days and ":"")+ diffHours + " hour(s)");
             }
         }
         return timeLeftlist;

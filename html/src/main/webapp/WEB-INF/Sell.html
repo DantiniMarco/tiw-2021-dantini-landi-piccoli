@@ -51,13 +51,13 @@
                 <td><span
                         th:text="${openAuction.itemDescription}"></span></td>
                 <td><span
-                        th:text="${openAuction.price==0.0}?'no bids':${openAuction.price}"></span></td>
+                        th:text="${openAuction.price==0.0}?'No bids':${openAuction.price}"></span></td>
                 <td><span
                         th:text="${openAuction.minRaise}"></span></td>
                 <td><span
                         th:text="${timeLeftOpen.get(iter.index)}"></span></td>
                 <td><span
-                        th:text="${#dates.format(openAuction.getDeadline(), 'dd-MM-yyyy HH:mm')}"></span></td>
+                        th:text="${#temporals.format(openAuction.getDeadline(), 'dd-MM-yyyy HH:mm:ss')}"></span></td>
             </tr>
             </tbody>
         </table>
@@ -85,7 +85,7 @@
                 <td><span
                         th:text="${closedAuction.minRaise}"></span></td>
                 <td><span
-                        th:text="${#dates.format(closedAuction.getDeadline(), 'dd-MM-yyyy HH:mm')}"></span></td>
+                        th:text="${#temporals.format(closedAuction.getDeadline(), 'dd-MM-yyyy HH:mm:ss')}"></span></td>
             </tr>
             </tbody>
         </table>

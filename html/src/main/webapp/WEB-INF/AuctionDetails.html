@@ -36,7 +36,7 @@
             <p th:text="${'Description: ' + auctionData.itemDescription}"></p>
             <p th:text="${'Price: ' + auctionData.price}"></p>
             <p th:text="${'Minimum raise: ' + auctionData.minRaise}"></p>
-            <p th:text="${'Deadline: ' + auctionData.deadline}"></p>
+            <p th:text="${'Deadline: ' + #temporals.format(auctionData.deadline, 'dd-MM-yyyy HH:mm:ss')}"></p>
             <img style="max-height: 300px; max-width: 300px;" alt="No image found"
                  th:src="@{/ImageServlet(name=${auctionData.itemImage})}">
         </div>
@@ -58,7 +58,7 @@
                     <tr th:each="bid:${bids}">
                         <td th:text="${bid.bidderUsername}"></td>
                         <td th:text="${bid.bidPrice}"></td>
-                        <td th:text="${bid.dateTime}"></td>
+                        <td th:text="${#temporals.format(bid.dateTime, 'dd-MM-yyyy HH:mm:ss')}"></td>
                     </tr>
                     </tbody>
                 </table>

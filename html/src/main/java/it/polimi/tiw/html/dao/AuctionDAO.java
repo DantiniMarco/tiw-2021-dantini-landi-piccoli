@@ -4,6 +4,11 @@ import java.sql.*;
 import java.util.*;
 import java.util.Date;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
 import it.polimi.tiw.html.beans.Auction;
 import it.polimi.tiw.html.beans.AuctionStatus;
 import it.polimi.tiw.html.beans.ExtendedAuction;
@@ -44,7 +49,7 @@ public class AuctionDAO {
                         ExtendedAuction auction = new ExtendedAuction();
                         auction.setInitialPrice(result.getInt("initialprice"));
                         auction.setMinRaise(result.getInt("minraise"));
-                        auction.setDeadline(new Date(result.getLong("deadline") * 1000));
+                        auction.setDeadline(ZonedDateTime.ofInstant(Instant.ofEpochSecond(result.getLong("deadline")), ZoneOffset.UTC).withZoneSameInstant(ZoneId.of("Europe/Rome")));
                         auction.setIdAuction(result.getInt("idauction"));
                         auction.setItemName(result.getString("name"));
                         searchedList.add(auction);
@@ -84,7 +89,7 @@ public class AuctionDAO {
                     auction.setItemDescription(result.getString("description"));
                     auction.setPrice(result.getFloat("price"));
                     auction.setMinRaise(result.getFloat("minraise"));
-                    auction.setDeadline(new Date(result.getLong("deadline") * 1000));
+                    auction.setDeadline(ZonedDateTime.ofInstant(Instant.ofEpochSecond(result.getLong("deadline")), ZoneOffset.UTC).withZoneSameInstant(ZoneId.of("Europe/Rome")));
                     auctions.add(auction);
                 }
             } catch (SQLException e) {
@@ -217,7 +222,7 @@ public class AuctionDAO {
                 auction.setItemDescription(result.getString("description"));
                 auction.setPrice(result.getFloat("price"));
                 auction.setMinRaise(result.getFloat("minraise"));
-                auction.setDeadline(new Date(result.getLong("deadline") * 1000));
+                auction.setDeadline(ZonedDateTime.ofInstant(Instant.ofEpochSecond(result.getLong("deadline")), ZoneOffset.UTC).withZoneSameInstant(ZoneId.of("Europe/Rome")));
                 auction.setStatus(AuctionStatus.getAuctionStatusFromInt(result.getInt("status")));
             }
         }catch (SQLException sqle){

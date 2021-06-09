@@ -7,6 +7,7 @@ import it.polimi.tiw.html.dao.UserDAO;
 import it.polimi.tiw.html.utils.ConnectionHandler;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
+import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
@@ -36,6 +37,7 @@ public class AuctionDetailsServlet extends HttpServlet {
         ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
         templateResolver.setTemplateMode(TemplateMode.HTML);
         this.templateEngine = new TemplateEngine();
+        this.templateEngine.addDialect(new Java8TimeDialect());
         this.templateEngine.setTemplateResolver(templateResolver);
         templateResolver.setSuffix(".html");
     }

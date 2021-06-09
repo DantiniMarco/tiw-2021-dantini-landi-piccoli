@@ -134,9 +134,10 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
 
 
     this.calculateTimeLeft = function (deadline) {
+        let timeLeft, diffHours, diffDays;
         let dateDeadline = new Date(deadline);
         let diff = dateDeadline - new Date().valueOf();
-        if (diff <= 3600) {
+        if (diff <= 3600*1000) {
             if (diff < 1) {
                 timeLeft = "Expired";
             } else {
@@ -145,7 +146,7 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
         } else {
             diffHours = diff / (60 * 60 * 1000) % 24;
             diffDays = diff / (24 * 60 * 60 * 1000);
-            timeLeft = ((Math.floor(diffDays) > 0)?Math.floor(diffDays) + " days and ":"")+ Math.floor(diffHours) + " hours";
+            timeLeft = ((Math.floor(diffDays) > 0)?Math.floor(diffDays) + " days and ":"")+ Math.floor(diffHours) + " hour(s)";
         }
 
         return timeLeft;

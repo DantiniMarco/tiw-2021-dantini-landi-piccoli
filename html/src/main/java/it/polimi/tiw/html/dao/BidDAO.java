@@ -4,6 +4,10 @@ import it.polimi.tiw.html.beans.ExtendedAuction;
 import it.polimi.tiw.html.beans.ExtendedBid;
 
 import java.sql.*;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,7 +35,7 @@ public class BidDAO {
                     ExtendedBid bid = new ExtendedBid();
                     bid.setBidderUsername(result.getString("username"));
                     bid.setBidPrice(result.getFloat("bidprice"));
-                    bid.setDateTime(new Date(result.getLong("datetime") * 1000));
+                    bid.setDateTime(ZonedDateTime.ofInstant(Instant.ofEpochSecond(result.getLong("datetime")), ZoneOffset.UTC).withZoneSameInstant(ZoneId.of("Europe/Rome")));
                     bids.add(bid);
                 }
             }
