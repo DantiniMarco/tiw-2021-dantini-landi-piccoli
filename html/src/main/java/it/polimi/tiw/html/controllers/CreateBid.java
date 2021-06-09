@@ -69,4 +69,13 @@ public class CreateBid extends HttpServlet {
 
         response.sendRedirect(getServletContext().getContextPath() + "/GoToBidPage?idauction=" + idAuction + errorString);
     }
+
+    @Override
+    public void destroy() {
+        try {
+            ConnectionHandler.closeConnection(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -72,7 +72,9 @@ public class SellHelperServlet extends HttpServlet {
             if (initialPrice < 1 || initialPrice > 999999.99f) {
                 throw new NumberFormatException();
             }
-
+            if (!(getServletContext().getMimeType(fileName).startsWith("image/"))) {
+                throw new IOException();
+            }
             LocalDateTime dateLowerBound = LocalDateTime.now(ZoneOffset.UTC);
             dateLowerBound = dateLowerBound.plusDays(1);
             LocalDateTime dateUpperBound = LocalDateTime.now(ZoneOffset.UTC);
@@ -115,7 +117,10 @@ public class SellHelperServlet extends HttpServlet {
 
 
         } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Illegal parameter");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal parameter");
+            return;
+        } catch (IOException e){
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad image");
             return;
         } catch (SQLException sqle) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");

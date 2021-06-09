@@ -16,12 +16,14 @@ import java.io.OutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.text.DateFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.zip.DataFormatException;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
@@ -75,7 +77,9 @@ public class SellHelperServlet extends HttpServlet {
             if (initialPrice < 1 || initialPrice > 999999.99f) {
                 throw new NumberFormatException();
             }
-
+            if (!(getServletContext().getMimeType(fileName).startsWith("image/"))) {
+                throw new IOException();
+            }
             LocalDateTime dateLowerBound = LocalDateTime.now(ZoneOffset.UTC);
             dateLowerBound = dateLowerBound.plusDays(1);
             LocalDateTime dateUpperBound = LocalDateTime.now(ZoneOffset.UTC);
@@ -102,7 +106,7 @@ public class SellHelperServlet extends HttpServlet {
                 } catch (FileNotFoundException fne) {
                     System.out.println("Problems during file upload.");
                     System.out.println("Sono nel terzo catch");
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue with image upload");
                     return;
                 } finally {
                     if (filecontent != null) {
@@ -121,6 +125,8 @@ public class SellHelperServlet extends HttpServlet {
 
         } catch (NumberFormatException e) {
             errorString = "?error=wrongFormat";
+        } catch (IOException e){
+            errorString = "?error=badImage";
         } catch (SQLException sqle) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Issue from database");
             return;

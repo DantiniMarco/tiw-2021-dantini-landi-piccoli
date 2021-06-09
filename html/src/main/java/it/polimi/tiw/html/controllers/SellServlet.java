@@ -51,6 +51,15 @@ public class SellServlet extends HttpServlet {
         AuctionDAO am= new AuctionDAO(connection);
         List<ExtendedAuction> openAuctions;
         List<ExtendedAuction> closedAuctions;
+        ServletContext servletContext = getServletContext();
+        final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
+
+        if (request.getParameter("error") != null && request.getParameter("error").equals("badImage")) {
+            ctx.setVariable("errorMsg", "The file uploaded is not an image.");
+        }
+        if (request.getParameter("error") != null && request.getParameter("error").equals("wrongFormat")) {
+            ctx.setVariable("errorMsg", "Input is not correctly formatted");
+        }
 
         try{
             openAuctions = am.findAuctionsByIdAndStatus(user.getIdUser(), AuctionStatus.OPEN);
@@ -66,8 +75,7 @@ public class SellServlet extends HttpServlet {
             throw new UnavailableException("Error executing query");
         }
 
-        ServletContext servletContext = getServletContext();
-        final WebContext ctx = new WebContext(request,response,servletContext,request.getLocale());
+
         ctx.setVariable("openAuctions", openAuctions);
         ctx.setVariable("closedAuctions", closedAuctions);
 

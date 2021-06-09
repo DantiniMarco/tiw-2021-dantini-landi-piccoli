@@ -81,4 +81,12 @@ public class CreateBid extends HttpServlet {
             return;
         }
     }
+    @Override
+    public void destroy() {
+        try {
+            ConnectionHandler.closeConnection(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

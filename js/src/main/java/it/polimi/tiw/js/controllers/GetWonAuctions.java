@@ -104,12 +104,12 @@ public class GetWonAuctions extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(json);
     }
+    @Override
     public void destroy() {
         try {
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (SQLException sqle) {
+            ConnectionHandler.closeConnection(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

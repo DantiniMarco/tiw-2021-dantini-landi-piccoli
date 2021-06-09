@@ -103,12 +103,12 @@ public class GetSearchedAuction extends HttpServlet {
 
     }
 
+    @Override
     public void destroy() {
         try {
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (SQLException sqle) {
+            ConnectionHandler.closeConnection(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

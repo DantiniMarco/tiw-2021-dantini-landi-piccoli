@@ -141,11 +141,9 @@ public class GoToBidPage extends HttpServlet {
     @Override
     public void destroy() {
         try {
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
+            ConnectionHandler.closeConnection(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
