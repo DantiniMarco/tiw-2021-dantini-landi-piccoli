@@ -206,8 +206,6 @@
             } else {
                 auctionsListSell.show();
             }
-            //searchForm.reset();
-            //searchForm.show();
         };
     }
 })();

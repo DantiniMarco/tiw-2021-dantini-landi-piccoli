@@ -195,7 +195,7 @@ function AuctionDetails(options) {
     }
 
     this.update = function (formdata) {
-        this.bidform.querySelector('input[type="number"]').min= formdata.currMax;
+        this.bidform.querySelector('input[type="number"]').min= formdata.currMax + 0.01;
             this.itemName.textContent = formdata.item.name;
         this.itemImage.src = location.pathname.substring(0, location.pathname.lastIndexOf("/") + 1) + "ImageServlet?name=" + formdata.item.image;
         this.itemDescription.textContent = formdata.item.description;
