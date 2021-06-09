@@ -40,12 +40,11 @@ public class AuctionDetailsServletHelper extends HttpServlet {
         String id_param = request.getParameter("auctionId");
         boolean bad_request = false, ready = true;
         int id = -1;
-        String errorMsg = null;
 
         if(id_param==null || id_param.isEmpty()){
             bad_request = true;
         }
-
+        System.out.println(id_param);
         try{
             id = Integer.parseInt(id_param);
         }catch (NumberFormatException ex){
@@ -82,7 +81,7 @@ public class AuctionDetailsServletHelper extends HttpServlet {
 
 
         if(!ready){
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad requst");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad request");
         }
 
         response.setStatus(HttpServletResponse.SC_OK);

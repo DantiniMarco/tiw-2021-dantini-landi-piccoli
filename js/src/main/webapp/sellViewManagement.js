@@ -118,8 +118,8 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
         this.listclosedbody.innerHTML = ""; // empty the table body
         // build updated list
         let self = this;
-        this.addauctionform.querySelector('#deadlineLocalDateTime').min = this.dateToIsoString(new Date(sellData.dateLowerBound));
-        this.addauctionform.querySelector('#deadlineLocalDateTime').max = this.dateToIsoString(new Date(sellData.dateUpperBound));
+        this.addauctionform.querySelector('#deadlineLocalDateTime').min = this.auctionDetailsSell.dateToIsoString(new Date(sellData.dateLowerBound));
+        this.addauctionform.querySelector('#deadlineLocalDateTime').max = this.auctionDetailsSell.dateToIsoString(new Date(sellData.dateUpperBound));
         sellData.openAuctions.forEach(function (auction) { // self visible here, not this
             self.listopenbody.appendChild(self.setRowAuction(auction));
         });
@@ -133,18 +133,26 @@ function AuctionListSell(_alert, _listopen, _listopenbody, _listclosed, _listclo
         self.listclosedbody.style.display = null;
     }
 
-    this.dateToIsoString = function (date) {
-       pad = function(num) {
-           var norm = Math.floor(num);
-           return (norm < 10 ? '0' : '') + norm;
-       };
+    //to update
+    /*this.calculateTime(auctionList) {
+        for (let auction : auctionList) {
+            diff = auction.getDeadline().getTime() - new Date().getTime();
 
-        return date.getFullYear() +
-            '-' + pad(date.getMonth() + 1) +
-            '-' + pad(date.getDate()) +
-            'T' + pad(date.getHours()) +
-            ':' + pad(date.getMinutes());
-    }
+            if (diff <= 3600) {
+                if (diff < 1) {
+                    timeLeftlist.add("Expired");
+                } else {
+                    timeLeftlist.add("Less than an hour");
+                }
+            } else {
+                diffHours = diff / (60 * 60 * 1000) % 24;
+                diffDays = diff / (24 * 60 * 60 * 1000);
+                timeLeftlist.add(((diffDays > 0)?diffDays + " days and ":"")+ diffHours + " hours");
+            }
+        }
+        return timeLeftlist;
+    }*/
+
 
 }
 
@@ -162,30 +170,29 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
     this.bidsTable = _bidsTable;
     this.bidsTableBody = _bidsTableBody;
     this.auctionDetailsAlert = _auctionDetailsAlert;
-
-    this.registerEvents = function (auctionListSell) {
-        this.closeAuctionForm.querySelector('button[type="submit"]').addEventListener('click', (e) => {
-            e.preventDefault();
-            let form = e.target.closest("form");
-            if (form.checkValidity()) {
-                let self = this
-                makeCall("POST", 'AuctionDetailsServletHelper', form,
-                    function (req) {
-                        if (req.readyState === 4) {
-                            let message = req.responseText;
-                            if (req.status === 200) {
-                                self.show();
-                            } else {
-                                self.alert.textContent = message;
-                            }
+    this.closeAuctionForm.querySelector('button[type="submit"]').addEventListener('click', (e) => {
+        e.preventDefault();
+        let form = e.target.closest("form");
+        if (form.checkValidity()) {
+            let self = this;
+            makeCall("POST", 'AuctionDetailsServletHelper', form,
+                function (req) {
+                    if (req.readyState === 4) {
+                        let message = req.responseText;
+                        if (req.status === 200) {
+                            self.show();
+                        } else {
+                            self.alert.textContent = message;
                         }
                     }
-                );
-            } else {
-                form.reportValidity();
-            }
-        });
+                }
+            );
+        } else {
+            form.reportValidity();
+        }
+    });
 
+    this.registerEvents = function (auctionListSell) {
         this.sellBackButton.addEventListener('click', (e) => {
             auctionListSell.show();
             this.sellContainer.style.visibility = "visible";
@@ -210,8 +217,9 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
                     if (req.status === 200) {
                         self.sellContainer.visibility="hidden";
                         self.sellContainer.style.display = "none";
-                        self.alert.textContent = ""
-                        console.log(req.responseText);
+                        self.alert.textContent = "";
+                        let message = req.responseText;
+                        console.log(message);
                         var auctionDataBox = JSON.parse(req.responseText);
                         console.log(auctionDataBox);
                         if (auctionDataBox.length === 0) {
@@ -220,9 +228,7 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
                         }
                         self.update(auctionDataBox);
                     } else {
-                        self.searchalert.textContent = req.responseText;
-                        self.sellContainer.visibility="visible";
-                        self.sellContainer.style.display = null;
+                        self.alert.textContent = "Server error";
                     }
                 }
             }
@@ -276,7 +282,8 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
                 this.bidsTable.style.display = null;
             }
             let currDate = new Date();
-            if(auctionDataBox.auction.deadline<new Date(currDate.getFullYear(), currDate.getMonth(), currDate.getDay(), currDate.getHours(), currDate.getMinutes(), currDate.getSeconds())){
+            let test = this.dateToIsoString(new Date(currDate.getFullYear(), currDate.getMonth(), currDate.getDate(), currDate.getHours(), currDate.getMinutes(), currDate.getSeconds()));
+            if(auctionDataBox.auction.deadline<test){
                 this.closeAuctionForm.style.visibility="visible";
                 this.closeAuctionForm.style.display=null;
                 this.closeAuctionForm.querySelector('input[type="hidden"]').value = auctionDataBox.auction.idAuction;
@@ -308,5 +315,18 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
         row.appendChild(dateAndTime);
 
         return row;
+    }
+
+    this.dateToIsoString = function (date) {
+        pad = function(num) {
+            var norm = Math.floor(num);
+            return (norm < 10 ? '0' : '') + norm;
+        };
+
+        return date.getFullYear() +
+            '-' + pad(date.getMonth() + 1) +
+            '-' + pad(date.getDate()) +
+            'T' + pad(date.getHours()) +
+            ':' + pad(date.getMinutes());
     }
 }
