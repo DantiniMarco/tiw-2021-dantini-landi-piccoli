@@ -271,6 +271,7 @@ function WonAndLatestAuction(_alertRecentAuctions, _alertWonAuction,_alert, _won
                 if (req.readyState === 4) {
                     if (req.status === 200) {
                         self.alertWonAuction.textContent = ""
+                        self.alertRecentAuctions.textContent = ""
                         self.alert.textContent = ""
                         console.log(req.responseText);
                         var auctionsToShow = JSON.parse(req.responseText);
