@@ -239,7 +239,10 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
         }
         this.auctionData.appendChild(price);
         minraise = document.createElement("p");
-        minraise.textContent = "Minimum raise: " + auctionDataBox.auction.minRaise;
+        minraise.textContent = "Minimum raise: " +  new Intl.NumberFormat('it-IT', {
+            style: 'currency',
+            currency: 'EUR'
+        }).format(auctionDataBox.auction.minRaise);
         this.auctionData.appendChild(minraise);
         deadline = document.createElement("p");
         deadline.textContent = "Deadline: " + new Date(auctionDataBox.auction.deadline).toLocaleString();
