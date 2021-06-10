@@ -62,7 +62,7 @@ public class CreateBid extends HttpServlet {
             if (price.isEmpty()) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter missing");
                 return;
-            } else if (fPrice < currMaxPrice) {
+            } else if (fPrice < (currMaxPrice - 0.001f)) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().println("This price is too low.");
                 return;

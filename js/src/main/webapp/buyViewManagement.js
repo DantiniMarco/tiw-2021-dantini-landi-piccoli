@@ -216,7 +216,7 @@ function AuctionDetails(options) {
         if (formdata.bids.length === 0) {
             this.bidlistcontainer.style.visibility= "hidden"
             this.bidlistcontainer.style.display= "none"
-            this.noBids.textContent = " This auction has not received auctions yes"
+            this.noBids.textContent = " This auction has not received bids yet"
         } else {
             this.noBids.style.visibility="hidden"
             this.noBids.style.display="none"

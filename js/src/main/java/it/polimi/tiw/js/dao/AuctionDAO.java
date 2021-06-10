@@ -35,7 +35,7 @@ public class AuctionDAO {
 
         String query = "SELECT idauction, UNIX_TIMESTAMP(deadline) AS deadline, minraise, initialprice, name FROM " +
                 "(item NATURAL JOIN auction) WHERE auction.idcreator != ? AND (item.name LIKE ? OR " +
-                "item.description LIKE ?) AND auction.status = 0 AND auction.deadline >= CURDATE() ORDER BY auction.deadline DESC";
+                "item.description LIKE ?) AND auction.status = 0 AND auction.deadline >= CURRENT_TIMESTAMP() ORDER BY auction.deadline DESC";
         try (PreparedStatement pstatement = con.prepareStatement(query)) {
             pstatement.setInt(1, userid);
             pstatement.setString(2, "%" + keyword + "%");
@@ -47,8 +47,8 @@ public class AuctionDAO {
                 else {
                     while (result.next()) {
                         ExtendedAuction auction = new ExtendedAuction();
-                        auction.setInitialPrice(result.getInt("initialprice"));
-                        auction.setMinRaise(result.getInt("minraise"));
+                        auction.setInitialPrice(result.getFloat("initialprice"));
+                        auction.setMinRaise(result.getFloat("minraise"));
                         auction.setDeadline(ZonedDateTime.ofInstant(Instant.ofEpochSecond(result.getLong("deadline")), ZoneOffset.UTC));
                         auction.setIdAuction(result.getInt("idauction"));
                         auction.setItemName(result.getString("name"));
