@@ -41,6 +41,10 @@
         <url-pattern>/SellServlet</url-pattern>
         <url-pattern>/SellHelperServlet</url-pattern>
         <url-pattern>/ImageServlet</url-pattern>
+        <url-pattern>/AuctionDetailsServlet</url-pattern>
+        <url-pattern>/AuctionDetailsServletHelper</url-pattern>
+        <url-pattern>/GoToBidPage</url-pattern>
+        <url-pattern>/CreateBid</url-pattern>
     </filter-mapping>
     <welcome-file-list>
         <welcome-file>Login</welcome-file>
