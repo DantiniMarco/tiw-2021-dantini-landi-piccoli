@@ -51,9 +51,9 @@
                 <td><span
                         th:text="${openAuction.itemDescription}"></span></td>
                 <td><span
-                        th:text="${openAuction.price==0.0}?'No bids':${openAuction.price}"></span></td>
-                <td><span
-                        th:text="${openAuction.minRaise}"></span></td>
+                        th:text="${openAuction.price==0.0}?'No bids':${#numbers.formatDecimal(openAuction.price, 1, 'POINT', 2, 'COMMA')}"></span>
+                    <span th:if="${openAuction.price!=0.0}"> &euro;</span></td>
+                <td><span th:text="${#numbers.formatDecimal(openAuction.minRaise, 1, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
                 <td><span
                         th:text="${timeLeftOpen.get(iter.index)}"></span></td>
                 <td><span
@@ -81,9 +81,9 @@
                 <td><span
                         th:text="${closedAuction.itemDescription}"></span></td>
                 <td><span
-                        th:text="${closedAuction.price==0.0}?'no bids':${closedAuction.price}"></span></td>
-                <td><span
-                        th:text="${closedAuction.minRaise}"></span></td>
+                        th:text="${closedAuction.price==0.0}?'No bids':${#numbers.formatDecimal(closedAuction.price, 1, 'POINT', 2, 'COMMA')}"></span>
+                    <span th:if="${closedAuction.price!=0.0}"> &euro;</span></td>
+                <td><span th:text="${#numbers.formatDecimal(closedAuction.minRaise, 1, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
                 <td><span
                         th:text="${#temporals.format(closedAuction.getDeadline(), 'dd-MM-yyyy HH:mm:ss')}"></span></td>
             </tr>

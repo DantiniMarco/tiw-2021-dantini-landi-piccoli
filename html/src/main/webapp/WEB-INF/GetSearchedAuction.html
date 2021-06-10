@@ -48,7 +48,7 @@
     <tbody>
     <tr th:each="w : ${wonList}">
 
-        <td><span th:text="${#numbers.formatDecimal(w.getPrice(), 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
+        <td><span th:text="${#numbers.formatDecimal(w.getPrice(), 1, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
         <td th:text="${w.getItemName()}"></td>
         <td th:text="${w.getItemDescription()}"></td>
 
@@ -82,8 +82,8 @@
     <tr th:each="a : ${auctions}">
 
         <td th:text="${a.getItemName()}"></td>
-        <td><span th:text="${#numbers.formatDecimal(a.getInitialPrice(), 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
-        <td><span th:text="${#numbers.formatDecimal(a.getMinRaise(), 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
+        <td><span th:text="${#numbers.formatDecimal(a.getInitialPrice(), 1, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
+        <td><span th:text="${#numbers.formatDecimal(a.getMinRaise(), 1, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
         <td th:text="${#temporals.format(a.getDeadline(), 'dd-MM-yyyy HH:mm:ss')}"></td>
         <td><a th:href ="@{/GoToBidPage(idauction=${a.getIdAuction()})}">Details</a></td>
     </tr>

@@ -56,18 +56,18 @@
                     <h3> Insert here the price of your bid, make sure that your price is higher than the max in the list </h3>
                 </tr>
                 <tr>
-                    <h4 ><span th:text="${'The minimum raise is: '+ #numbers.formatDecimal(minimumRaise, 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></h4>
+                    <h4 ><span th:text="${'The minimum raise is: '+ #numbers.formatDecimal(minimumRaise, 1, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></h4>
                 </tr>
                 <tr>
                     <div class="container">
-                        <h5 ><span th:text="${'The minimum bet is: '+ #numbers.formatDecimal(currMax, 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></h5>
+                        <h5 ><span th:text="${'The minimum bet is: '+ #numbers.formatDecimal(currMax, 1, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></h5>
                     </div>
                 </tr>
                 <tr>
                     <form action="#" th:action="@{/CreateBid}" method="POST">
                         <div class="container">
                             <label for="price"><b>Make a new bid</b></label>
-                            <input type="number" th:min="${#numbers.formatDecimal(currMax, 0, 'COMMA', 2, 'POINT')}" step="0.01" placeholder="Type here..." id="price" name="price" required> <br>
+                            <input type="number" th:min="${#numbers.formatDecimal(currMax, 1, 'COMMA', 2, 'POINT')}" step="0.01" placeholder="Type here..." id="price" name="price" required> <br>
                             <button type="submit">Submit</button>
                             <p th:text="${errorMsg}"></p>
                             <input type="hidden" name="idauction" th:value="${idauction}">
@@ -88,7 +88,7 @@
             <tbody>
             <tr th:each="a : ${bids}">
 
-                <td><span th:text="${#numbers.formatDecimal(a.getBidPrice(), 0, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
+                <td><span th:text="${#numbers.formatDecimal(a.getBidPrice(), 1, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
                 <td th:text="${#temporals.format(a.getDateTime(), 'dd-MM-yyyy HH:mm:ss')}"></td>
             </tr>
             </tbody>

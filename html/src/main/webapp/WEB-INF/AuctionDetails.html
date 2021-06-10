@@ -34,8 +34,10 @@
         <div>
             <p th:text="${'Name: ' + auctionData.itemName}"></p>
             <p th:text="${'Description: ' + auctionData.itemDescription}"></p>
-            <p th:text="'Last bid: ' + ${auctionData.price==0.0}?'No bids':${auctionData.price}"></p>
-            <p th:text="${'Minimum raise: ' + auctionData.minRaise}"></p>
+            <p><span
+                    th:text="${auctionData.price==0.0}?'No bids':${'Last bid: ' + #numbers.formatDecimal(auctionData.price, 1, 'POINT', 2, 'COMMA')}"></span>
+                <span th:if="${auctionData.price!=0.0}"> &euro;</span></p>
+            <p><span th:text="${'Minimum raise: '+ #numbers.formatDecimal(auctionData.minRaise, 1, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></p>
             <p th:text="${'Deadline: ' + #temporals.format(auctionData.deadline, 'dd-MM-yyyy HH:mm:ss')}"></p>
             <img style="max-height: 300px; max-width: 300px;" alt="No image found"
                  th:src="@{/ImageServlet(name=${auctionData.itemImage})}">
@@ -57,7 +59,7 @@
                     <tbody>
                     <tr th:each="bid:${bids}">
                         <td th:text="${bid.bidderUsername}"></td>
-                        <td th:text="${bid.bidPrice}"></td>
+                        <td><span th:text="${#numbers.formatDecimal(bid.bidPrice, 1, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></td>
                         <td th:text="${#temporals.format(bid.dateTime, 'dd-MM-yyyy HH:mm:ss')}"></td>
                     </tr>
                     </tbody>
