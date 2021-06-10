@@ -229,7 +229,14 @@ function AuctionDetailsSell(_alert,_sellContainer, _itemImage,_auctionDetails, _
         itemDescription.textContent = "Description: " + auctionDataBox.auction.itemDescription;
         this.auctionData.appendChild(itemDescription);
         price = document.createElement("p");
-        price.textContent = "Last bid: " + auctionDataBox.auction.price;
+        if(auctionDataBox.auction.price == 0){
+            price.textContent = "Last bid: No bids";
+        }else{
+            price.textContent = "Last bid: " +  new Intl.NumberFormat('it-IT', {
+                style: 'currency',
+                currency: 'EUR'
+            }).format(auctionDataBox.auction.price);
+        }
         this.auctionData.appendChild(price);
         minraise = document.createElement("p");
         minraise.textContent = "Minimum raise: " + auctionDataBox.auction.minRaise;

@@ -34,7 +34,7 @@
         <div>
             <p th:text="${'Name: ' + auctionData.itemName}"></p>
             <p th:text="${'Description: ' + auctionData.itemDescription}"></p>
-            <p th:text="${auctionData.price==0.0}?'No bids':${'Last bid: ' + auctionData.price}"></p>
+            <p th:text="'Last bid: ' + ${auctionData.price==0.0}?'No bids':${auctionData.price}"></p>
             <p th:text="${'Minimum raise: ' + auctionData.minRaise}"></p>
             <p th:text="${'Deadline: ' + #temporals.format(auctionData.deadline, 'dd-MM-yyyy HH:mm:ss')}"></p>
             <img style="max-height: 300px; max-width: 300px;" alt="No image found"
