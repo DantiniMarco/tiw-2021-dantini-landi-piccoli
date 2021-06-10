@@ -34,7 +34,7 @@
         <div>
             <p th:text="${'Name: ' + auctionData.itemName}"></p>
             <p th:text="${'Description: ' + auctionData.itemDescription}"></p>
-            <p th:text="${'Price: ' + auctionData.price}"></p>
+            <p th:text="${auctionData.price==0.0}?'No bids':${'Last bid: ' + auctionData.price}"></p>
             <p th:text="${'Minimum raise: ' + auctionData.minRaise}"></p>
             <p th:text="${'Deadline: ' + #temporals.format(auctionData.deadline, 'dd-MM-yyyy HH:mm:ss')}"></p>
             <img style="max-height: 300px; max-width: 300px;" alt="No image found"
@@ -77,7 +77,7 @@
         <div th:if="${auctionData.isClose()}">
             <h3>Auction winner data</h3>
             <div th:if="${winner==null}">
-                <p>This item has recieved no bids</p>
+                <p><center>This item has recieved no bids</center></p>
             </div>
             <div th:if="${winner!=null}">
                 <p th:text="${'Winner\'s first name: ' + winner.firstName}"></p>
