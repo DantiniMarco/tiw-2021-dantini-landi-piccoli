@@ -74,7 +74,7 @@ public class SellHelperServlet extends HttpServlet {
             }
 
             LocalDateTime dateLowerBound = LocalDateTime.now(ZoneOffset.UTC);
-            dateLowerBound = dateLowerBound.plusDays(1);
+            dateLowerBound = dateLowerBound.plusDays(1).minusMinutes(1);
             LocalDateTime dateUpperBound = LocalDateTime.now(ZoneOffset.UTC);
             dateUpperBound = dateUpperBound.plusWeeks(2);
             if(deadline.before(Timestamp.valueOf(dateLowerBound)) || deadline.after(Timestamp.valueOf(dateUpperBound))){
@@ -82,8 +82,9 @@ public class SellHelperServlet extends HttpServlet {
             }
 
             UUID uuid = UUID.randomUUID();
-            String newFileName = uuid + (fileName != "" ? fileName.substring(fileName.indexOf(".")) : "");
-            if (filePart.getSize() > 0) {
+            String newFileName = null;
+            if (filePart.getSize() > 0 && fileName != null && fileName.contains(".")) {
+                newFileName = uuid + (fileName.substring(fileName.indexOf(".")));
                 String mimeType = getServletContext().getMimeType(fileName);
                 if (mimeType != null && !(mimeType.startsWith("image/"))) {
                     throw new IOException();
@@ -112,9 +113,7 @@ public class SellHelperServlet extends HttpServlet {
 
             User user = (User) request.getSession().getAttribute("user");
             int idCreator = user.getIdUser();
-            if (fileName.isEmpty()) {
-                newFileName = null;
-            }
+
             am.insertNewAuction(itemName, newFileName, itemDescription, initialPrice, minRaise, deadline, idCreator);
 
 
