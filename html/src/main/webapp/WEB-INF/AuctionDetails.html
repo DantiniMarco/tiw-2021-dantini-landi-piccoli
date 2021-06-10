@@ -35,7 +35,7 @@
             <p th:text="${'Name: ' + auctionData.itemName}"></p>
             <p th:text="${'Description: ' + auctionData.itemDescription}"></p>
             <p><span
-                    th:text="${auctionData.price==0.0}?'No bids':${'Last bid: ' + #numbers.formatDecimal(auctionData.price, 1, 'POINT', 2, 'COMMA')}"></span>
+                    th:text="${auctionData.price==0.0}?'Last bid: ' + 'No bids':${'Last bid: ' + #numbers.formatDecimal(auctionData.price, 1, 'POINT', 2, 'COMMA')}"></span>
                 <span th:if="${auctionData.price!=0.0}"> &euro;</span></p>
             <p><span th:text="${'Minimum raise: '+ #numbers.formatDecimal(auctionData.minRaise, 1, 'POINT', 2, 'COMMA')}"></span><span> &euro;</span></p>
             <p th:text="${'Deadline: ' + #temporals.format(auctionData.deadline, 'dd-MM-yyyy HH:mm:ss')}"></p>
