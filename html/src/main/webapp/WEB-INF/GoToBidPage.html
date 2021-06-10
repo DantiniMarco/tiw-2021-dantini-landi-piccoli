@@ -67,7 +67,7 @@
                     <form action="#" th:action="@{/CreateBid}" method="POST">
                         <div class="container">
                             <label for="price"><b>Make a new bid</b></label>
-                            <input type="number" th:min="${#numbers.formatDecimal(currMax, 0, 2)}" step="0.01" placeholder="Type here..." id="price" name="price" required> <br>
+                            <input type="number" th:min="${#numbers.formatDecimal(currMax, 0, 'COMMA', 2, 'POINT')}" step="0.01" placeholder="Type here..." id="price" name="price" required> <br>
                             <button type="submit">Submit</button>
                             <p th:text="${errorMsg}"></p>
                             <input type="hidden" name="idauction" th:value="${idauction}">
